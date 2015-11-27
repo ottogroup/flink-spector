@@ -20,9 +20,9 @@ import org.apache.flink.api.common.typeutils.TypeSerializer
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.streaming.api.operators.StreamingRuntimeContext
 import org.apache.flink.streaming.test.CoreSpec
-import org.apache.flink.streaming.test.runtime.MessageType
-import org.apache.flink.streaming.test.runtime.MessageType._
-import org.apache.flink.streaming.test.util.SerializeUtil
+import org.apache.flink.core.runtime.MessageType
+import org.apache.flink.core.runtime.MessageType._
+import org.apache.flink.core.util.SerializeUtil
 import org.mockito.Mockito._
 import org.zeromq.ZMQ
 

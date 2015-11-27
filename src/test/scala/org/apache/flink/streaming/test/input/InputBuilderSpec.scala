@@ -16,6 +16,7 @@
 
 package org.apache.flink.streaming.test.input
 
+import org.apache.flink.core.input.InputBuilder
 import org.apache.flink.streaming.test.CoreSpec
 
 class InputBuilderSpec extends CoreSpec {

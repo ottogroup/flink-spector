@@ -17,9 +17,9 @@ package org.apache.flink.streaming.test.input
 
 import java.util.concurrent.TimeUnit
 
+import org.apache.flink.streaming.test.input.time.After
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord
 import org.apache.flink.streaming.test.CoreSpec
-import org.apache.flink.streaming.test.input.time.After
 
 import scala.collection.JavaConversions._
 

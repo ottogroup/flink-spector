@@ -19,7 +19,8 @@ import java.util.{List => JList}
 
 import org.apache.flink.streaming.runtime.streamrecord
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord
-import org.apache.flink.streaming.test.input.{EventTimeInput, Input}
+import org.apache.flink.core.input.Input
+import org.apache.flink.streaming.test.input.EventTimeInput
 import org.scalatest.concurrent.Timeouts
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FlatSpec, Matchers, OptionValues}

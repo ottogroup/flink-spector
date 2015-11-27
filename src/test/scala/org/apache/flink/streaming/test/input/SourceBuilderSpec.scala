@@ -18,8 +18,8 @@ package org.apache.flink.streaming.test.input
 
 import java.util
 
-import org.apache.flink.streaming.test.CoreSpec
-import org.apache.flink.streaming.test.runtime.{SimpleOutputVerifier, StreamTestEnvironment}
+import org.apache.flink.core.runtime.SimpleOutputVerifier
+import org.apache.flink.streaming.test.{CoreSpec, StreamTestEnvironment}
 
 class SourceBuilderSpec extends CoreSpec {
 

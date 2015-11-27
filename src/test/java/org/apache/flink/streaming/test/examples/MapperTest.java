@@ -19,10 +19,10 @@ package org.apache.flink.streaming.test.examples;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.test.core.StreamTestBase;
-import org.apache.flink.streaming.test.core.output.ExpectedOutput;
+import org.apache.flink.streaming.test.StreamTestBase;
+import org.apache.flink.core.set.ExpectedOutput;
 
-import static org.apache.flink.streaming.test.core.Sugar.strict;
+import static org.apache.flink.core.Sugar.strict;
 
 /**
  * This example shows how to define input without time characteristics.

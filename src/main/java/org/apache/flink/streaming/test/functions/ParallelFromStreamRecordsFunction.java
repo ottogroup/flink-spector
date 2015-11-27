@@ -24,8 +24,8 @@ import org.apache.flink.streaming.api.checkpoint.CheckpointedAsynchronously;
 import org.apache.flink.streaming.api.functions.source.RichEventTimeSourceFunction;
 import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
-import org.apache.flink.streaming.test.util.SerializeUtil;
-import org.apache.flink.streaming.test.util.Util;
+import org.apache.flink.core.util.SerializeUtil;
+import org.apache.flink.core.util.Util;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;

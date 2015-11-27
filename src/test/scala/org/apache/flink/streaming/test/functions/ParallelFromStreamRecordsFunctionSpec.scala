@@ -26,8 +26,8 @@ import org.apache.flink.streaming.api.operators.StreamingRuntimeContext
 import org.apache.flink.streaming.api.watermark.Watermark
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord
 import org.apache.flink.streaming.test.CoreSpec
-import org.apache.flink.streaming.test.input.EventTimeInputBuilder
 import org.apache.flink.streaming.test.input.time.After
+import org.apache.flink.streaming.test.input.EventTimeInputBuilder
 import org.mockito.Mockito._
 
 import scala.collection.JavaConversions._

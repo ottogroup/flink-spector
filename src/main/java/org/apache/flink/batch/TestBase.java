@@ -17,12 +17,12 @@
 package org.apache.flink.batch;
 
 import org.apache.flink.api.java.DataSet;
-import org.apache.flink.streaming.test.input.Input;
-import org.apache.flink.streaming.test.output.HamcrestVerifier;
-import org.apache.flink.streaming.test.output.OutputMatcherFactory;
-import org.apache.flink.streaming.test.runtime.OutputVerifier;
-import org.apache.flink.streaming.test.runtime.StreamTestEnvironment;
-import org.apache.flink.streaming.test.trigger.VerifyFinishedTrigger;
+import org.apache.flink.core.input.Input;
+import org.apache.flink.core.table.HamcrestVerifier;
+import org.apache.flink.core.table.OutputMatcherFactory;
+import org.apache.flink.core.runtime.OutputVerifier;
+import org.apache.flink.streaming.test.StreamTestEnvironment;
+import org.apache.flink.core.trigger.VerifyFinishedTrigger;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;

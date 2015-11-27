@@ -24,12 +24,12 @@ import com.google.common.util.concurrent.MoreExecutors;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.runtime.StreamingMode;
 import org.apache.flink.runtime.client.JobTimeoutException;
-import org.apache.flink.streaming.test.input.Input;
-import org.apache.flink.streaming.test.runtime.OutputListener;
-import org.apache.flink.streaming.test.runtime.OutputVerifier;
-import org.apache.flink.streaming.test.runtime.StreamTestFailedException;
-import org.apache.flink.streaming.test.trigger.DefaultTestTrigger;
-import org.apache.flink.streaming.test.trigger.VerifyFinishedTrigger;
+import org.apache.flink.core.input.Input;
+import org.apache.flink.core.runtime.OutputListener;
+import org.apache.flink.core.runtime.OutputVerifier;
+import org.apache.flink.core.runtime.FlinkTestFailedException;
+import org.apache.flink.core.trigger.DefaultTestTrigger;
+import org.apache.flink.core.trigger.VerifyFinishedTrigger;
 import org.apache.flink.test.util.ForkableFlinkMiniCluster;
 import org.apache.flink.test.util.TestBaseUtils;
 import org.apache.flink.test.util.TestEnvironment;
@@ -111,7 +111,7 @@ public class TestRunner extends TestEnvironment{
 	 * new instance of {@link ForkableFlinkMiniCluster}
 	 *
 	 * @param parallelism global setting for parallel execution.
-	 * @return new instance of StreamTestEnvironment
+	 * @return new instance of {@link TestRunner}
 	 * @throws Exception
 	 */
 	public static TestRunner createTestEnvironment(int parallelism) throws Exception {
@@ -170,8 +170,8 @@ public class TestRunner extends TestEnvironment{
 			try {
 				future.get();
 			} catch (ExecutionException e) {
-				//check if it is a StreamTestFailedException
-				if (e.getCause() instanceof StreamTestFailedException) {
+				//check if it is a FlinkTestFailedException
+				if (e.getCause() instanceof FlinkTestFailedException) {
 					//unwrap exception
 					throw e.getCause().getCause();
 				}
@@ -188,13 +188,13 @@ public class TestRunner extends TestEnvironment{
 	}
 
 	/**
-	 * Creates a TestOutputFormat to verify your the output of your stream.
+	 * Creates a TestOutputFormat to verify the output.
 	 * Using a {@link OutputVerifier}
 	 *
 	 * @param verifier {@link OutputVerifier} which will be
 	 *                 used to verify the received records.
 	 * @param <IN>     type of the input
-	 * @return the created sink.
+	 * @return the created {@link TestOutputFormat}.
 	 */
 	public <IN> TestOutputFormat<IN> createTestOutputFormat(OutputVerifier<IN> verifier) {
 		VerifyFinishedTrigger trigger = new DefaultTestTrigger();
@@ -205,7 +205,7 @@ public class TestRunner extends TestEnvironment{
 	}
 
 	/**
-	 * Creates a TestOutputFormat to verify the output of your stream.
+	 * Creates a TestOutputFormat to verify the output.
 	 * The environment will register a port
 	 *
 	 * @param verifier which will be used to verify the received records

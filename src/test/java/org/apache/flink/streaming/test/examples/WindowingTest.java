@@ -18,10 +18,10 @@ package org.apache.flink.streaming.test.examples;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.apache.flink.streaming.test.core.StreamTestBase;
-import org.apache.flink.streaming.test.output.AssertBlock;
-import org.apache.flink.streaming.test.output.OutputMatcher;
-import static org.apache.flink.streaming.test.core.Sugar.*;
+import org.apache.flink.streaming.test.StreamTestBase;
+import org.apache.flink.core.table.AssertBlock;
+import org.apache.flink.core.table.OutputMatcher;
+import static org.apache.flink.core.Sugar.*;
 //import to use the dsl of hamcrest:
 import static org.hamcrest.Matchers.*;
 

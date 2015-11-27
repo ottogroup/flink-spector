@@ -19,7 +19,7 @@ package org.apache.flink.streaming.test.input;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.test.input.time.TimeSpan;
-import org.apache.flink.streaming.test.runtime.StreamTestEnvironment;
+import org.apache.flink.streaming.test.StreamTestEnvironment;
 
 /**
  * This builder is used to define input in a fluent way.

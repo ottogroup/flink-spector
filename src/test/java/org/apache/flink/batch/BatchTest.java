@@ -19,16 +19,16 @@ package org.apache.flink.batch;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.streaming.test.core.output.ExpectedOutput;
-import org.apache.flink.streaming.test.input.Input;
-import org.apache.flink.streaming.test.input.InputBuilder;
-import org.apache.flink.streaming.test.output.AssertBlock;
-import org.apache.flink.streaming.test.output.OutputMatcher;
-import org.apache.flink.streaming.test.trigger.FinishAtCount;
+import org.apache.flink.core.set.ExpectedOutput;
+import org.apache.flink.core.input.Input;
+import org.apache.flink.core.input.InputBuilder;
+import org.apache.flink.core.table.AssertBlock;
+import org.apache.flink.core.table.OutputMatcher;
+import org.apache.flink.core.trigger.FinishAtCount;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
-import static org.apache.flink.streaming.test.output.OutputMatchers.anyOf;
+import static org.apache.flink.core.table.OutputMatchers.anyOf;
 
 public class BatchTest extends TestBase {
 

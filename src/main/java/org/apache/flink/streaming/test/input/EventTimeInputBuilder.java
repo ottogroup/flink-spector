@@ -17,7 +17,6 @@
 package org.apache.flink.streaming.test.input;
 
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
-import org.apache.flink.streaming.test.input.time.After;
 import org.apache.flink.streaming.test.input.time.TimeSpan;
 
 import java.util.ArrayList;

@@ -19,9 +19,9 @@ package org.apache.flink.streaming.test.input
 import java.util
 import java.util.concurrent.TimeUnit
 
-import org.apache.flink.streaming.test.CoreSpec
 import org.apache.flink.streaming.test.input.time.After
-import org.apache.flink.streaming.test.runtime.{SimpleOutputVerifier, StreamTestEnvironment}
+import org.apache.flink.streaming.test.{StreamTestEnvironment, CoreSpec}
+import org.apache.flink.core.runtime.SimpleOutputVerifier
 
 class EventTimeSourceBuilderSpec extends CoreSpec {
 

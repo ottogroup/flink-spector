@@ -16,8 +16,9 @@
 
 package org.apache.flink.streaming.test.input;
 
+import org.apache.flink.core.input.InputBuilder;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
-import org.apache.flink.streaming.test.runtime.StreamTestEnvironment;
+import org.apache.flink.streaming.test.StreamTestEnvironment;
 
 import java.util.Collection;
 
