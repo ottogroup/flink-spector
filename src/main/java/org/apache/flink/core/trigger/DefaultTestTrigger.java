@@ -16,10 +16,10 @@
 
 package org.apache.flink.core.trigger;
 
-import org.apache.flink.streaming.test.StreamTestEnvironment;
+import org.apache.flink.streaming.DataStreamTestEnvironment;
 
 /**
- * The default trigger used by the {@link StreamTestEnvironment}.
+ * The default trigger used by the {@link DataStreamTestEnvironment}.
  * This trigger will not terminate the listener prematurely.
  */
 public class DefaultTestTrigger implements VerifyFinishedTrigger {

@@ -16,9 +16,9 @@
 
 package org.apache.flink.core.table.tuple
 
-import org.apache.flink.streaming.test.CoreSpec
 import org.apache.flink.core.table.HamcrestVerifier
 import org.apache.flink.core.runtime.FlinkTestFailedException
+import org.apache.flink.streaming.CoreSpec
 import org.hamcrest.core.IsCollectionContaining
 
 import scala.collection.JavaConversions._

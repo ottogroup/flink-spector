@@ -17,8 +17,8 @@ package org.apache.flink.core.util
 
 import java.util
 
+import org.apache.flink.streaming.CoreSpec
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord
-import org.apache.flink.streaming.test.CoreSpec
 
 import scala.collection.JavaConversions._
 

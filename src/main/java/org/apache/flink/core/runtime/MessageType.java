@@ -28,8 +28,7 @@ public enum MessageType {
 
 	OPEN("OPEN".getBytes()),
 	CLOSE("CLOSE".getBytes()),
-	REC("REC".getBytes()),
-	SER("SER".getBytes());
+	REC("RECORD".getBytes());
 
 	/** byte representation of the message identifier */
 	public final byte[] bytes;
@@ -63,6 +62,15 @@ public enum MessageType {
 	 * @return byte array containing the payload.
 	 */
 	public byte[] getPayload(byte[] message) {
+		if(this == OPEN) {
+			System.out.println("open");
+			return getOpenPayload(message);
+		}
+		return ArrayUtils.subarray(message, length, message.length);
+	}
+
+	public byte[] getOpenPayload(byte[] message) {
+		int length = "OPEN 0 1 SER".getBytes().length;
 		return ArrayUtils.subarray(message, length, message.length);
 	}
 

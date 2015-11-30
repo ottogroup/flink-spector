@@ -31,9 +31,9 @@ import java.util.Collection;
 public class DataSetBuilder<T> {
 
 	private final InputBuilder<T> builder = new InputBuilder<>();
-	private final TestRunner env;
+	private final DataSetTestEnvironment env;
 
-	public DataSetBuilder(TestRunner env) {
+	public DataSetBuilder(DataSetTestEnvironment env) {
 		this.env = env;
 	}
 
@@ -46,7 +46,7 @@ public class DataSetBuilder<T> {
 	 * @return created {@link DataSetBuilder}
 	 */
 	public static <T> DataSetBuilder<T> createBuilder(T record,
-	                                                      TestRunner env) {
+	                                                      DataSetTestEnvironment env) {
 		DataSetBuilder<T> sourceBuilder = new DataSetBuilder<>(env);
 		return sourceBuilder.emit(record);
 	}

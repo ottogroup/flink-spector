@@ -72,16 +72,17 @@ public class TestOutputFormat<IN> extends RichOutputFormat<IN> {
 		if (serializer == null) {
 
 			//transmit parallelism
-			publisher.send(String.format("OPEN %d %d",
+
+			String open = String.format("OPEN %d %d",
 					taskNumber,
-					numTasks), 0);
+					numTasks);
 			//create serializer
 			TypeInformation<IN> typeInfo = TypeExtractor.getForObject(next);
 			serializer = typeInfo.createSerializer(getRuntimeContext().getExecutionConfig());
 			//push serializer to output receiver
 			try {
-				msg = Bytes.concat("SER".getBytes(), SerializeUtil.serialize(serializer));
-				publisher.send(msg, 0);
+				msg = Bytes.concat((open +" SER").getBytes(), SerializeUtil.serialize(serializer));
+				publisher.send(msg);
 			} catch (IOException e) {
 				LOG.error("Could not serialize TypeSerializer", e);
 				return;
@@ -97,8 +98,8 @@ public class TestOutputFormat<IN> extends RichOutputFormat<IN> {
 			LOG.error("Could not serialize input", e);
 			return;
 		}
-		msg = Bytes.concat("REC".getBytes(), bytes);
-		publisher.send(msg, 0);
+		msg = Bytes.concat("RECORD".getBytes(), bytes);
+		publisher.send(msg);
 	}
 
 	@Override
@@ -106,7 +107,7 @@ public class TestOutputFormat<IN> extends RichOutputFormat<IN> {
 		//signal close to output receiver
 		String end = String.format("CLOSE %d",
 				taskNumber);
-		publisher.send(end, 0);
+		publisher.send(end);
 		publisher.close();
 		context.term();
 	}

@@ -15,7 +15,7 @@
  */
 package org.apache.flink.core.table.result
 
-import org.apache.flink.streaming.test.CoreSpec
+import org.apache.flink.streaming.CoreSpec
 import org.hamcrest.Matchers
 
 import scala.collection.JavaConverters._

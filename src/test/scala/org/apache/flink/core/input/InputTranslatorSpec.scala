@@ -15,7 +15,7 @@
  */
 package org.apache.flink.core.input
 
-import org.apache.flink.streaming.test.CoreSpec
+import org.apache.flink.streaming.CoreSpec
 
 class InputTranslatorSpec extends CoreSpec{
 

@@ -17,7 +17,7 @@
 package org.apache.flink.core.table
 
 import org.apache.flink.api.java.tuple.{Tuple2 => Fluple2, Tuple3 => Fluple3}
-import org.apache.flink.streaming.test.CoreSpec
+import org.apache.flink.streaming.CoreSpec
 
 class TupleMaskSpec extends CoreSpec {
 

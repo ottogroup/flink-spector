@@ -16,7 +16,7 @@
 
 package org.apache.flink.core.runtime;
 
-import org.apache.flink.streaming.test.functions.TestSink;
+import org.apache.flink.streaming.functions.TestSink;
 
 /**
  * Implement this interface to verify the input

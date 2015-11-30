@@ -25,6 +25,8 @@ import org.apache.flink.batch.TestOutputFormat;
 import org.apache.flink.core.trigger.VerifyFinishedTrigger;
 import org.apache.flink.runtime.client.JobTimeoutException;
 import org.apache.flink.test.util.ForkableFlinkMiniCluster;
+import org.zeromq.ZMQ;
+import org.apache.flink.core.runtime.OutputListener.ResultState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,10 +53,10 @@ public abstract class Runner {
 	/**
 	 * list of {@link ListenableFuture}s wrapping the {@link OutputListener}s.
 	 */
-	private final List<ListenableFuture<Boolean>> listeners = new ArrayList<>();
+	private final List<ListenableFuture<ResultState>> listenerFutures = new ArrayList<>();
 
 	/**
-	 * Number of running listeners
+	 * Number of running sockets
 	 */
 	private final AtomicInteger runningListeners;
 
@@ -66,7 +68,7 @@ public abstract class Runner {
 	/**
 	 * Time in milliseconds before the test gets stopped with a timeout.
 	 */
-	private long timeout = 3000;
+	private long timeout = 4000;
 
 	/**
 	 * {@link TimerTask} to stop the test execution.
@@ -84,6 +86,8 @@ public abstract class Runner {
 	 */
 	private Integer currentPort;
 
+	private final ZMQSubscribers subscribers = new ZMQSubscribers();
+
 
 	public Runner(ForkableFlinkMiniCluster executor) {
 		this.cluster = executor;
@@ -92,35 +96,62 @@ public abstract class Runner {
 		runningListeners = new AtomicInteger(0);
 		stopExecution = new TimerTask() {
 			public void run() {
-				System.out.println("no timer!");
 				stopExecution();
 			}
 		};
+
 	}
 
-	protected abstract void execute() throws Throwable;
+	private class ZMQSubscribers {
+
+		private ZMQ.Context context = ZMQ.context(2);
+		private List<ZMQ.Socket> sockets = new ArrayList<>();
+
+		ZMQ.Socket getSubscriber(String address) {
+			ZMQ.Socket subscriber = context.socket(ZMQ.PULL);
+			subscriber.bind(address);
+			sockets.add(subscriber);
+			return subscriber;
+		}
+
+		public void close() {
+			for (ZMQ.Socket s : sockets) {
+				s.close();
+			}
+			try {
+				context.close();
+			} catch (IllegalStateException e) {
+				System.out.println("shit");
+				//shit happens
+			}
+		}
+
+	}
+
+	protected abstract void executeEnvironment() throws Throwable;
 
 	/**
 	 * Stop the execution of the test.
-	 * <p>
+	 * <p/>
 	 * Shutting the local cluster down will, will notify
-	 * the listeners when the sinks are closed.
+	 * the sockets when the sinks are closed.
 	 * Thus terminating the execution gracefully.
 	 */
 	public synchronized void stopExecution() {
 		if (stopped.get()) {
 			return;
 		}
-		System.out.println("why?");
+			subscribers.close();
 		stopped.set(true);
 		stopTimer.cancel();
 		stopTimer.purge();
 		cluster.shutdown();
+		System.out.println("Runner.stopExecution");
 	}
 
 	/**
 	 * Starts the test execution.
-	 * Collects the results from listeners after
+	 * Collects the results from sockets after
 	 * the cluster has terminated.
 	 *
 	 * @throws Throwable any Exception that has occurred
@@ -129,17 +160,17 @@ public abstract class Runner {
 	public void executeTest() throws Throwable {
 		stopTimer.schedule(stopExecution, timeout);
 		try {
-			execute();
-		} catch (JobTimeoutException e) {
+			executeEnvironment();
+		} catch (JobTimeoutException
+				| IllegalStateException e) {
 			//cluster has been shutdown forcefully, most likely by at timeout.
 			stopped.set(true);
 		}
-		runningListeners.set(0);
 
 		//====================
 		// collect failures
 		//====================
-		for (ListenableFuture future : listeners) {
+		for (ListenableFuture future : listenerFutures) {
 			try {
 				future.get();
 			} catch (ExecutionException e) {
@@ -150,6 +181,10 @@ public abstract class Runner {
 				}
 				throw e.getCause();
 			}
+		}
+		Thread.sleep(50);
+		if (!stopped.get()) {
+			subscribers.close();
 		}
 		stopTimer.cancel();
 		stopTimer.purge();
@@ -186,49 +221,57 @@ public abstract class Runner {
 	}
 
 	/**
+	 * Get a port to use.
+	 *
+	 * @return unused port.
+	 */
+	private int getAvailablePort() {
+		int port = currentPort;
+		currentPort++;
+		return port;
+	}
+
+	/**
 	 * Registers a verifier for a 0MQ port.
 	 *
 	 * @param <OUT>
-	 * @param port     to listen on.
 	 * @param verifier verifier
 	 * @param trigger
 	 */
-	private <OUT> void registerListener(int port,
-	                                    OutputVerifier<OUT> verifier,
-	                                    VerifyFinishedTrigger trigger) {
-		ListenableFuture<Boolean> future = executorService
-				.submit(new OutputListener<OUT>(port, verifier, trigger));
-		runningListeners.incrementAndGet();
-		listeners.add(future);
+	public <OUT> int registerListener(OutputVerifier<OUT> verifier,
+	                                  VerifyFinishedTrigger trigger) {
+		int port = getAvailablePort();
 
-		Futures.addCallback(future, new FutureCallback<Boolean>() {
+		ZMQ.Socket subscriber = subscribers.getSubscriber("tcp://*:" + port);
+
+		ListenableFuture<OutputListener.ResultState> future = executorService
+				.submit(new OutputListener<OUT>(subscriber, verifier, trigger));
+		runningListeners.incrementAndGet();
+		listenerFutures.add(future);
+
+		Futures.addCallback(future, new FutureCallback<ResultState>() {
 
 			@Override
-			public void onSuccess(Boolean continueExecution) {
-				if (runningListeners.get() == 0) {
-					//execution of environment already finished
-					return;
-				}
-				if (!continueExecution) {
+			public void onSuccess(ResultState state) {
+				if (state != ResultState.SUCCESS) {
 					if (runningListeners.decrementAndGet() == 0) {
 						stopExecution();
+						System.out.println("Runner.onSuccess");
 					}
 				}
 			}
 
 			@Override
 			public void onFailure(Throwable throwable) {
-				if (runningListeners.get() == 0) {
-					//execution of environment already finished
-					return;
-				}
-				//check if other listeners are still running
+				//check if other sockets are still running
 				if (runningListeners.decrementAndGet() == 0) {
-					System.out.println("no failure!");
 					stopExecution();
+					System.out.println("Runner.onFailure");
 				}
 			}
 		});
+
+		return port;
 	}
 
 }

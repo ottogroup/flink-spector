@@ -18,10 +18,10 @@ package org.apache.flink.core;
 
 import org.apache.flink.core.set.ExpectedOutput;
 import org.apache.flink.core.set.MatcherBuilder;
-import org.apache.flink.streaming.test.input.EventTimeInputBuilder;
+import org.apache.flink.streaming.input.EventTimeInputBuilder;
 import org.apache.flink.core.input.InputBuilder;
-import org.apache.flink.streaming.test.input.time.After;
-import org.apache.flink.streaming.test.input.time.Before;
+import org.apache.flink.streaming.input.time.After;
+import org.apache.flink.streaming.input.time.Before;
 
 import java.util.concurrent.TimeUnit;
 

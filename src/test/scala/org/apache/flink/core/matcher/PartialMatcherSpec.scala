@@ -16,7 +16,7 @@
 
 package org.apache.flink.core.matcher
 
-import org.apache.flink.streaming.test.CoreSpec
+import org.apache.flink.streaming.CoreSpec
 import org.mockito.Mockito._
 
 import scala.collection.mutable.ArrayBuffer

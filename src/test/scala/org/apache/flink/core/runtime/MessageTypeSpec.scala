@@ -15,17 +15,14 @@
  */
 package org.apache.flink.core.runtime
 
-import org.apache.flink.streaming.test.CoreSpec
 import org.apache.flink.core.runtime.MessageType._
+import org.apache.flink.streaming.CoreSpec
 
 class MessageTypeSpec extends CoreSpec {
 
   "getMessageType" should "classify messages" in {
     MessageType
       .getMessageType("OPEN 1 2".getBytes) shouldBe OPEN
-
-    MessageType
-      .getMessageType("SERfoobar".getBytes) shouldBe SER
 
     MessageType
       .getMessageType("RECMarostn".getBytes) shouldBe REC
@@ -44,14 +41,14 @@ class MessageTypeSpec extends CoreSpec {
     new String(payload) shouldBe "blabla"
   }
 
-  it should "return the payload of a SER message" in {
-    val payload = SER.getPayload("SERblabla".getBytes)
+  it should "return the payload of a OPEN message" in {
+    val payload = OPEN.getPayload("OPEN 2 12SERblabla".getBytes)
     new String(payload) shouldBe "blabla"
   }
 
   "isType" should "should match the type of a message" in {
-    MessageType.isType("SERblabla".getBytes, SER) shouldBe true
-    MessageType.isType("SERblabla".getBytes, OPEN) shouldBe false
+    MessageType.isType("CLOSEblabla".getBytes, CLOSE) shouldBe true
+    MessageType.isType("CLOSEblabla".getBytes, OPEN) shouldBe false
   }
 
 

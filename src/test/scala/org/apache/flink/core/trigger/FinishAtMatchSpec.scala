@@ -16,7 +16,7 @@
 
 package org.apache.flink.core.trigger
 
-import org.apache.flink.streaming.test.CoreSpec
+import org.apache.flink.streaming.CoreSpec
 import org.hamcrest.core.Is
 
 class FinishAtMatchSpec extends CoreSpec {

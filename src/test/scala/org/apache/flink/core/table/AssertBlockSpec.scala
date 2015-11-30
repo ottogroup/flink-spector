@@ -17,7 +17,7 @@
 package org.apache.flink.core.table
 
 import org.apache.flink.api.java.tuple.{Tuple3 => Fluple3, Tuple4 => Fluple4}
-import org.apache.flink.streaming.test.CoreSpec
+import org.apache.flink.streaming.CoreSpec
 import org.hamcrest.core.Is
 
 import scala.collection.JavaConversions._

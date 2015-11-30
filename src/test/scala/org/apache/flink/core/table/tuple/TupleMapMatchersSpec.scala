@@ -16,9 +16,9 @@
 package org.apache.flink.core.table.tuple
 
 import org.apache.flink.api.java.tuple.{Tuple3 => Fluple3}
-import org.apache.flink.streaming.test.CoreSpec
 import org.apache.flink.core.KeyMatcherPair
 import org.apache.flink.core.table.TupleMask
+import org.apache.flink.streaming.CoreSpec
 import org.hamcrest.Matchers
 
 import scala.collection.JavaConverters._

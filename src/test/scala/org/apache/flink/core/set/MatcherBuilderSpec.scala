@@ -16,7 +16,7 @@
 
 package org.apache.flink.core.set
 
-import org.apache.flink.streaming.test.CoreSpec
+import org.apache.flink.streaming.CoreSpec
 
 import scala.collection.JavaConversions._
 

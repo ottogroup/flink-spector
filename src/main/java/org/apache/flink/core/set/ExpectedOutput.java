@@ -16,7 +16,7 @@
 
 package org.apache.flink.core.set;
 
-import org.apache.flink.streaming.test.functions.TestSink;
+import org.apache.flink.streaming.functions.TestSink;
 import org.apache.flink.core.table.OutputMatcher;
 import org.hamcrest.Description;
 

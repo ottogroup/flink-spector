@@ -15,8 +15,8 @@
  */
 package org.apache.flink.core.set
 
-import org.apache.flink.streaming.test.CoreSpec
 import org.apache.flink.core.runtime.OutputVerifier
+import org.apache.flink.streaming.CoreSpec
 import org.mockito.Mockito._
 
 class StringToInt(verifier: OutputVerifier[Int])

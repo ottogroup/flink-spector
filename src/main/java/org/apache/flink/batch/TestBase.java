@@ -21,7 +21,7 @@ import org.apache.flink.core.input.Input;
 import org.apache.flink.core.table.HamcrestVerifier;
 import org.apache.flink.core.table.OutputMatcherFactory;
 import org.apache.flink.core.runtime.OutputVerifier;
-import org.apache.flink.streaming.test.StreamTestEnvironment;
+import org.apache.flink.streaming.DataStreamTestEnvironment;
 import org.apache.flink.core.trigger.VerifyFinishedTrigger;
 import org.hamcrest.Matcher;
 import org.junit.After;
@@ -34,14 +34,14 @@ public class TestBase {
 	/**
 	 * Test Environment
 	 */
-	private TestRunner env;
+	private DataSetTestEnvironment env;
 
 	/**
-	 * Creates a new {@link StreamTestEnvironment}
+	 * Creates a new {@link DataStreamTestEnvironment}
 	 */
 	@Before
 	public void initialize() throws Exception {
-		env = TestRunner.createTestEnvironment(2);
+		env = DataSetTestEnvironment.createTestEnvironment(2);
 	}
 
 

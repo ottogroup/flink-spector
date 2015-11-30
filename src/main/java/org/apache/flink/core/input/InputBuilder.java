@@ -16,7 +16,7 @@
 
 package org.apache.flink.core.input;
 
-import org.apache.flink.streaming.test.functions.ParallelFromStreamRecordsFunction;
+import org.apache.flink.streaming.functions.ParallelFromStreamRecordsFunction;
 
 import java.util.ArrayList;
 import java.util.Collection;
