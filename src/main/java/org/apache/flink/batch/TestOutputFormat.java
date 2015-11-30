@@ -22,6 +22,7 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.core.runtime.OutputHandler;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.apache.flink.core.util.SerializeUtil;
 import org.slf4j.Logger;
@@ -34,8 +35,8 @@ public class TestOutputFormat<IN> extends RichOutputFormat<IN> {
 
 	private static final long serialVersionUID = 1L;
 
-	private transient ZMQ.Context context;
-	private transient ZMQ.Socket publisher;
+
+	private OutputHandler handler;
 	private TypeSerializer<IN> serializer;
 	private final int port;
 	private String jobManagerAddress;
@@ -59,36 +60,27 @@ public class TestOutputFormat<IN> extends RichOutputFormat<IN> {
 	public void open(int taskNumber, int numTasks) throws IOException {
 		this.taskNumber = taskNumber;
 		this.numTasks = numTasks;
-
 		//open a socket to push data
-		context = ZMQ.context(1);
-		publisher = context.socket(ZMQ.PUSH);
-		publisher.connect("tcp://" + jobManagerAddress + ":" + port);
+		handler = new OutputHandler(jobManagerAddress, port);
 	}
 
 	@Override
 	public void writeRecord(IN next) throws IOException {
 		byte[] msg;
 		if (serializer == null) {
-
-			//transmit parallelism
-
-			String open = String.format("OPEN %d %d",
-					taskNumber,
-					numTasks);
 			//create serializer
 			TypeInformation<IN> typeInfo = TypeExtractor.getForObject(next);
 			serializer = typeInfo.createSerializer(getRuntimeContext().getExecutionConfig());
 			//push serializer to output receiver
 			try {
-				msg = Bytes.concat((open +" SER").getBytes(), SerializeUtil.serialize(serializer));
-				publisher.send(msg);
+				handler.sendOpen(taskNumber,
+						numTasks,
+						SerializeUtil.serialize(serializer));
 			} catch (IOException e) {
 				LOG.error("Could not serialize TypeSerializer", e);
 				return;
 			}
 		}
-
 
 		//serialize input and push to output
 		byte[] bytes;
@@ -98,17 +90,12 @@ public class TestOutputFormat<IN> extends RichOutputFormat<IN> {
 			LOG.error("Could not serialize input", e);
 			return;
 		}
-		msg = Bytes.concat("RECORD".getBytes(), bytes);
-		publisher.send(msg);
+		handler.sendRecord(bytes);
 	}
 
 	@Override
 	public void close() throws IOException {
 		//signal close to output receiver
-		String end = String.format("CLOSE %d",
-				taskNumber);
-		publisher.send(end);
-		publisher.close();
-		context.term();
+		handler.sendClose(taskNumber);
 	}
 }

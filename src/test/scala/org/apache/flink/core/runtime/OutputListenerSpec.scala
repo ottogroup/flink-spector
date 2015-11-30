@@ -137,7 +137,7 @@ class OutputListenerSpec extends CoreSpec {
 
   def sendString(socket: ZMQ.Socket, msg: String): Unit = {
     val bytes = SerializeUtil.serialize(msg, serializer)
-    val packet = Bytes.concat("RECORD".getBytes, bytes)
+    val packet = Bytes.concat("REC".getBytes, bytes)
     socket.send(packet, 0)
   }
 

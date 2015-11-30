@@ -21,6 +21,7 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.core.runtime.OutputHandler;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.apache.flink.core.util.SerializeUtil;
 import org.slf4j.Logger;
@@ -41,8 +42,7 @@ public class TestSink<IN> extends RichSinkFunction<IN> {
 
 	private Logger LOG = LoggerFactory.getLogger(RichSinkFunction.class);
 
-	private transient Context context;
-	private transient ZMQ.Socket publisher;
+	private OutputHandler handler;
 	private TypeSerializer<IN> serializer;
 	private int port;
 
@@ -56,9 +56,7 @@ public class TestSink<IN> extends RichSinkFunction<IN> {
 		String jobManagerAddress = configuration
 				.getString("jobmanager.rpc.address", "localhost");
 		//open a socket to push data
-		context = ZMQ.context(1);
-		publisher = context.socket(ZMQ.PUSH);
-		publisher.connect("tcp://" + jobManagerAddress + ":" + port);
+		handler = new OutputHandler(jobManagerAddress, port);
 
 	}
 
@@ -77,19 +75,14 @@ public class TestSink<IN> extends RichSinkFunction<IN> {
 
 		if (serializer == null) {
 
-			String open = String.format("OPEN %d %d",
-					indexofThisSubTask,
-					numberOfSubTasks);
-
 			//create serializer
 			TypeInformation<IN> typeInfo = TypeExtractor.getForObject(next);
 			serializer = typeInfo.createSerializer(getRuntimeContext().getExecutionConfig());
 			//push serializer to output receiver
 			try {
-				msg = Bytes.concat((open + " SER").getBytes("UTF-8"), SerializeUtil.serialize(serializer));
-				if(!publisher.send(msg)) {
-					System.out.println("ser failed");
-				}
+				handler.sendOpen(indexofThisSubTask,
+						numberOfSubTasks, SerializeUtil.serialize(serializer));
+
 			} catch (IOException e) {
 				System.out.println("ser failed 1");
 				LOG.error("Could not serialize TypeSerializer", e);
@@ -107,21 +100,17 @@ public class TestSink<IN> extends RichSinkFunction<IN> {
 			LOG.error("Could not serialize input", e);
 			return;
 		}
-		msg = Bytes.concat("RECORD".getBytes(), bytes);
-		if(!publisher.send(msg)){
-			System.out.println("message failed");
-		}
+		msg = Bytes.concat("REC".getBytes(), bytes);
+		handler.sendRecord(bytes);
 		System.out.println("out: " + next);
 	}
 
 	@Override
 	public void close() {
 		//signal close to output receiver
-		String end = String.format("CLOSE %d",
+		handler.sendClose(
 				getRuntimeContext().getIndexOfThisSubtask());
-		publisher.send(end);
-		publisher.close();
-		context.term();
+
 	}
 
 }

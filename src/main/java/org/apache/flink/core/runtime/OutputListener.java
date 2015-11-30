@@ -163,7 +163,7 @@ public class OutputListener<OUT> implements Callable<OutputListener.ResultState>
 //				//--> if it's the first save it.
 //				break;
 			case REC:
-				System.out.print("RECORD ");
+				System.out.print("REC ");
 				//Received a record message from the sink.
 				//--> call the verifier and the finishing trigger.
 				out = type.getPayload(bytes);

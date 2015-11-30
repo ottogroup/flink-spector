@@ -119,7 +119,7 @@ public abstract class Runner {
 				s.close();
 			}
 			try {
-				context.close();
+				context.term();
 			} catch (IllegalStateException e) {
 				System.out.println("shit");
 				//shit happens

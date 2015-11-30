@@ -28,7 +28,7 @@ public enum MessageType {
 
 	OPEN("OPEN".getBytes()),
 	CLOSE("CLOSE".getBytes()),
-	REC("RECORD".getBytes());
+	REC("REC".getBytes());
 
 	/** byte representation of the message identifier */
 	public final byte[] bytes;

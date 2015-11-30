@@ -42,7 +42,7 @@ class MessageTypeSpec extends CoreSpec {
   }
 
   it should "return the payload of a OPEN message" in {
-    val payload = OPEN.getPayload("OPEN 2 12SERblabla".getBytes)
+    val payload = OPEN.getPayload("OPEN 2 1 SERblabla".getBytes)
     new String(payload) shouldBe "blabla"
   }
 
