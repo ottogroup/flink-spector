@@ -125,6 +125,19 @@ public class TestBase {
 		env.setParallelism(n);
 	}
 
+
+	/**
+	 * Provides an {@link DataSetBuilder} to create an {@link DataSet}
+	 *
+	 * @param record the first record to emit.
+	 * @param <OUT>  generic type of the returned stream.
+	 * @return {@link DataSetBuilder} to work with.
+	 */
+	public <OUT> DataSetBuilder<OUT> createTestDataSetWith(OUT record) {
+		return DataSetBuilder.createBuilder(record, env);
+	}
+
+
 	/**
 	 * Executes the test and verifies the output received.
 	 */

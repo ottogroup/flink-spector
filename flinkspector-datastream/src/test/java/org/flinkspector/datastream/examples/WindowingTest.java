@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.flinkspector.datastream;
+package org.flinkspector.datastream.examples;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.flinkspector.core.table.AssertBlock;
 import org.flinkspector.core.table.OutputMatcher;
+import org.flinkspector.datastream.StreamTestBase;
 
 //import to use the dsl of hamcrest:
 import static org.hamcrest.Matchers.*;
@@ -28,8 +29,8 @@ import static org.hamcrest.Matchers.*;
  * This example shows how to create test input with time characteristics.
  * And the usage of {@link AssertBlock} to build an {@link OutputMatcher}.
  * <p/>
- * To ensure test cases run in a few seconds the framework sets the time characteristic, of the data flow, to
- * EventTime. The source emitting the records, calculates and emits watermarks based on the timestamped input.
+ * To ensure test cases run in a few seconds the framework sets the time characteristic of the data flow, to
+ * EventTime. The test source emitting the input, calculates and emits watermarks based on the timestamped input.
  */
 public class WindowingTest extends StreamTestBase {
 
@@ -50,8 +51,8 @@ public class WindowingTest extends StreamTestBase {
 		setParallelism(2);
 
 		/*
-		 * Define the input DataStream get a EventTimeSourceBuilder
-		 * with .createTimedTestStreamWith(record).
+		 * Define the input DataStream:
+		 * Get a EventTimeSourceBuilder with, .createTimedTestStreamWith(record).
 		 * Add data records to it and retrieve a DataStreamSource
 		 * by calling .finish().
 		 *

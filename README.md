@@ -1,14 +1,15 @@
-# Flink Streaming Test Tool
+# Flinkspector
 
-This project provides tooling to test Apache Flink streaming data flows. The `StreamTestEnvironment` executes the data flow and feeds a verifier with the output. The tool ships with several implementations of this verifier. 
+This project provides a framework to define unit tests for Apache Flink data flows.
+The framework executes the data flows locally and verifies the output using predefined expectations. 
 
 Features include:
 - Concise DSL to define test scenarios.
 - Powerful matchers to express expectations.
-- Test windowing with timestamped input.
 - Test base for `JUnit`.
+- Test stream windowing with timestamped input.
 
-## Simple Example:
+## Minimal Example
 ```java
 class Test extends StreamTestBase {
     
@@ -25,24 +26,32 @@ class Test extends StreamTestBase {
 
 }
 ```
-You can find more extensive examples here: .
+You can find more extensive examples here: 
+* [DataSet API test examples](flinkspector-dataset/src/test/java/org/flinkspector/dataset/examples).
+* [DataStream API test examples](flinkspector-datastream/src/test/java/org/flinkspector/datastream/examples).
 
-## Getting started:
+## Getting started
 
-### Maven Central
-This project is not released yet.
-
-### Manual Build
-1. Clone this repo: `git clone http://repo`.
+### Manual Build:
+1. Clone this repo: `git clone https://github.com/ottogroup/flink-spector`.
 2. Build with maven: `maven install`.
-3. Include in your projects pom.xml: 
-    ```xml
-    <dependency>
-        <groupId>org.apache.flink</groupId>
-        <articaftId>flink-streaming-test</artifactId>
-        <version>0.1-SNAPSHOT</version>
-    <\dependency>
-    ```
+3. Include in your project's pom.xml: 
+```xml
+<dependency>
+    <groupId>org.flinkspector</groupId>
+    <articaftId>flinkspector-dataset</artifactId>
+    <version>0.1-SNAPSHOT</version>
+</dependency>
+```
+or for the Flink DataStream API:
+    
+```xml
+<dependency>
+    <groupId>org.flinkspector</groupId>
+    <articaftId>flinkspector-datastream</artifactId>
+    <version>0.1-SNAPSHOT</version>
+</dependency>
+```
 
 ## Origins
-The project was conceived at the Business Intelligence department of Otto Group
+The project was conceived at the Business Intelligence department of Otto Group.

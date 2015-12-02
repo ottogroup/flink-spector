@@ -43,28 +43,57 @@ public class BatchTest extends TestBase {
 		});
 	}
 
+
 	@Test
 	public void testMap() throws Throwable {
-		Input<Tuple2<Integer, String>> input = InputBuilder
-				.create(Tuple2.of(1, "test"))
-				.emit(Tuple2.of(2, "why"))
-				.emit(Tuple2.of(3, "not"))
-				.emit(Tuple2.of(4, "batch?"));
 
-		DataSet<Tuple2<Integer, String>> testDataSet = createTestDataSet(input);
+		/*
+		 * Define the input DataSet:
+		 * Get a DataSetBuilder with .createTestStreamWith(record).
+		 * Add data records to it and retrieve a DataSet,
+		 * by calling .finish().
+		 */
+		DataSet<Tuple2<Integer, String>> testDataSet =
+				createTestDataSetWith(Tuple2.of(1,"test"))
+						.emit(Tuple2.of(2, "why"))
+						.emit(Tuple2.of(3, "not"))
+						.emit(Tuple2.of(4, "batch?"))
+						.finish();
 
+		/*
+		 * Define the output you expect from the the transformation under test.
+		 * Add the tuples you want to see with .expect(record).
+		 */
 		ExpectedOutput<Tuple2<String, Integer>> output = ExpectedOutput
 				.create(Tuple2.of("test", 1))
 				.expect(Tuple2.of("why", 2))
 				.expect(Tuple2.of("not", 3));
+		// refine your expectations by adding requirements
 		output.refine().only();
 
+		/*
+		 * Creates an OutputMatcher using AssertBlock.
+		 * AssertBlock builds an OutputMatcher working on Tuples.
+		 * You assign String identifiers to your Tuple,
+		 * and add hamcrest matchers testing the values.
+		 */
 		OutputMatcher<Tuple2<String, Integer>> matcher =
+				//name the values in your tuple with keys:
 				new AssertBlock<Tuple2<String, Integer>>("name", "value")
+						//add an assertion using a value and an hamcrest matchers
 						.assertThat("name", isA(String.class))
 						.assertThat("value", lessThan(5))
+						//express how many matchers must return true for your test to pass:
+						.anyOfThem()
+						//define how many records need to fulfill the
 						.onEachRecord();
 
+		/*
+		 * Use assertDataSet to map DataSet to an OutputMatcher.
+		 * ExpectedOutput extends OutputMatcher and thus can be used in this way.
+		 * Combine the created matchers with anyOf(), implicating that at least one of
+		 * the matchers must be positive.
+		 */
 		assertDataSet(swap(testDataSet), anyOf(output, matcher), FinishAtCount.of(3));
 	}
 

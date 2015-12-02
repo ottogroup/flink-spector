@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package org.flinkspector.datastream;
+package org.flinkspector.datastream.examples;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.flinkspector.core.set.ExpectedOutput;
+import org.flinkspector.datastream.StreamTestBase;
 
 
 /**
  * This example shows how to define input without time characteristics.
- * And an the usage of {@link ExpectedOutput}.
+ * With the usage of {@link ExpectedOutput}.
  */
 public class MapperTest extends StreamTestBase {
 
@@ -51,8 +52,8 @@ public class MapperTest extends StreamTestBase {
 	public void testMap() {
 
 		/*
-		 * Define the input DataStream
-		 * get a SourceBuilder with .createTestStreamWith(record).
+		 * Define the input DataStream:
+		 * Get a SourceBuilder with .createTestStreamWith(record).
 		 * Add data records to it and retrieve a DataStreamSource
 		 * by calling .finish().
 		 */
