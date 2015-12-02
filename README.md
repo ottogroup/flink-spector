@@ -90,3 +90,10 @@ or for the Flink DataStream API:
 
 ## Origins
 The project was conceived at the Business Intelligence department of Otto Group.
+
+## Build Status
+
+[![Build Status](https://travis-ci.org/ottogroup/flink-spector.svg?branch=master)](https://travis-ci.org/ottogroup/flink-spector)
+
+## License
+Licensed under the [Apache License 2.0](https://github.com/ottogroup/schedoscope/blob/master/LICENSE)
