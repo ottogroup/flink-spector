@@ -25,7 +25,7 @@ import org.flinkspector.core.runtime.{FlinkTestFailedException, SimpleOutputVeri
 import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.scalatest.concurrent.Eventually
 import org.scalatest.exceptions.TestFailedException
-import org.scalatest.time.{Seconds, Span}
+import org.scalatest.time.{Minutes, Seconds, Span}
 
 import scala.collection.JavaConversions._
 
@@ -104,13 +104,16 @@ class DataSetEnvironmentSpec extends CoreSpec with Eventually {
     val dataSet = env.fromElements(list: _*)
       .map(new MapFunction[Integer,Integer] {
         override def map(value: Integer): Integer = {
-          Thread.sleep(1000)
+          val start = System.currentTimeMillis()
+          while(System.currentTimeMillis() - start < 1000L){
+            Thread.sleep(100)
+          }
           value + 1
         }
       })
     val outputFormat = env.createTestOutputFormat(happyVerifier)
     dataSet.output(outputFormat)
-    failAfter(Span(3, Seconds)) {
+    failAfter(Span(1, Minutes)) {
       env.executeTest()
     }
     //check if a forceful stop was invoked

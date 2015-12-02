@@ -181,8 +181,8 @@ public class StreamTestBase {
 	 *
 	 * @param parallelism The parallelism
 	 */
-	public void setParallelism(int n) {
-		env.setParallelism(n);
+	public void setParallelism(int parallelism) {
+		env.setParallelism(parallelism);
 	}
 
 	/**

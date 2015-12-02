@@ -27,7 +27,7 @@ import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.flinkspector.datastream.input.EventTimeInputBuilder
 import org.scalatest.concurrent.Eventually
 import org.scalatest.exceptions.TestFailedException
-import org.scalatest.time.{Seconds, Span}
+import org.scalatest.time.{Minutes, Seconds, Span}
 
 import scala.collection.JavaConversions._
 
@@ -108,13 +108,16 @@ class StreamTestEnvironmentSpec extends CoreSpec with Eventually {
     val source = env.fromElements(list: _*)
       .map(new MapFunction[Integer, Integer] {
         override def map(t: Integer): Integer = {
-          Thread.sleep(1000)
+          val start = System.currentTimeMillis()
+          while(System.currentTimeMillis() - start < 1000L){
+            Thread.sleep(100)
+          }
           t + 1
         }
       })
     val sink = env.createTestSink(happyVerifier)
     source.addSink(sink)
-    failAfter(Span(3, Seconds)) {
+    failAfter(Span(1, Minutes)) {
       env.executeTest()
     }
     //check if a forceful stop was invoked
