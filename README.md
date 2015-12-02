@@ -44,9 +44,9 @@ public void testWindowing() {
 					.close();
 
 		
-	// Lets you query the output tuples like a table:
+	// Lets you query the output like a table:
 	OutputMatcher<Tuple2<Integer, String>> matcher =
-			//name the values in your tuple with keys:
+			//define keys for the values in your tuple:
 			new AssertBlock<Tuple2<Integer, String>>("value", "name")
 					.assertThat("value", is(3))
 					.assertThat("name", either(is("fritz")).or(is("peter")))
@@ -82,6 +82,7 @@ or for the Flink DataStream API:
     <version>0.1-SNAPSHOT</version>
 </dependency>
 ```
+
 
 ## Origins
 The project was conceived at the Business Intelligence department of Otto Group.
