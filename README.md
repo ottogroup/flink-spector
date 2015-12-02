@@ -64,6 +64,10 @@ You can find more extensive examples here:
 
 ### Manual Build:
 1. Clone this repo: `git clone https://github.com/ottogroup/flink-spector`.
+
+> Note: The current build works with Flink version 0.10.1.
+> If you're using Flink 0.10.0 you can clone the `flink-0.10.0` branch.
+
 2. Build with maven: `maven install`.
 3. Include in your project's pom.xml: 
 ```xml
