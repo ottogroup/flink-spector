@@ -9,23 +9,53 @@ Features include:
 - Test base for `JUnit`.
 - Test stream windowing with timestamped input.
 
-## Minimal Example
+## Examples
+
+###Minimal:
 ```java
 class Test extends StreamTestBase {
     
     @org.junit.Test
     public myTest() {
-		DataStream<Integer> stream = createTestStream(asList(1,2,3))
+		DataSet<Integer> dataSet = createTestDataSet(asList(1,2,3))
 		    .map((MapFunction<Integer,Integer>) (value) -> {return value + 1});
 
 		ExpectedOutput<Integer> expectedOutput = 
 		    new ExpectedOutput<Integer>().expectAll(asList(2,3,4))
 
-		assertStream(stream, expectedOutput);
+		assertDataSet(dataSet, expectedOutput);
     }
 
 }
 ```
+
+###Streaming: 
+```java
+@org.junit.Test
+public void testWindowing() {
+
+	// Define the input DataStream:	
+	DataStream<Tuple2<Integer, String>> testStream =
+			createTimedTestStreamWith(Tuple2.of(1, "fritz"))
+					.emit(Tuple2.of(1, "hans"), after(15, seconds))	
+					.emit(Tuple2.of(1, "heidi"), before(5, seconds))	
+					.emit(Tuple2.of(3, "peter"), after(20, seconds), times(10))	
+					.repeatAll(after(10, seconds), times(1))
+					.close();
+
+		
+	// Lets you query the output tuples like a table:
+	OutputMatcher<Tuple2<Integer, String>> matcher =
+			//name the values in your tuple with keys:
+			new AssertBlock<Tuple2<Integer, String>>("value", "name")
+					.assertThat("value", is(3))
+					.assertThat("name", either(is("fritz")).or(is("peter")))
+					.onEachRecord();
+	
+	assertStream(someWindowAggregation(testStream), matcher);
+}
+```
+
 You can find more extensive examples here: 
 * [DataSet API test examples](flinkspector-dataset/src/test/java/org/flinkspector/dataset/examples).
 * [DataStream API test examples](flinkspector-datastream/src/test/java/org/flinkspector/datastream/examples).

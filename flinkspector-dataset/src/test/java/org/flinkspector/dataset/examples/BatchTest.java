@@ -19,8 +19,6 @@ package org.flinkspector.dataset.examples;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.flinkspector.core.input.Input;
-import org.flinkspector.core.input.InputBuilder;
 import org.flinkspector.core.set.ExpectedOutput;
 import org.flinkspector.core.table.AssertBlock;
 import org.flinkspector.core.table.OutputMatcher;
@@ -51,14 +49,14 @@ public class BatchTest extends TestBase {
 		 * Define the input DataSet:
 		 * Get a DataSetBuilder with .createTestStreamWith(record).
 		 * Add data records to it and retrieve a DataSet,
-		 * by calling .finish().
+		 * by calling .complete().
 		 */
 		DataSet<Tuple2<Integer, String>> testDataSet =
 				createTestDataSetWith(Tuple2.of(1,"test"))
 						.emit(Tuple2.of(2, "why"))
 						.emit(Tuple2.of(3, "not"))
 						.emit(Tuple2.of(4, "batch?"))
-						.finish();
+						.complete();
 
 		/*
 		 * Define the output you expect from the the transformation under test.

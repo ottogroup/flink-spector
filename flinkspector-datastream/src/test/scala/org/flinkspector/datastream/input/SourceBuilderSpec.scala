@@ -36,7 +36,7 @@ class SourceBuilderSpec extends CoreSpec {
       .emit(2)
       .emit(3)
       .emit(4)
-      .finish()
+      .close()
 
     source.addSink{
       env.createTestSink(new Verifier[Int](List(1,2,3,4)))

@@ -57,7 +57,7 @@ public class EventTimeSourceBuilder<T> {
 	 *
 	 * @return {@link DataStreamSource}
 	 */
-	public DataStreamSource<T> finish() {
+	public DataStreamSource<T> close() {
 		return env.fromInput(builder);
 	}
 

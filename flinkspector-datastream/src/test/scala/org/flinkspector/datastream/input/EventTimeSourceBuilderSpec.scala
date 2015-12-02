@@ -37,7 +37,7 @@ class EventTimeSourceBuilderSpec extends CoreSpec {
       .emit(2, After.period(1,TimeUnit.SECONDS))
       .emit(3, After.period(1,TimeUnit.SECONDS))
       .emit(4, After.period(1,TimeUnit.SECONDS))
-      .finish()
+      .close()
 
     source.addSink{
       env.createTestSink(new Verifier[Int](List(1,2,3,4)))

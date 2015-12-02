@@ -54,7 +54,7 @@ public class WindowingTest extends StreamTestBase {
 		 * Define the input DataStream:
 		 * Get a EventTimeSourceBuilder with, .createTimedTestStreamWith(record).
 		 * Add data records to it and retrieve a DataStreamSource
-		 * by calling .finish().
+		 * by calling .close().
 		 *
 		 * Note: The before and after keywords define the time span !between! the previous
 		 * record and the current record.
@@ -72,7 +72,7 @@ public class WindowingTest extends StreamTestBase {
 					     * The spans between record defined previously will be kept.
 					     */
 						.repeatAll(after(10, seconds), times(1))
-						.finish();
+						.close();
 
 		/*
 		 * Creates an OutputMatcher using AssertBlock.

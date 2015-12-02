@@ -55,7 +55,7 @@ public class SourceBuilder<T> {
 	 * Produces a {@link DataStreamSource} with the predefined input.
 	 * @return {@link DataStreamSource}
 	 */
-	public DataStreamSource<T> finish() {
+	public DataStreamSource<T> close() {
 		return env.fromInput(builder);
 	}
 

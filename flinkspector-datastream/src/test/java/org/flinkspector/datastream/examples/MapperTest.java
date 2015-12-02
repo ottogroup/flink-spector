@@ -55,13 +55,13 @@ public class MapperTest extends StreamTestBase {
 		 * Define the input DataStream:
 		 * Get a SourceBuilder with .createTestStreamWith(record).
 		 * Add data records to it and retrieve a DataStreamSource
-		 * by calling .finish().
+		 * by calling .complete().
 		 */
 		DataStream<Tuple2<Integer, String>> stream =
 				createTestStreamWith(Tuple2.of(1, "test"))
 						.emit(Tuple2.of(2, "foo"))
 						.emit(Tuple2.of(3, "bar"))
-						.finish();
+						.close();
 
 		/*
 		 * Define the output you expect from the the transformation under test.
