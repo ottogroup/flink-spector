@@ -16,6 +16,7 @@
 
 package org.flinkspector.datastream;
 
+import org.apache.flink.streaming.api.environment.LocalStreamEnvironment;
 import org.flinkspector.core.input.InputBuilder;
 import org.flinkspector.core.set.ExpectedOutput;
 import org.flinkspector.core.set.MatcherBuilder;
@@ -63,9 +64,9 @@ public class StreamTestBase {
 	 * Creates a DataStreamSource from an EventTimeInput object.
 	 * The DataStreamSource will emit the records with the specified EventTime.
 	 *
-	 * @param input to emit
-	 * @param <OUT> type of the emitted records
-	 * @return a DataStreamSource generating the input
+	 * @param input to emit.
+	 * @param <OUT> type of the emitted records.
+	 * @return a DataStreamSource generating the input.
 	 */
 	public <OUT> DataStreamSource<OUT> createTestStream(EventTimeInput<OUT> input) {
 		return env.fromInput(input);
@@ -74,7 +75,7 @@ public class StreamTestBase {
 	/**
 	 * Provides an {@link SourceBuilder} to create an {@link DataStreamSource}
 	 *
-	 * @param record the first record to emit
+	 * @param record the first record to emit.
 	 * @param <OUT>  type of the stream.
 	 * @return {@link SourceBuilder} to work with.
 	 */
@@ -85,7 +86,7 @@ public class StreamTestBase {
 	/**
 	 * Provides an {@link EventTimeSourceBuilder} to create an {@link DataStreamSource}
 	 *
-	 * @param record the first record to emit
+	 * @param record the first record to emit.
 	 * @param <OUT>  type of the stream.
 	 * @return {@link EventTimeSourceBuilder} to work with.
 	 */
@@ -98,9 +99,9 @@ public class StreamTestBase {
 	 * Creates a DataStreamSource from an EventTimeInput object.
 	 * The DataStreamSource will emit the records with the specified EventTime.
 	 *
-	 * @param input to emit
-	 * @param <OUT> type of the emitted records
-	 * @return a DataStreamSource generating the input
+	 * @param input to emit.
+	 * @param <OUT> type of the emitted records.
+	 * @return a DataStreamSource generating the input.
 	 */
 	public <OUT> DataStreamSource<OUT> createTestStream(Collection<OUT> input) {
 		return env.fromInput(input);
@@ -109,9 +110,9 @@ public class StreamTestBase {
 	/**
 	 * Creates a DataStreamSource from an Input object.
 	 *
-	 * @param input to emit
-	 * @param <OUT> type of the emitted records
-	 * @return a DataStream generating the input
+	 * @param input to emit.
+	 * @param <OUT> type of the emitted records.
+	 * @return a DataStream generating the input.
 	 */
 	public <OUT> DataStreamSource<OUT> createTestStream(Input<OUT> input) {
 		return env.fromInput(input);
@@ -168,6 +169,18 @@ public class StreamTestBase {
 		stream.addSink(createTestSink(matcher, trigger));
 	}
 
+	/**
+	 * Sets the parallelism for operations executed through this environment.
+	 * Setting a parallelism of x here will cause all operators (such as map,
+	 * batchReduce) to run with x parallel instances. This method overrides the
+	 * default parallelism for this environment. The
+	 * {@link LocalStreamEnvironment} uses by default a value equal to the
+	 * number of hardware contexts (CPU cores / threads). When executing the
+	 * program via the command line client from a JAR file, the default degree
+	 * of parallelism is the one configured for that setup.
+	 *
+	 * @param parallelism The parallelism
+	 */
 	public void setParallelism(int n) {
 		env.setParallelism(n);
 	}
@@ -196,8 +209,8 @@ public class StreamTestBase {
 	/**
 	 * Creates an {@link After} object.
 	 *
-	 * @param span length of span
-	 * @param unit of time
+	 * @param span length of span.
+	 * @param unit of time.
 	 * @return {@link After}
 	 */
 	public static After after(long span, TimeUnit unit) {
@@ -207,8 +220,8 @@ public class StreamTestBase {
 	/**
 	 * Creates an {@link Before} object.
 	 *
-	 * @param span length of span
-	 * @param unit of time
+	 * @param span length of span.
+	 * @param unit of time.
 	 * @return {@link Before}
 	 */
 	public static Before before(long span, TimeUnit unit) {
