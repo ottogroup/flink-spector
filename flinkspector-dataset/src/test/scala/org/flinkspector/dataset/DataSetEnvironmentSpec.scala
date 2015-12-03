@@ -29,11 +29,7 @@ import org.scalatest.time.{Minutes, Seconds, Span}
 
 import scala.collection.JavaConversions._
 
-class DataSetEnvironmentSpec extends CoreSpec with Eventually {
-
-  //configuration for eventually
-  override implicit val patienceConfig =
-    PatienceConfig(timeout = scaled(Span(2, Seconds)), interval = scaled(Span(1, Seconds)))
+class DataSetEnvironmentSpec extends CoreSpec {
 
   class CountTrigger(n: Int) extends VerifyFinishedTrigger[Integer] {
     override def onRecord(record: Integer): Boolean = false
@@ -93,7 +89,7 @@ class DataSetEnvironmentSpec extends CoreSpec with Eventually {
     env.executeTest()
   }
 
-  it should "trigger a successful time-out" in {
+  ignore should "trigger a successful time-out" in {
     val happyVerifier = new SimpleOutputVerifier[Integer] {
       override def verify(output: util.List[Integer]): Unit = {}
     }
@@ -113,15 +109,14 @@ class DataSetEnvironmentSpec extends CoreSpec with Eventually {
       })
     val outputFormat = env.createTestOutputFormat(happyVerifier)
     dataSet.output(outputFormat)
-    failAfter(Span(1, Minutes)) {
-      env.executeTest()
-    }
+    env.executeTest()
+
     //check if a forceful stop was invoked
     env.hasBeenStopped shouldBe true
 
   }
 
-  it should "trigger a failed time-out" in {
+  ignore should "trigger a failed time-out" in {
     val sadVerifier = new SimpleOutputVerifier[Integer] {
       override def verify(output: util.List[Integer]): Unit = {
         throw new FlinkTestFailedException(new AssertionError())

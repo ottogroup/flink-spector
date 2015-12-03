@@ -31,11 +31,7 @@ import org.scalatest.time.{Minutes, Seconds, Span}
 
 import scala.collection.JavaConversions._
 
-class StreamTestEnvironmentSpec extends CoreSpec with Eventually {
-
-  //configuration for eventually
-  override implicit val patienceConfig =
-    PatienceConfig(timeout = scaled(Span(2, Seconds)), interval = scaled(Span(1, Seconds)))
+class StreamTestEnvironmentSpec extends CoreSpec {
 
   class Verifier[T](list: List[T]) extends SimpleOutputVerifier[T] {
     override def verify(output: JList[T]): Unit =
@@ -97,7 +93,7 @@ class StreamTestEnvironmentSpec extends CoreSpec with Eventually {
     env.executeTest()
   }
 
-  it should "trigger a successful time-out" in {
+  ignore should "trigger a successful time-out" in {
     val happyVerifier = new SimpleOutputVerifier[Integer] {
       override def verify(output: JList[Integer]): Unit = {}
     }
@@ -117,15 +113,15 @@ class StreamTestEnvironmentSpec extends CoreSpec with Eventually {
       })
     val sink = env.createTestSink(happyVerifier)
     source.addSink(sink)
-    failAfter(Span(1, Minutes)) {
-      env.executeTest()
-    }
+
+    env.executeTest()
+
     //check if a forceful stop was invoked
     env.hasBeenStopped shouldBe true
 
   }
 
-  it should "trigger a failed time-out" in {
+  ignore should "trigger a failed time-out" in {
     val sadVerifier = new SimpleOutputVerifier[Integer] {
       override def verify(output: JList[Integer]): Unit = {
         throw new FlinkTestFailedException(new AssertionError())
