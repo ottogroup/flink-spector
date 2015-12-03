@@ -13,7 +13,7 @@ Features include:
 
 ###Minimal:
 ```java
-class Test extends StreamTestBase {
+class Test extends TestBase {
     
     @org.junit.Test
     public myTest() {
