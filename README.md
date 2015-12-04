@@ -6,8 +6,10 @@ The framework executes the data flows locally and verifies the output using pred
 Features include:
 - Concise DSL to define test scenarios.
 - Powerful matchers to express expectations.
-- Test base for `JUnit`.
+- Test base for JUnit.
 - Test stream windowing with timestamped input.
+
+Check out the [**wiki**](https://github.com/ottogroup/flink-spector/wiki) to learn how Flinkspector can assist you in developing Flink jobs.
 
 ## Examples
 
@@ -66,7 +68,7 @@ You can find more extensive examples here:
 1. Clone this repo: `git clone https://github.com/ottogroup/flink-spector`.
 
 > Note: The current build works with Flink version 0.10.1.
-> If you're using Flink 0.10.0 you can clone the `flink-0.10.0` branch.
+> If you're using Flink 0.10.0, clone the `flink-0.10.0` branch.
 
 2. Build with maven: `maven install`.
 3. Include in your project's pom.xml: 
