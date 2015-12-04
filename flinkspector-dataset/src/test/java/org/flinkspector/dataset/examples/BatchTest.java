@@ -19,7 +19,7 @@ package org.flinkspector.dataset.examples;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.flinkspector.core.set.ExpectedOutput;
+import org.flinkspector.core.collection.ExpectedOutput;
 import org.flinkspector.core.table.AssertBlock;
 import org.flinkspector.core.table.OutputMatcher;
 import org.flinkspector.core.trigger.FinishAtCount;
@@ -56,7 +56,7 @@ public class BatchTest extends TestBase {
 						.emit(Tuple2.of(2, "why"))
 						.emit(Tuple2.of(3, "not"))
 						.emit(Tuple2.of(4, "batch?"))
-						.complete();
+						.close();
 
 		/*
 		 * Define the output you expect from the the transformation under test.
@@ -67,7 +67,7 @@ public class BatchTest extends TestBase {
 				.expect(Tuple2.of("why", 2))
 				.expect(Tuple2.of("not", 3));
 		// refine your expectations by adding requirements
-		output.refine().only();
+		output.refine().only().inOrder(strict);
 
 		/*
 		 * Creates an OutputMatcher using AssertBlock.
@@ -78,7 +78,7 @@ public class BatchTest extends TestBase {
 		OutputMatcher<Tuple2<String, Integer>> matcher =
 				//name the values in your tuple with keys:
 				new AssertBlock<Tuple2<String, Integer>>("name", "value")
-						//add an assertion using a value and an hamcrest matchers
+						//add an assertion using a value and hamcrest matchers
 						.assertThat("name", isA(String.class))
 						.assertThat("value", lessThan(5))
 						//express how many matchers must return true for your test to pass:
@@ -95,4 +95,6 @@ public class BatchTest extends TestBase {
 		assertDataSet(swap(testDataSet), anyOf(output, matcher), FinishAtCount.of(3));
 	}
 
+	private class Person {
+	}
 }

@@ -20,8 +20,8 @@ import com.google.common.primitives.Bytes
 import org.apache.flink.api.common.ExecutionConfig
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.typeutils.TypeExtractor
-import OutputSubscriber.ResultState
 import org.flinkspector.core.CoreSpec
+import org.flinkspector.core.runtime.OutputSubscriber.ResultState
 import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.flinkspector.core.util.SerializeUtil
 import org.mockito.Mockito._

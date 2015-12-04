@@ -22,11 +22,15 @@ import org.flinkspector.core.table.AssertBlock;
 import org.flinkspector.core.table.OutputMatcher;
 import org.flinkspector.datastream.StreamTestBase;
 
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.either;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+
 //import to use the dsl of hamcrest:
-import static org.hamcrest.Matchers.*;
 
 /**
- * This example shows how to create test input with time characteristics.
+ * This example shows how to startWith test input with time characteristics.
  * And the usage of {@link AssertBlock} to build an {@link OutputMatcher}.
  * <p/>
  * To ensure test cases run in a few seconds the framework sets the time characteristic of the data flow, to
@@ -83,7 +87,7 @@ public class WindowingTest extends StreamTestBase {
 		OutputMatcher<Tuple2<Integer, String>> matcher =
 				//name the values in your tuple with keys:
 				new AssertBlock<Tuple2<Integer, String>>("value", "name")
-						//add an assertion using a value and an hamcrest matchers
+						//add an assertion using a value and hamcrest matchers
 						.assertThat("value", is(3))
 						.assertThat("name", either(is("fritz")).or(is("peter")))
 						//express how many matchers must return true for your test to pass:
@@ -98,7 +102,7 @@ public class WindowingTest extends StreamTestBase {
 		 * assertStream(swap(stream), and(matcher, .outputWithSize(.greaterThan(4))
 		 * would additionally assert that the number of produced records is exactly 3.
 		 */
-		assertStream(window(testStream), matcher);
+		assertStream(window(testStream), anyOf(matcher, hasItem(Tuple2.of(3,"fritz"))));
 
 	}
 

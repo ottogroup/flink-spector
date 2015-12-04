@@ -23,7 +23,7 @@ import scala.collection.mutable.ArrayBuffer
 object SeriesMatcher {
 
   /**
-   * Helper function to create a [[SeriesMatcher]] from a [[ListMatcherBuilder]]
+   * Helper function to startWith a [[SeriesMatcher]] from a [[ListMatcherBuilder]]
    * @param builder to use for creation.
    * @tparam T
    * @return [[SeriesMatcher]]
@@ -34,7 +34,7 @@ object SeriesMatcher {
 }
 
 /**
- * Extends [[PartialMatcher]] to create a matcher, which tests
+ * Extends [[PartialMatcher]] to startWith a matcher, which tests
  * whether a list is contained in the output.
  * @param constraints list of [[ListMatcher]] that define the current expectations.
  * @param right list of expected elements

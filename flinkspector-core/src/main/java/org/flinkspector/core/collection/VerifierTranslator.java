@@ -14,17 +14,32 @@
  * limitations under the License.
  */
 
-package org.flinkspector.core.set;
+package org.flinkspector.core.collection;
 
-import org.flinkspector.matcher.FromPartialMatcher;
+import org.flinkspector.core.runtime.OutputVerifier;
 
-public interface FromListMatcher {
+public abstract class VerifierTranslator<IN,OUT> implements OutputVerifier<IN> {
 
-	FromPartialMatcher from(int n);
+	OutputVerifier<OUT> verifier;
 
-	void to(int n);
+	public VerifierTranslator(OutputVerifier<OUT> verifier) {
+		this.verifier = verifier;
+	}
 
-	void all();
+	protected abstract OUT translate(IN record);
 
-	void indices(int first, int second, int... rest);
+	@Override
+	public void init() {
+		verifier.init();
+	}
+
+	@Override
+	public void receive(IN record) throws Exception {
+		verifier.receive(translate(record));
+	}
+
+	@Override
+	public void finish() throws Exception {
+		verifier.finish();
+	}
 }

@@ -35,7 +35,7 @@ class DataSetBuilderSpec extends CoreSpec {
       .emit(2)
       .emit(3)
       .emit(4)
-      .complete()
+      .close()
 
     source.output{
       env.createTestOutputFormat(new Verifier[Int](List(1,2,3,4)))

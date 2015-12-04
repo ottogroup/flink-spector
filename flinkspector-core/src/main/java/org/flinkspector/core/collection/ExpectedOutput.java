@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.flinkspector.core.set;
+package org.flinkspector.core.collection;
 
 import org.flinkspector.core.table.OutputMatcher;
 import org.hamcrest.Description;
@@ -30,21 +30,27 @@ import java.util.List;
  */
 public class ExpectedOutput<T> extends OutputMatcher<T> {
 
-	/** list of expected records */
-	private List<T> expectedOutput;
+	/** collection of expected records */
+	private List<T> expectedRecords;
 	/** matcher to test the output */
 	private MatcherBuilder<T> matcher;
 
 	public ExpectedOutput() {
-		expectedOutput = new ArrayList<>();
+		expectedRecords = new ArrayList<>();
 	}
 
 	public static <T> ExpectedOutput<T> create(T record) {
+		if(record == null) {
+			throw new IllegalArgumentException("Record has too be not null!");
+		}
 		ExpectedOutput<T> output = new ExpectedOutput<>();
 		return output.expect(record);
 	}
 
 	public static <T> ExpectedOutput<T> create(Collection<T> records) {
+		if(records == null) {
+			throw new IllegalArgumentException("Record has too be not null!");
+		}
 		ExpectedOutput<T> output = new ExpectedOutput<>();
 		return output.expectAll(records);
 	}
@@ -56,17 +62,32 @@ public class ExpectedOutput<T> extends OutputMatcher<T> {
 	 */
 	public MatcherBuilder<T> refine() {
 		if (matcher == null) {
-			matcher = new MatcherBuilder<>(expectedOutput);
+			matcher = new MatcherBuilder<>(expectedRecords);
 		}
 		return matcher;
 	}
 
 	/**
-	 * Adds an record to the list of expected output
+	 * Adds an record to the collection of expected output
 	 * @param record to add
 	 */
 	public ExpectedOutput<T> expect(T record) {
-		expectedOutput.add(record);
+		if(record == null) {
+			throw new IllegalArgumentException("Record has too be not null!");
+		}
+		expectedRecords.add(record);
+		return this;
+	}
+
+	/**
+	 * Adds an record to the collection of expected output
+	 * @param record to add
+	 */
+	public ExpectedOutput<T> expect(T record, int times) {
+		if(record == null) {
+			throw new IllegalArgumentException("Record has too be not null!");
+		}
+		expectedRecords.add(record);
 		return this;
 	}
 
@@ -75,9 +96,27 @@ public class ExpectedOutput<T> extends OutputMatcher<T> {
 	 * @param records to add
 	 */
 	public ExpectedOutput<T> expectAll(Collection<T> records) {
-		expectedOutput.addAll(records);
+		if(records == null) {
+			throw new IllegalArgumentException("Record has too be not null!");
+		}
+		expectedRecords.addAll(records);
 		return this;
 	}
+
+	/**
+	 * Expect the current output a number of times
+	 *
+	 * @param times number of times the input ist will be repeated
+	 */
+	public ExpectedOutput<T> repeatAll(int times) {
+		List<T> toAppend = new ArrayList<>();
+		for (int i = 0; i < times; i++) {
+			toAppend.addAll(expectedRecords);
+		}
+		expectedRecords.addAll(toAppend);
+		return this;
+	}
+
 
 	@Override
 	public boolean matchesSafely(Iterable<T> output) {

@@ -20,7 +20,8 @@ import java.util.{List => JList}
 import org.flinkspector.core.input.Input
 import org.scalatest.concurrent.Timeouts
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{OptionValues, Matchers, FlatSpec}
+import org.scalatest.{FlatSpec, Matchers, OptionValues}
+
 import scala.collection.JavaConversions._
 
 abstract class CoreSpec

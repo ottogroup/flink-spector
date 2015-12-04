@@ -16,10 +16,10 @@
 
 package org.flinkspector.datastream.input;
 
-import org.flinkspector.datastream.DataStreamTestEnvironment;
-import org.flinkspector.datastream.input.time.TimeSpan;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
+import org.flinkspector.datastream.DataStreamTestEnvironment;
+import org.flinkspector.datastream.input.time.TimeSpan;
 
 /**
  * This builder is used to define input in a fluent way.

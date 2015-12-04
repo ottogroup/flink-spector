@@ -17,6 +17,7 @@
 package org.flinkspector.datastream.input
 
 import java.util
+
 import org.flinkspector.CoreSpec
 import org.flinkspector.core.runtime.SimpleOutputVerifier
 import org.flinkspector.datastream.DataStreamTestEnvironment
@@ -28,7 +29,7 @@ class SourceBuilderSpec extends CoreSpec {
       output should contain theSameElementsAs list
   }
 
-  "The source builder" should "create a working source" in {
+  "The source builder" should "startWith a working source" in {
     val env = DataStreamTestEnvironment.createTestEnvironment(1)
     val builder = new SourceBuilder[Int](env)
 

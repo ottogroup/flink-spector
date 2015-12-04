@@ -17,9 +17,9 @@
 package org.flinkspector.dataset;
 
 import org.apache.flink.api.java.DataSet;
+import org.flinkspector.core.collection.MatcherBuilder;
 import org.flinkspector.core.input.Input;
 import org.flinkspector.core.runtime.OutputVerifier;
-import org.flinkspector.core.set.MatcherBuilder;
 import org.flinkspector.core.table.HamcrestVerifier;
 import org.flinkspector.core.table.OutputMatcherFactory;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
@@ -37,14 +37,14 @@ public class TestBase {
 	/**
 	 * Test Environment
 	 */
-	private DataSetTestEnvironment env;
+	private DataSetTestEnvironment testEnv;
 
 	/**
 	 * Creates a new {@link DataSetTestEnvironment}
 	 */
 	@Before
 	public void initialize() throws Exception {
-		env = DataSetTestEnvironment.createTestEnvironment(2);
+		testEnv = DataSetTestEnvironment.createTestEnvironment(1);
 	}
 
 	/**
@@ -53,10 +53,9 @@ public class TestBase {
 	 * @param input to emit
 	 * @param <OUT> generic type of the returned data set
 	 * @return a DataSet containing the input
-	 *
 	 */
 	public <OUT> DataSet<OUT> createTestDataSet(Collection<OUT> input) {
-		return env.fromCollection(input);
+		return testEnv.fromCollection(input);
 	}
 
 	/**
@@ -67,7 +66,7 @@ public class TestBase {
 	 * @return a DataSet containing the input
 	 */
 	public <OUT> DataSet<OUT> createTestDataSet(Input<OUT> input) {
-		return env.fromCollection(input.getInput());
+		return testEnv.fromCollection(input.getInput());
 	}
 
 	/**
@@ -79,29 +78,53 @@ public class TestBase {
 	 */
 	public <IN> TestOutputFormat<IN> createTestOutputFormat(org.hamcrest.Matcher<Iterable<IN>> matcher) {
 		OutputVerifier<IN> verifier = new HamcrestVerifier<IN>(matcher);
-		return env.createTestOutputFormat(verifier);
+		return createTestOutputFormat(verifier);
 	}
 
 	/**
 	 * Creates a {@link TestOutputFormat} using {@link org.hamcrest.Matcher} to verify the output.
 	 *
 	 * @param matcher of type Iterable<IN>
-	 * @param <IN> generic type of the returned {@link TestOutputFormat}
+	 * @param <IN>    generic type of the returned {@link TestOutputFormat}
 	 * @return the created data set from the given.
 	 */
 	public <IN> TestOutputFormat<IN> createTestOutputFormat(org.hamcrest.Matcher<Iterable<IN>> matcher,
-	                                        VerifyFinishedTrigger trigger) {
+	                                                        VerifyFinishedTrigger trigger) {
 		OutputVerifier<IN> verifier = new HamcrestVerifier<>(matcher);
-		return env.createTestOutputFormat(verifier,trigger);
+		return createTestOutputFormat(verifier, trigger);
+	}
+
+	/**
+	 * Creates a {@link TestOutputFormat} using {@link org.hamcrest.Matcher} to verify the output.
+	 *
+	 * @param verifier {@link OutputVerifier}
+	 * @param <IN>     generic type of the returned {@link TestOutputFormat}
+	 * @return the created data set from the given.
+	 */
+	public <IN> TestOutputFormat<IN> createTestOutputFormat(OutputVerifier<IN> verifier,
+	                                                        VerifyFinishedTrigger trigger) {
+		return testEnv.createTestOutputFormat(verifier, trigger);
+	}
+
+	/**
+	 * Creates a {@link TestOutputFormat} using {@link org.hamcrest.Matcher} to verify the output.
+	 *
+	 * @param verifier {@link OutputVerifier}
+	 * @param <IN>     generic type of the returned {@link TestOutputFormat}
+	 * @return the created data set from the given.
+	 */
+	public <IN> TestOutputFormat<IN> createTestOutputFormat(OutputVerifier<IN> verifier) {
+		return testEnv.createTestOutputFormat(verifier);
 	}
 
 	/**
 	 * Inspect a {@link DataSet} using a {@link OutputMatcherFactory}.
 	 *
-	 * @param dataSet  {@link DataSet} to test.
+	 * @param dataSet {@link DataSet} to test.
 	 * @param matcher {@link OutputMatcherFactory} to use.
 	 * @param <T>     type of the dataSet.
 	 */
+
 	public <T> void assertDataSet(DataSet<T> dataSet, Matcher<Iterable<T>> matcher) {
 		dataSet.output(createTestOutputFormat(matcher));
 	}
@@ -109,34 +132,45 @@ public class TestBase {
 	/**
 	 * Inspect a {@link DataSet} using a {@link OutputMatcherFactory}.
 	 *
-	 * @param dataSet  {@link DataSet} to test.
+	 * @param dataSet {@link DataSet} to test.
 	 * @param matcher {@link OutputMatcherFactory} to use.
 	 * @param trigger {@link VerifyFinishedTrigger}
 	 *                to finish the assertion early.
 	 * @param <T>     type of the dataSet.
 	 */
 	public <T> void assertDataSet(DataSet<T> dataSet,
-	                             Matcher<Iterable<T>> matcher,
-	                             VerifyFinishedTrigger trigger) {
+	                              Matcher<Iterable<T>> matcher,
+	                              VerifyFinishedTrigger trigger) {
 		dataSet.output(createTestOutputFormat(matcher, trigger));
 	}
 
-	public void setParallelism(int n) {
-		env.setParallelism(n);
+	/**
+	 * Sets the parallelism for operations executed through this environment.
+	 * Setting a parallelism of x here will cause all operators (such as map,
+	 * batchReduce) to run with x parallel instances. This method overrides the
+	 * default parallelism for this environment. The
+	 * {@link org.apache.flink.api.java.LocalEnvironment} uses by default a value equal to the
+	 * number of hardware contexts (CPU cores / threads). When executing the
+	 * program via the command line client from a JAR file, the default degree
+	 * of parallelism is the one configured for that setup.
+	 *
+	 * @param parallelism The parallelism
+	 */
+	public void setParallelism(int parallelism) {
+		testEnv.setParallelism(parallelism);
 	}
 
 
 	/**
-	 * Provides an {@link DataSetBuilder} to create an {@link DataSet}
+	 * Provides an {@link DataSetBuilder} to startWith an {@link DataSet}
 	 *
 	 * @param record the first record to emit.
 	 * @param <OUT>  generic type of the returned stream.
 	 * @return {@link DataSetBuilder} to work with.
 	 */
 	public <OUT> DataSetBuilder<OUT> createTestDataSetWith(OUT record) {
-		return DataSetBuilder.createBuilder(record, env);
+		return DataSetBuilder.createBuilder(record, testEnv);
 	}
-
 
 	/**
 	 * Executes the test and verifies the output received.
@@ -144,15 +178,25 @@ public class TestBase {
 	@After
 	public void executeTest() throws Throwable {
 		try {
-			env.executeTest();
+			testEnv.executeTest();
 		} catch (AssertionError assertionError) {
-			if (env.hasBeenStopped()) {
+			if (testEnv.hasBeenStopped()) {
 				//the execution has been forcefully stopped inform the user!
 				throw new AssertionError("Test terminated due timeout!" +
 						assertionError.getMessage());
 			}
 			throw assertionError;
 		}
+	}
+
+	/**
+	 * Setter for the timeout interval
+	 * after the test execution gets stopped.
+	 *
+	 * @param interval in milliseconds.
+	 */
+	public void setTimeout(long interval) {
+		testEnv.setTimeoutInterval(interval);
 	}
 
 	//================================================================================

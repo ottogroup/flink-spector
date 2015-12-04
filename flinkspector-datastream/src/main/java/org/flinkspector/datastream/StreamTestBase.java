@@ -16,23 +16,23 @@
 
 package org.flinkspector.datastream;
 
-import org.apache.flink.streaming.api.environment.LocalStreamEnvironment;
-import org.flinkspector.core.input.InputBuilder;
-import org.flinkspector.core.set.ExpectedOutput;
-import org.flinkspector.core.set.MatcherBuilder;
-import org.flinkspector.core.table.OutputMatcherFactory;
-import org.flinkspector.datastream.input.EventTimeInput;
-import org.flinkspector.datastream.input.EventTimeInputBuilder;
-import org.flinkspector.datastream.input.SourceBuilder;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.environment.LocalStreamEnvironment;
+import org.flinkspector.core.collection.ExpectedOutput;
+import org.flinkspector.core.collection.MatcherBuilder;
 import org.flinkspector.core.input.Input;
+import org.flinkspector.core.input.InputBuilder;
 import org.flinkspector.core.runtime.OutputVerifier;
 import org.flinkspector.core.table.HamcrestVerifier;
+import org.flinkspector.core.table.OutputMatcherFactory;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.flinkspector.datastream.functions.TestSink;
+import org.flinkspector.datastream.input.EventTimeInput;
+import org.flinkspector.datastream.input.EventTimeInputBuilder;
 import org.flinkspector.datastream.input.EventTimeSourceBuilder;
+import org.flinkspector.datastream.input.SourceBuilder;
 import org.flinkspector.datastream.input.time.After;
 import org.flinkspector.datastream.input.time.Before;
 import org.hamcrest.Matcher;
@@ -49,15 +49,15 @@ public class StreamTestBase {
 	/**
 	 * Test Environment
 	 */
-	private DataStreamTestEnvironment env;
+	private DataStreamTestEnvironment testEnv;
 
 	/**
 	 * Creates a new {@link DataStreamTestEnvironment}
 	 */
 	@org.junit.Before
 	public void initialize() throws Exception {
-		env = DataStreamTestEnvironment.createTestEnvironment(2);
-		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+		testEnv = DataStreamTestEnvironment.createTestEnvironment(1);
+		testEnv.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 	}
 
 	/**
@@ -69,29 +69,29 @@ public class StreamTestBase {
 	 * @return a DataStreamSource generating the input.
 	 */
 	public <OUT> DataStreamSource<OUT> createTestStream(EventTimeInput<OUT> input) {
-		return env.fromInput(input);
+		return testEnv.fromInput(input);
 	}
 
 	/**
-	 * Provides an {@link SourceBuilder} to create an {@link DataStreamSource}
+	 * Provides an {@link SourceBuilder} to startWith an {@link DataStreamSource}
 	 *
 	 * @param record the first record to emit.
 	 * @param <OUT>  type of the stream.
 	 * @return {@link SourceBuilder} to work with.
 	 */
 	public <OUT> SourceBuilder<OUT> createTestStreamWith(OUT record) {
-		return SourceBuilder.createBuilder(record, env);
+		return SourceBuilder.createBuilder(record, testEnv);
 	}
 
 	/**
-	 * Provides an {@link EventTimeSourceBuilder} to create an {@link DataStreamSource}
+	 * Provides an {@link EventTimeSourceBuilder} to startWith an {@link DataStreamSource}
 	 *
 	 * @param record the first record to emit.
 	 * @param <OUT>  type of the stream.
 	 * @return {@link EventTimeSourceBuilder} to work with.
 	 */
 	public <OUT> EventTimeSourceBuilder<OUT> createTimedTestStreamWith(OUT record) {
-		return EventTimeSourceBuilder.createBuilder(record, env);
+		return EventTimeSourceBuilder.createBuilder(record, testEnv);
 	}
 
 
@@ -104,7 +104,7 @@ public class StreamTestBase {
 	 * @return a DataStreamSource generating the input.
 	 */
 	public <OUT> DataStreamSource<OUT> createTestStream(Collection<OUT> input) {
-		return env.fromInput(input);
+		return testEnv.fromInput(input);
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class StreamTestBase {
 	 * @return a DataStream generating the input.
 	 */
 	public <OUT> DataStreamSource<OUT> createTestStream(Input<OUT> input) {
-		return env.fromInput(input);
+		return testEnv.fromInput(input);
 	}
 
 	/**
@@ -127,7 +127,30 @@ public class StreamTestBase {
 	 */
 	public <IN> TestSink<IN> createTestSink(org.hamcrest.Matcher<Iterable<IN>> matcher) {
 		OutputVerifier<IN> verifier = new HamcrestVerifier<IN>(matcher);
-		return env.createTestSink(verifier);
+		return createTestSink(verifier);
+	}
+
+	/**
+	 * Creates a TestSink using {@link org.hamcrest.Matcher} to verify the output.
+	 *
+	 * @param verifier of generic type IN
+	 * @param <IN>
+	 * @return the created sink.
+	 */
+	public <IN> TestSink<IN> createTestSink(OutputVerifier<IN> verifier,
+	                                        VerifyFinishedTrigger trigger) {
+		return testEnv.createTestSink(verifier, trigger);
+	}
+
+	/**
+	 * Creates a TestSink using {@link org.hamcrest.Matcher} to verify the output.
+	 *
+	 * @param verifier of generic type IN
+	 * @param <IN>
+	 * @return the created sink.
+	 */
+	public <IN> TestSink<IN> createTestSink(OutputVerifier<IN> verifier) {
+		return testEnv.createTestSink(verifier);
 	}
 
 	/**
@@ -140,7 +163,7 @@ public class StreamTestBase {
 	public <IN> TestSink<IN> createTestSink(org.hamcrest.Matcher<Iterable<IN>> matcher,
 	                                        VerifyFinishedTrigger trigger) {
 		OutputVerifier<IN> verifier = new HamcrestVerifier<>(matcher);
-		return env.createTestSink(verifier, trigger);
+		return createTestSink(verifier, trigger);
 	}
 
 	/**
@@ -182,7 +205,7 @@ public class StreamTestBase {
 	 * @param parallelism The parallelism
 	 */
 	public void setParallelism(int parallelism) {
-		env.setParallelism(parallelism);
+		testEnv.setParallelism(parallelism);
 	}
 
 	/**
@@ -191,15 +214,25 @@ public class StreamTestBase {
 	@org.junit.After
 	public void executeTest() throws Throwable {
 		try {
-			env.executeTest();
+			testEnv.executeTest();
 		} catch (AssertionError assertionError) {
-			if (env.hasBeenStopped()) {
+			if (testEnv.hasBeenStopped()) {
 				//the execution has been forcefully stopped inform the user!
 				throw new AssertionError("Test terminated due timeout!" +
 						assertionError.getMessage());
 			}
 			throw assertionError;
 		}
+	}
+
+	/**
+	 * Setter for the timeout interval
+	 * after the test execution gets stopped.
+	 *
+	 * @param interval in milliseconds.
+	 */
+	public void setTimeout(long interval) {
+		testEnv.setTimeoutInterval(interval);
 	}
 
 	//================================================================================
@@ -233,7 +266,7 @@ public class StreamTestBase {
 	}
 
 	public static <T> InputBuilder<T> emit(T elem) {
-		return InputBuilder.create(elem);
+		return InputBuilder.startWith(elem);
 	}
 
 	public static <T> ExpectedOutput<T> expectOutput(T record) {

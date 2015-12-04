@@ -17,15 +17,14 @@
 package org.flinkspector.datastream;
 
 import com.google.common.base.Preconditions;
-import org.apache.flink.streaming.api.datastream.DataStreamSource;
-import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
-import org.apache.flink.streaming.util.TestStreamEnvironment;
-import org.flinkspector.datastream.functions.ParallelFromStreamRecordsFunction;
-import org.flinkspector.datastream.functions.TestSink;
-import org.flinkspector.datastream.input.EventTimeInput;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.runtime.StreamingMode;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.functions.source.FromElementsFunction;
+import org.apache.flink.streaming.api.functions.source.SourceFunction;
+import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
+import org.apache.flink.streaming.util.TestStreamEnvironment;
 import org.apache.flink.test.util.ForkableFlinkMiniCluster;
 import org.apache.flink.test.util.TestBaseUtils;
 import org.flinkspector.core.input.Input;
@@ -33,8 +32,9 @@ import org.flinkspector.core.runtime.OutputVerifier;
 import org.flinkspector.core.runtime.Runner;
 import org.flinkspector.core.trigger.DefaultTestTrigger;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
-import org.apache.flink.streaming.api.functions.source.FromElementsFunction;
-import org.apache.flink.streaming.api.functions.source.SourceFunction;
+import org.flinkspector.datastream.functions.ParallelFromStreamRecordsFunction;
+import org.flinkspector.datastream.functions.TestSink;
+import org.flinkspector.datastream.input.EventTimeInput;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -59,7 +59,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	}
 
 	/**
-	 * Factory method to create a new instance, providing a
+	 * Factory method to startWith a new instance, providing a
 	 * new instance of {@link ForkableFlinkMiniCluster}
 	 *
 	 * @param parallelism global setting for parallel execution.
@@ -67,16 +67,17 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	 * @throws Exception
 	 */
 	public static DataStreamTestEnvironment createTestEnvironment(int parallelism) throws Exception {
+		int tasksSlots = Runtime.getRuntime().availableProcessors();
 		ForkableFlinkMiniCluster cluster =
 				TestBaseUtils.startCluster(
 						1,
-						parallelism,
+						tasksSlots,
 						StreamingMode.STREAMING,
 						false,
 						false,
 						true
 				);
-		return new DataStreamTestEnvironment(cluster, 1);
+		return new DataStreamTestEnvironment(cluster, parallelism);
 	}
 
 	/**
@@ -121,7 +122,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	 * Note that this operation will result in a non-parallel data stream source, i.e. a data stream source with a
 	 * degree of parallelism one.
 	 *
-	 * @param data  The array of elements to create the data stream from.
+	 * @param data  The array of elements to startWith the data stream from.
 	 * @param <OUT> The type of the returned data stream
 	 * @return The data stream representing the given array of elements
 	 */
@@ -133,7 +134,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	/**
 	 * Creates a data stream form the given non-empty {@link EventTimeInput} object.
 	 * The type of the data stream is that of the {@link EventTimeInput}.
-	 * @param input The {@link EventTimeInput} to create the data stream from.
+	 * @param input The {@link EventTimeInput} to startWith the data stream from.
 	 * @param <OUT> The generic type of the returned data stream.
 	 * @return The data stream representing the given input.
 	 */
@@ -144,7 +145,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	/**
 	 * Creates a data stream form the given non-empty {@link Input} object.
 	 * The type of the data stream is that of the {@link Input}.
-	 * @param input The {@link Input} to create the data stream from.
+	 * @param input The {@link Input} to startWith the data stream from.
 	 * @param <OUT> The generic type of the returned data stream.
 	 * @return The data stream representing the given input.
 	 */
@@ -163,7 +164,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	 * <p>Note that this operation will result in a non-parallel data stream source, i.e. a data stream source with a
 	 * parallelism one.</p>
 	 *
-	 * @param data  The collection of elements to create the data stream from.
+	 * @param data  The collection of elements to startWith the data stream from.
 	 * @param <OUT> The generic type of the returned data stream.
 	 * @return The data stream representing the given collection
 	 */
@@ -182,7 +183,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 		try {
 			typeInfo = TypeExtractor.getForObject(first.getValue());
 		} catch (Exception e) {
-			throw new RuntimeException("Could not create TypeInformation for type " + first.getClass()
+			throw new RuntimeException("Could not startWith TypeInformation for type " + first.getClass()
 					+ "; please specify the TypeInformation manually via "
 					+ "StreamExecutionEnvironment#fromElements(Collection, TypeInformation)");
 		}
@@ -195,7 +196,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	 * <p>Note that this operation will result in a non-parallel data stream source,
 	 * i.e., a data stream source with a parallelism one.</p>
 	 *
-	 * @param data    The collection of elements to create the data stream from
+	 * @param data    The collection of elements to startWith the data stream from
 	 * @param outType The TypeInformation for the produced data stream
 	 * @param <OUT>   The type of the returned data stream
 	 * @return The data stream representing the given collection
@@ -209,7 +210,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 		try {
 			typeInfo = TypeExtractor.getForObject(first);
 		} catch (Exception e) {
-			throw new RuntimeException("Could not create TypeInformation for type " + first.getClass()
+			throw new RuntimeException("Could not startWith TypeInformation for type " + first.getClass()
 					+ "; please specify the TypeInformation manually via "
 					+ "StreamExecutionEnvironment#fromElements(Collection, TypeInformation)");
 		}
@@ -254,7 +255,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	 * Setter for the timeout interval
 	 * after the test execution gets stopped.
 	 *
-	 * @param interval
+	 * @param interval in milliseconds.
 	 */
 	public void setTimeoutInterval(long interval) {
 		runner.setTimeoutInterval(interval);

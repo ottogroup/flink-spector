@@ -16,8 +16,8 @@
 
 package org.flinkspector.core.table.tuple;
 
-import org.flinkspector.core.KeyMatcherPair;
 import org.apache.flink.api.java.tuple.Tuple;
+import org.flinkspector.core.KeyMatcherPair;
 import org.flinkspector.core.table.TupleMask;
 import org.hamcrest.Factory;
 

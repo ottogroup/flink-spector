@@ -14,32 +14,15 @@
  * limitations under the License.
  */
 
-package org.flinkspector.core.set;
+package org.flinkspector.core.collection;
 
-import org.flinkspector.core.runtime.OutputVerifier;
+import org.flinkspector.core.table.HamcrestVerifier;
+import org.hamcrest.Matcher;
 
-public abstract class OutputTranslator<IN,OUT> implements OutputVerifier<IN> {
+abstract public class MatcherTranslator<IN, OUT> extends VerifierTranslator<IN, OUT> {
 
-	OutputVerifier<OUT> verifier;
-
-	public OutputTranslator(OutputVerifier<OUT> verifier) {
-		this.verifier = verifier;
+	public MatcherTranslator(Matcher<Iterable<OUT>> matcher) {
+		super(new HamcrestVerifier<OUT>(matcher));
 	}
 
-	protected abstract OUT translate(IN record);
-
-	@Override
-	public void init() {
-		verifier.init();
-	}
-
-	@Override
-	public void receive(IN record) throws Exception {
-		verifier.receive(translate(record));
-	}
-
-	@Override
-	public void finish() throws Exception {
-		verifier.finish();
-	}
 }

@@ -20,7 +20,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.core.IsNot;
 
 /**
- * Offers a set of factory methods to create
+ * Offers a set of factory methods to startWith
  * {@link Matcher}s that takes an {@link Iterable}
  * and excepts a certain number of positive matches.
  */

@@ -23,9 +23,7 @@ import org.apache.flink.api.common.functions.MapFunction
 import org.flinkspector.core.input.InputBuilder
 import org.flinkspector.core.runtime.{FlinkTestFailedException, SimpleOutputVerifier}
 import org.flinkspector.core.trigger.VerifyFinishedTrigger
-import org.scalatest.concurrent.Eventually
 import org.scalatest.exceptions.TestFailedException
-import org.scalatest.time.{Minutes, Seconds, Span}
 
 import scala.collection.JavaConversions._
 

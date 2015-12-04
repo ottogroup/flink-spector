@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.flinkspector.core.set
+package org.flinkspector.core.collection
 
 import org.flinkspector.core.CoreSpec
 import org.flinkspector.core.runtime.OutputVerifier
 import org.mockito.Mockito._
 
 class StringToInt(verifier: OutputVerifier[Int])
-  extends OutputTranslator[String,Int](verifier) {
+  extends VerifierTranslator[String,Int](verifier) {
   override def translate(record: String): Int = Integer.parseInt(record)
 }
 
-class OutputTranslatorSpec extends CoreSpec {
+class VerifierTranslatorSpec extends CoreSpec {
 
   "the translator" should "translate output" in {
     val verifier = mock[OutputVerifier[Int]]

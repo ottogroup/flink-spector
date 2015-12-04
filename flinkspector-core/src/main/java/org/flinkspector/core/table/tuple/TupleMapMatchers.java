@@ -22,7 +22,7 @@ import org.flinkspector.core.table.TupleMask;
 import org.hamcrest.Matcher;
 
 /**
- * Offers a set of factory methods to create {{@link Matcher}s,
+ * Offers a set of factory methods to startWith {{@link Matcher}s,
  * taking an {@link Iterable} with Pairs of Keys and {@link Matcher}s
  * and ensure a certain number of positive matches.
  */

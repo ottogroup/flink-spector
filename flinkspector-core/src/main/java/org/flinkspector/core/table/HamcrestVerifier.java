@@ -16,8 +16,8 @@
 
 package org.flinkspector.core.table;
 
-import org.flinkspector.core.runtime.SimpleOutputVerifier;
 import org.flinkspector.core.runtime.FlinkTestFailedException;
+import org.flinkspector.core.runtime.SimpleOutputVerifier;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
 

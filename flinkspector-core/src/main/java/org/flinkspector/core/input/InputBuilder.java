@@ -32,7 +32,7 @@ public class InputBuilder<T> implements Input<T> {
 	 */
 	List<T> input = new ArrayList<T>();
 
-	public static <T> InputBuilder<T> create(T record) {
+	public static <T> InputBuilder<T> startWith(T record) {
 		InputBuilder<T> builder = new InputBuilder<T>();
 		builder.emit(record);
 		return builder;

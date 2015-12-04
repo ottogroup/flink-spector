@@ -34,7 +34,7 @@ public abstract class InputTranslator<IN,OUT> implements Input<OUT> {
 
 	private Input<IN> input;
 
-	protected InputTranslator(Input<IN> input) {
+	public InputTranslator(Input<IN> input) {
 		this.input = input;
 	}
 

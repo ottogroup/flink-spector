@@ -16,9 +16,9 @@
 
 package org.flinkspector.core.runtime;
 
+import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.flinkspector.core.util.SerializeUtil;
-import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQException;
 
