@@ -17,8 +17,8 @@ package org.flinkspector.core.quantify.assertions
 
 import org.apache.flink.api.java.tuple.{Tuple3 => Fluple3}
 import org.flinkspector.core.quantify.TupleMask
-import org.flinkspector.core.{CoreSpec, KeyMatcherPair}
 import org.hamcrest.{Matcher, Matchers}
+import org.flinkspector.core.{CoreSpec, KeyMatcherPair}
 
 import scala.collection.JavaConverters._
 
