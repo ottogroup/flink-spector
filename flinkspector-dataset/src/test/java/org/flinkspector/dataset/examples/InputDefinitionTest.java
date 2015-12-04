@@ -55,7 +55,6 @@ public class InputDefinitionTest extends TestBase {
 		}
 	}
 
-	
 	public void myTest() {
 
 		Input<String> stringInput = InputBuilder
