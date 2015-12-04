@@ -20,7 +20,10 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.datastream.DataStream;
+<<<<<<< 6057b4479bf6733e54682251a5f2e3f7d82175ae
 import org.flinkspector.core.collection.ExpectedRecords;
+=======
+>>>>>>> +code documentation conform
 import org.flinkspector.core.table.TupleMask;
 import org.flinkspector.datastream.StreamTestBase;
 
