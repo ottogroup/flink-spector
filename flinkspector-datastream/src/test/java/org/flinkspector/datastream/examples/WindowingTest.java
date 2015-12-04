@@ -31,7 +31,11 @@ import static org.hamcrest.Matchers.is;
 
 /**
  * This example shows how to startWith test input with time characteristics.
+<<<<<<< 0758c2a67d00031858b9c4a176bcf25f4c9319eb
  * And the usage of {@link AssertTuples} to build an {@link OutputMatcher}.
+=======
+ * And the usage of {@link AssertBlock} to build an {@link OutputMatcher}.
+>>>>>>> +code documentation conform
  * <p/>
  * To ensure test cases run in a few seconds the framework sets the time characteristic of the data flow, to
  * EventTime. The test source emitting the input, calculates and emits watermarks based on the timestamped input.

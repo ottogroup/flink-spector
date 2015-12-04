@@ -19,8 +19,13 @@ package org.flinkspector.dataset.examples;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
+<<<<<<< 0758c2a67d00031858b9c4a176bcf25f4c9319eb
 import org.flinkspector.core.table.AssertTuples;
 import org.flinkspector.core.collection.ExpectedRecords;
+=======
+import org.flinkspector.core.collection.ExpectedRecords;
+import org.flinkspector.core.table.AssertBlock;
+>>>>>>> +code documentation conform
 import org.flinkspector.core.table.OutputMatcher;
 import org.flinkspector.core.trigger.FinishAtCount;
 import org.flinkspector.dataset.TestBase;
@@ -77,7 +82,11 @@ public class BatchTest extends TestBase {
 		 */
 		OutputMatcher<Tuple2<String, Integer>> matcher =
 				//name the values in your tuple with keys:
+<<<<<<< 0758c2a67d00031858b9c4a176bcf25f4c9319eb
 				new AssertTuples<Tuple2<String, Integer>>("name", "value")
+=======
+				new AssertBlock<Tuple2<String, Integer>>("name", "value")
+>>>>>>> +code documentation conform
 						//add an assertion using a value and hamcrest matchers
 						.assertThat("name", isA(String.class))
 						.assertThat("value", lessThan(5))
@@ -95,4 +104,6 @@ public class BatchTest extends TestBase {
 		assertDataSet(swap(testDataSet), anyOf(output, matcher), FinishAtCount.of(3));
 	}
 
+	private class Person {
+	}
 }

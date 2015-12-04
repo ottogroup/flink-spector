@@ -17,6 +17,7 @@
 package org.flinkspector.core.table;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.flink.api.java.tuple.Tuple;
 import org.flinkspector.core.KeyMatcherPair;
 import org.flinkspector.core.table.tuple.MatcherCombiner;
 import org.hamcrest.Matcher;
