@@ -25,9 +25,8 @@ import org.flinkspector.core.input.InputBuilder
 import org.flinkspector.core.runtime.{FlinkTestFailedException, SimpleOutputVerifier}
 import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.flinkspector.datastream.input.EventTimeInputBuilder
-import org.scalatest.concurrent.Eventually
 import org.scalatest.exceptions.TestFailedException
-import org.scalatest.time.{Minutes, Seconds, Span}
+import org.scalatest.time.{Seconds, Span}
 
 import scala.collection.JavaConversions._
 
@@ -218,7 +217,7 @@ class StreamTestEnvironmentSpec extends CoreSpec {
     oddStream.addSink(oddSink)
     env.executeTest()
 
-//    env.hasBeenStopped shouldBe false
+//    testEnv.hasBeenStopped shouldBe false
   }
 
   it should "stop if all triggers fire" in {

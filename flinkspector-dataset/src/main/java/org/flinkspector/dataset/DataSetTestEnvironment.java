@@ -16,16 +16,16 @@
 
 package org.flinkspector.dataset;
 
-import org.flinkspector.core.input.Input;
-import org.flinkspector.core.runtime.OutputVerifier;
-import org.flinkspector.core.runtime.Runner;
-import org.flinkspector.core.trigger.DefaultTestTrigger;
-import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.runtime.StreamingMode;
 import org.apache.flink.test.util.ForkableFlinkMiniCluster;
 import org.apache.flink.test.util.TestBaseUtils;
 import org.apache.flink.test.util.TestEnvironment;
+import org.flinkspector.core.input.Input;
+import org.flinkspector.core.runtime.OutputVerifier;
+import org.flinkspector.core.runtime.Runner;
+import org.flinkspector.core.trigger.DefaultTestTrigger;
+import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 
 public class DataSetTestEnvironment extends TestEnvironment{
 
@@ -43,7 +43,7 @@ public class DataSetTestEnvironment extends TestEnvironment{
 	}
 
 	/**
-	 * Factory method to create a new instance, providing a
+	 * Factory method to startWith a new instance, providing a
 	 * new instance of {@link ForkableFlinkMiniCluster}
 	 *
 	 * @param parallelism global setting for parallel execution.
@@ -51,16 +51,17 @@ public class DataSetTestEnvironment extends TestEnvironment{
 	 * @throws Exception
 	 */
 	public static DataSetTestEnvironment createTestEnvironment(int parallelism) throws Exception {
+		int taskSlots = Runtime.getRuntime().availableProcessors();
 		ForkableFlinkMiniCluster cluster =
 				TestBaseUtils.startCluster(
 						1,
-						parallelism,
-						StreamingMode.STREAMING,
+						taskSlots,
+						StreamingMode.BATCH_ONLY,
 						false,
 						false,
 						true
 				);
-		return new DataSetTestEnvironment(cluster, 1);
+		return new DataSetTestEnvironment(cluster, parallelism);
 	}
 
 	public <T> DataSet<T> createTestSet(Input<T> input) {
@@ -122,7 +123,7 @@ public class DataSetTestEnvironment extends TestEnvironment{
 	 * Setter for the timeout interval
 	 * after the test execution gets stopped.
 	 *
-	 * @param interval
+	 * @param interval in milliseconds.
 	 */
 	public void setTimeoutInterval(long interval) {
 		runner.setTimeoutInterval(interval);

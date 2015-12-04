@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.flinkspector.core.set
+package org.flinkspector.core.collection
 
 import org.flinkspector.core.CoreSpec
 
@@ -107,6 +107,17 @@ class MatcherBuilderSpec extends CoreSpec {
 
     indicesBuilder.matchesSafely(List(1, 4, 2, 3)) shouldBe true
     indicesBuilder.matchesSafely(List(4, 2, 3, 1)) shouldBe false
+  }
+
+  it should "check for two order statements" in {
+    val combinedOrder = new MatcherBuilder[Int](List(1, 2, 3, 4))
+    combinedOrder.inOrder(MatcherBuilder.Order.STRICT).from(1).to(2)
+    combinedOrder.inOrder(MatcherBuilder.Order.NONSTRICT).indices(0,3)
+
+    combinedOrder.matchesSafely(List(1, 2, 3, 4)) shouldBe true
+    combinedOrder.matchesSafely(List(1, 3, 2, 4)) shouldBe false
+    combinedOrder.matchesSafely(List(1, 4, 2, 3)) shouldBe true
+    combinedOrder.matchesSafely(List(4, 2, 3, 1)) shouldBe false
   }
 
   it should "check for series in combination" in {

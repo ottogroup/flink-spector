@@ -18,6 +18,7 @@ package org.flinkspector.datastream.input
 
 import java.util
 import java.util.concurrent.TimeUnit
+
 import org.flinkspector.CoreSpec
 import org.flinkspector.core.runtime.SimpleOutputVerifier
 import org.flinkspector.datastream.DataStreamTestEnvironment
@@ -30,7 +31,7 @@ class EventTimeSourceBuilderSpec extends CoreSpec {
       output should contain theSameElementsAs list
   }
 
-  "The source builder" should "create a working source" in {
+  "The source builder" should "startWith a working source" in {
     val env = DataStreamTestEnvironment.createTestEnvironment(1)
 
     val source = new EventTimeSourceBuilder[Int](env,1)

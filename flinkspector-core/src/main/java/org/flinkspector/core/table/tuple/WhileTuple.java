@@ -16,10 +16,10 @@
 
 package org.flinkspector.core.table.tuple;
 
+import org.apache.flink.api.java.tuple.Tuple;
 import org.flinkspector.core.KeyMatcherPair;
 import org.flinkspector.core.table.TupleMap;
 import org.flinkspector.core.table.TupleMask;
-import org.apache.flink.api.java.tuple.Tuple;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;

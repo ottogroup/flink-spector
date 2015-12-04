@@ -22,7 +22,7 @@ import org.scalatest.enablers.{Aggregating, Sequencing}
 /**
  * Wrapper around the [[Matchers]] library from ScalaTest.
  * @see http://scalatest.org/
- *      Offers several methods to create different [[ListMatcher]]s working on lists.
+ *      Offers several methods to startWith different [[ListMatcher]]s working on lists.
  */
 object ListMatchers extends Matchers {
 

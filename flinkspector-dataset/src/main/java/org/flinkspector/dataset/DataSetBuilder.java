@@ -54,7 +54,7 @@ public class DataSetBuilder<T> {
 	 * Produces a {@link DataSet} with the predefined input.
 	 * @return {@link DataSet}
 	 */
-	public DataSet<T> complete() {
+	public DataSet<T> close() {
 		return env.fromCollection(builder.getInput());
 	}
 

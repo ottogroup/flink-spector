@@ -16,13 +16,13 @@
 
 package org.flinkspector.dataset;
 
-import org.flinkspector.core.runtime.OutputPublisher;
-import org.flinkspector.core.util.SerializeUtil;
 import org.apache.flink.api.common.io.RichOutputFormat;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.configuration.Configuration;
+import org.flinkspector.core.runtime.OutputPublisher;
+import org.flinkspector.core.util.SerializeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +65,7 @@ public class TestOutputFormat<IN> extends RichOutputFormat<IN> {
 	public void writeRecord(IN next) throws IOException {
 		byte[] msg;
 		if (serializer == null) {
-			//create serializer
+			//startWith serializer
 			TypeInformation<IN> typeInfo = TypeExtractor.getForObject(next);
 			serializer = typeInfo.createSerializer(getRuntimeContext().getExecutionConfig());
 			//push serializer to output receiver

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package org.flinkspector.core.set;
+package org.flinkspector.core.collection;
 
-import org.flinkspector.matcher.ListMatcherBuilder;
 import org.flinkspector.core.table.OutputMatcher;
 import org.flinkspector.matcher.ListMatcherBuilder;
 import org.hamcrest.Description;

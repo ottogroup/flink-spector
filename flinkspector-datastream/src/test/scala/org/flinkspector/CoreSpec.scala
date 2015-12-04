@@ -16,6 +16,7 @@
 package org.flinkspector
 
 import java.util.{List => JList}
+
 import org.apache.flink.streaming.runtime.streamrecord
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord
 import org.flinkspector.core.input.Input

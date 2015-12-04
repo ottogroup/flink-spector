@@ -21,11 +21,11 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.apache.flink.runtime.client.JobTimeoutException;
 import org.apache.flink.test.util.ForkableFlinkMiniCluster;
-import org.zeromq.ZMQ;
 import org.flinkspector.core.runtime.OutputSubscriber.ResultState;
+import org.flinkspector.core.trigger.VerifyFinishedTrigger;
+import org.zeromq.ZMQ;
 
 import java.util.ArrayList;
 import java.util.List;

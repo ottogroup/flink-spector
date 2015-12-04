@@ -17,7 +17,7 @@
 package org.flinkspector.core.matcher
 
 import org.flinkspector.core.CoreSpec
-import org.flinkspector.matcher.{PartialMatcher, ListMatcher}
+import org.flinkspector.matcher.{ListMatcher, PartialMatcher}
 import org.mockito.Mockito._
 
 import scala.collection.mutable.ArrayBuffer

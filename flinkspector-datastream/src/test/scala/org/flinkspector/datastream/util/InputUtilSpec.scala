@@ -17,6 +17,7 @@
 package org.flinkspector.datastream.util
 
 import java.util
+
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord
 import org.flinkspector.CoreSpec
 

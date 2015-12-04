@@ -20,7 +20,7 @@ import org.flinkspector.core.table.result.RecordsMatchers;
 import org.hamcrest.Matcher;
 
 /**
- * Takes a {@link Matcher} and converts it into a {@link OutputMatcherFactory}
+ * Takes a {@link Matcher} and converts it into a {@link OutputMatcher}
  * matching an iterable of tuples.
  * Provides a set of methods to define the number of matches necessary to
  * fulfill the expectation.

@@ -72,7 +72,7 @@ public class TestSink<IN> extends RichSinkFunction<IN> {
 
 		if (serializer == null) {
 
-			//create serializer
+			//startWith serializer
 			TypeInformation<IN> typeInfo = TypeExtractor.getForObject(next);
 			serializer = typeInfo.createSerializer(getRuntimeContext().getExecutionConfig());
 			//push serializer to output receiver

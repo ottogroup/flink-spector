@@ -16,8 +16,8 @@
 
 package org.flinkspector.datastream.input;
 
-import org.flinkspector.datastream.input.time.TimeSpan;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
+import org.flinkspector.datastream.input.time.TimeSpan;
 
 import java.util.ArrayList;
 import java.util.Iterator;

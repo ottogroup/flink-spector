@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package org.flinkspector.core.set;
+package org.flinkspector.core.collection;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.flinkspector.matcher.FromPartialMatcher;
-import org.flinkspector.matcher.ListMatcherBuilder;
 import org.flinkspector.matcher.ListMatcherBuilder;
 
 import java.util.Arrays;

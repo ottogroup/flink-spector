@@ -17,7 +17,7 @@
 package org.flinkspector.dataset
 
 import org.apache.flink.api.java.DataSet
-import org.flinkspector.core.set.ExpectedRecords
+import org.flinkspector.core.collection.ExpectedRecords
 
 import scala.collection.JavaConversions._
 

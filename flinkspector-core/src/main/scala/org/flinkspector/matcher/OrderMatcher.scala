@@ -22,7 +22,7 @@ import scala.collection.mutable.ArrayBuffer
  */
 object OrderMatcher {
   /**
-   * Helper method to create a [[OrderMatcher]] from a [[ListMatcherBuilder]]
+   * Helper method to startWith a [[OrderMatcher]] from a [[ListMatcherBuilder]]
    * @param builder to use for creation.
    * @tparam T matched type
    * @return [[OrderMatcher]]

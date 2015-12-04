@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.flinkspector.core.set
+package org.flinkspector.core.collection
 
 import org.flinkspector.core.CoreSpec
 
@@ -37,6 +37,8 @@ class ExpectedOutputSpec extends CoreSpec {
 
     expectOutput.expectAll(List(1,2,3,4))
     expectOutput.refine().only()
+
+    //specify
 
     expectOutput.matchesSafely(List(1, 2, 3, 4)) shouldBe true
     expectOutput.matchesSafely(List(1, 2, 3)) shouldBe false

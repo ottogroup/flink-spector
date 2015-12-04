@@ -18,7 +18,11 @@ package org.flinkspector.datastream
 
 import org.apache.flink.streaming.api.datastream.DataStream
 import org.flinkspector.CoreSpec
-import org.flinkspector.core.set.ExpectedRecords
+<<<<<<< 9925c318562ab44831caed4cc727cd78e8f8942e
+
+=======
+import org.flinkspector.core.collection.{ExpectedRecords, ExpectedOutput}
+>>>>>>> +code documentation conform
 
 import scala.collection.JavaConversions._
 

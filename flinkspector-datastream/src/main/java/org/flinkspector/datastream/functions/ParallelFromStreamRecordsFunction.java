@@ -17,10 +17,10 @@
 package org.flinkspector.datastream.functions;
 
 import com.google.common.collect.Iterables;
-import org.apache.flink.core.memory.OutputViewDataOutputStreamWrapper;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.core.memory.DataInputView;
 import org.apache.flink.core.memory.InputViewDataInputStreamWrapper;
+import org.apache.flink.core.memory.OutputViewDataOutputStreamWrapper;
 import org.apache.flink.streaming.api.checkpoint.CheckpointedAsynchronously;
 import org.apache.flink.streaming.api.functions.source.RichEventTimeSourceFunction;
 import org.apache.flink.streaming.api.watermark.Watermark;
