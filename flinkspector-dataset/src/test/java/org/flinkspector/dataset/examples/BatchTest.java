@@ -19,7 +19,7 @@ package org.flinkspector.dataset.examples;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.flinkspector.core.set.ExpectedOutput;
+import org.flinkspector.core.set.ExpectedRecords;
 import org.flinkspector.core.table.AssertBlock;
 import org.flinkspector.core.table.OutputMatcher;
 import org.flinkspector.core.trigger.FinishAtCount;
@@ -62,7 +62,7 @@ public class BatchTest extends TestBase {
 		 * Define the output you expect from the the transformation under test.
 		 * Add the tuples you want to see with .expect(record).
 		 */
-		ExpectedOutput<Tuple2<String, Integer>> output = ExpectedOutput
+		ExpectedRecords<Tuple2<String, Integer>> output = ExpectedRecords
 				.create(Tuple2.of("test", 1))
 				.expect(Tuple2.of("why", 2))
 				.expect(Tuple2.of("not", 3));
@@ -88,7 +88,7 @@ public class BatchTest extends TestBase {
 
 		/*
 		 * Use assertDataSet to map DataSet to an OutputMatcher.
-		 * ExpectedOutput extends OutputMatcher and thus can be used in this way.
+		 * ExpectedRecords extends OutputMatcher and thus can be used in this way.
 		 * Combine the created matchers with anyOf(), implicating that at least one of
 		 * the matchers must be positive.
 		 */

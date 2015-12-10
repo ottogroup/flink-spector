@@ -20,10 +20,10 @@ class Test extends StreamTestBase {
 		DataSet<Integer> dataSet = createTestDataSet(asList(1,2,3))
 		    .map((MapFunction<Integer,Integer>) (value) -> {return value + 1});
 
-		ExpectedOutput<Integer> expectedOutput = 
+		ExpectedOutput<Integer> expectedRecords = 
 		    new ExpectedOutput<Integer>().expectAll(asList(2,3,4))
 
-		assertDataSet(dataSet, expectedOutput);
+		assertDataSet(dataSet, expectedRecords);
     }
 
 }

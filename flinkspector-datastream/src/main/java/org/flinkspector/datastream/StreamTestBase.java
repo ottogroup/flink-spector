@@ -18,7 +18,7 @@ package org.flinkspector.datastream;
 
 import org.apache.flink.streaming.api.environment.LocalStreamEnvironment;
 import org.flinkspector.core.input.InputBuilder;
-import org.flinkspector.core.set.ExpectedOutput;
+import org.flinkspector.core.set.ExpectedRecords;
 import org.flinkspector.core.set.MatcherBuilder;
 import org.flinkspector.core.table.OutputMatcherFactory;
 import org.flinkspector.datastream.input.EventTimeInput;
@@ -236,8 +236,8 @@ public class StreamTestBase {
 		return InputBuilder.create(elem);
 	}
 
-	public static <T> ExpectedOutput<T> expectOutput(T record) {
-		return ExpectedOutput.create(record);
+	public static <T> ExpectedRecords<T> expectOutput(T record) {
+		return ExpectedRecords.create(record);
 	}
 
 	public static int times(int n) {

@@ -28,24 +28,24 @@ import java.util.List;
  * for the output of a endpoint.
  * @param <T>
  */
-public class ExpectedOutput<T> extends OutputMatcher<T> {
+public class ExpectedRecords<T> extends OutputMatcher<T> {
 
 	/** list of expected records */
 	private List<T> expectedOutput;
 	/** matcher to test the output */
 	private MatcherBuilder<T> matcher;
 
-	public ExpectedOutput() {
+	public ExpectedRecords() {
 		expectedOutput = new ArrayList<>();
 	}
 
-	public static <T> ExpectedOutput<T> create(T record) {
-		ExpectedOutput<T> output = new ExpectedOutput<>();
+	public static <T> ExpectedRecords<T> create(T record) {
+		ExpectedRecords<T> output = new ExpectedRecords<>();
 		return output.expect(record);
 	}
 
-	public static <T> ExpectedOutput<T> create(Collection<T> records) {
-		ExpectedOutput<T> output = new ExpectedOutput<>();
+	public static <T> ExpectedRecords<T> create(Collection<T> records) {
+		ExpectedRecords<T> output = new ExpectedRecords<>();
 		return output.expectAll(records);
 	}
 
@@ -65,7 +65,7 @@ public class ExpectedOutput<T> extends OutputMatcher<T> {
 	 * Adds an record to the list of expected output
 	 * @param record to add
 	 */
-	public ExpectedOutput<T> expect(T record) {
+	public ExpectedRecords<T> expect(T record) {
 		expectedOutput.add(record);
 		return this;
 	}
@@ -74,7 +74,7 @@ public class ExpectedOutput<T> extends OutputMatcher<T> {
 	 * Adds a {@link Collection} of records to the expected output
 	 * @param records to add
 	 */
-	public ExpectedOutput<T> expectAll(Collection<T> records) {
+	public ExpectedRecords<T> expectAll(Collection<T> records) {
 		expectedOutput.addAll(records);
 		return this;
 	}

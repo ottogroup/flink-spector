@@ -17,7 +17,7 @@
 package org.flinkspector.dataset
 
 import org.apache.flink.api.java.DataSet
-import org.flinkspector.core.set.ExpectedOutput
+import org.flinkspector.core.set.ExpectedRecords
 
 import scala.collection.JavaConversions._
 
@@ -29,7 +29,7 @@ class TestBaseSpec extends CoreSpec{
 
     val coll : java.util.Collection[Int] = List(1,2,3,4)
     val dataSet : DataSet[Int] = base.createTestDataSet(coll)
-    val matcher = ExpectedOutput.create(coll)
+    val matcher = ExpectedRecords.create(coll)
 
     base.assertDataSet(dataSet,matcher)
     base.executeTest()
@@ -41,7 +41,7 @@ class TestBaseSpec extends CoreSpec{
 
     val coll : java.util.Collection[Int] = List(1,2,3,4)
     val dataSet : DataSet[Int] = base.createTestDataSet(List(1,2,3))
-    val matcher = ExpectedOutput.create(coll)
+    val matcher = ExpectedRecords.create(coll)
 
     base.assertDataSet(dataSet,matcher)
     an [AssertionError] shouldBe thrownBy(base.executeTest())
@@ -55,7 +55,7 @@ class TestBaseSpec extends CoreSpec{
     val coll : java.util.Collection[Int] = List(1,2,3,4)
     val dataSet1 : DataSet[Int] = base.createTestDataSet(coll)
     val dataSet2 : DataSet[Int] = base.createTestDataSet(coll)
-    val matcher = ExpectedOutput.create(coll)
+    val matcher = ExpectedRecords.create(coll)
 
     base.assertDataSet(dataSet1,matcher)
     base.assertDataSet(dataSet2,matcher)
@@ -69,7 +69,7 @@ class TestBaseSpec extends CoreSpec{
     val coll : java.util.Collection[Int] = List(1,2,3,4)
     val dataSet1 : DataSet[Int] = base.createTestDataSet(coll)
     val dataSet2 : DataSet[Int] = base.createTestDataSet(List(1,2,3))
-    val matcher = ExpectedOutput.create(coll)
+    val matcher = ExpectedRecords.create(coll)
 
     base.assertDataSet(dataSet1,matcher)
     base.assertDataSet(dataSet2,matcher)

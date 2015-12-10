@@ -23,7 +23,7 @@ import scala.collection.JavaConversions._
 class ExpectedOutputSpec extends CoreSpec {
 
   "expected output" should "check for all per default" in {
-    val expectOutput = new ExpectedOutput[Int]
+    val expectOutput = new ExpectedRecords[Int]
 
     expectOutput.expectAll(List(1,2,3,4))
 
@@ -33,7 +33,7 @@ class ExpectedOutputSpec extends CoreSpec {
   }
 
   it should "take refinements" in {
-    val expectOutput = new ExpectedOutput[Int]
+    val expectOutput = new ExpectedRecords[Int]
 
     expectOutput.expectAll(List(1,2,3,4))
     expectOutput.refine().only()

@@ -19,13 +19,13 @@ package org.flinkspector.datastream.examples;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.flinkspector.core.set.ExpectedOutput;
+import org.flinkspector.core.set.ExpectedRecords;
 import org.flinkspector.datastream.StreamTestBase;
 
 
 /**
  * This example shows how to define input without time characteristics.
- * With the usage of {@link ExpectedOutput}.
+ * With the usage of {@link ExpectedRecords}.
  */
 public class MapperTest extends StreamTestBase {
 
@@ -67,22 +67,22 @@ public class MapperTest extends StreamTestBase {
 		 * Define the output you expect from the the transformation under test.
 		 * Add the tuples you want to see with .expect(record).
 		 */
-		ExpectedOutput<Tuple2<String, Integer>> expectedOutput = new ExpectedOutput<Tuple2<String, Integer>>()
+		ExpectedRecords<Tuple2<String, Integer>> expectedRecords = new ExpectedRecords<Tuple2<String, Integer>>()
 				.expect(Tuple2.of("test", 1))
 				.expect(Tuple2.of("foo", 2));
 		// refine your expectations by adding requirements
-		expectedOutput.refine().noDuplicates().inOrder(strict).all();
+		expectedRecords.refine().noDuplicates().inOrder(strict).all();
 
 
 		/*
 		 * Use assertStream to map DataStream to an OutputMatcher.
-		 * ExpectedOutput extends OutputMatcher and thus can be used in this way.
-		 * This means you're also able to combine ExpectedOutput with any
+		 * ExpectedRecords extends OutputMatcher and thus can be used in this way.
+		 * This means you're also able to combine ExpectedRecords with any
 		 * OutputMatcher. E.g:
-		 * assertStream(swap(stream), and(expectedOutput,outputWithSize(3))
+		 * assertStream(swap(stream), and(expectedRecords,outputWithSize(3))
 		 * would additionally assert that the number of produced records is exactly 3.
 		 */
-		assertStream(swap(stream), expectedOutput);
+		assertStream(swap(stream), expectedRecords);
 
 	}
 }
