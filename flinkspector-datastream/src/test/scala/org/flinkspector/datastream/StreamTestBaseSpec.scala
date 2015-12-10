@@ -20,6 +20,7 @@ import org.apache.flink.streaming.api.datastream.DataStream
 import org.flinkspector.CoreSpec
 import org.flinkspector.core.collection.ExpectedRecords
 
+
 import scala.collection.JavaConversions._
 
 class StreamTestBaseSpec extends CoreSpec {

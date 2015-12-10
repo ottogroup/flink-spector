@@ -19,8 +19,8 @@ package org.flinkspector.dataset.examples;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.flinkspector.core.collection.ExpectedRecords;
 import org.flinkspector.core.table.AssertTuples;
+import org.flinkspector.core.collection.ExpectedRecords;
 import org.flinkspector.core.table.OutputMatcher;
 import org.flinkspector.core.trigger.FinishAtCount;
 import org.flinkspector.dataset.TestBase;
@@ -95,6 +95,4 @@ public class BatchTest extends TestBase {
 		assertDataSet(swap(testDataSet), anyOf(output, matcher), FinishAtCount.of(3));
 	}
 
-	private class Person {
-	}
 }
