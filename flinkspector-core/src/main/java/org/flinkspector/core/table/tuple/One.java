@@ -17,9 +17,6 @@
 package org.flinkspector.core.table.tuple;
 
 
-import org.apache.flink.api.java.tuple.Tuple;
-import org.flinkspector.core.KeyMatcherPair;
-import org.flinkspector.core.table.TupleMask;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
@@ -30,15 +27,15 @@ import org.hamcrest.Matcher;
  *
  * @param <T>
  */
-public class One<T extends Tuple> extends WhileTuple<T> {
+public class One<T> extends WhileMatcherCombiner<T> {
 
 	/**
 	 * Default constructor
 	 *
-	 * @param matchers {@link Iterable} of {@link KeyMatcherPair}
+	 * @param matchers {@link Iterable} of {@link Matcher}
 	 */
-	public One(Iterable<KeyMatcherPair> matchers, TupleMask<T> mask) {
-		super(matchers, mask);
+	public One(Iterable<Matcher<? super T>> matchers) {
+		super(matchers);
 	}
 
 	protected Description describeCondition(Description description) {
@@ -61,8 +58,7 @@ public class One<T extends Tuple> extends WhileTuple<T> {
 	}
 
 	@Factory
-	public static <T extends Tuple> One<T> one(Iterable<KeyMatcherPair> matchers,
-											TupleMask<T> mask) {
-		return new One<T>(matchers, mask);
+	public static <T> One<T> one(Iterable<Matcher<? super T>> matchers) {
+		return new One<T>(matchers);
 	}
 }

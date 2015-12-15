@@ -17,87 +17,30 @@
 package org.flinkspector.core.table;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.flink.api.java.tuple.Tuple;
 import org.flinkspector.core.KeyMatcherPair;
-import org.flinkspector.core.table.tuple.TupleMapMatchers;
+import org.flinkspector.core.table.tuple.MatcherCombiner;
 import org.hamcrest.Matcher;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Enables the use of a {@link TupleMask} to map a {@link Tuple} to string keys.
- * And then use these keys in combination with hamcrest's {@link Matcher}s to define
- * expectations that query the output like a table.
- * <p/>
- * The class holds a list of matcher and string key pairs.
- * The user can add a set of pairs and in the next step define,
- * how many of these matchers have to be valid for a defined set of
- * records.
- * <p/>
+ * Lets you build a list of assertion and define how often they should match your output
  * <pre>
  * {@code
- * new AssertBlock<Tuple2<String,Integer>>("name","age")
- * 		.assertThat("age", greaterThan(21))
- * 		.assertThat("name", either(is("fritz")).or(is("peter")))
- * 		.eachOfThem().onAnyRecord();
+ * new AssertOutput<Integer>("name","age")
+ * 		.assertThat(greaterThan(21))
+ * 		.assertThat(lessThan(11))
+ * 		anyOfThem().onEachRecord();
  * </pre>
- *
  * @param <T>
  */
-public class AssertBlock<T extends Tuple> {
-
-	/**
-	 * {@link TupleMask} used to map the keys to the inspected tuples.
-	 */
-	private final TupleMask<T> mask;
+public class AssertOutput<T> {
 
 	/**
 	 * List of {@link KeyMatcherPair} representing the assertions.
 	 */
-	private List<KeyMatcherPair> matchers = new ArrayList<>();
-
-	/**
-	 * Default Constructor.
-	 *
-	 * @param mask {@link TupleMask} to use.
-	 */
-	public AssertBlock(TupleMask<T> mask) {
-		this.mask = mask;
-	}
-
-	/**
-	 * Constructor that provides a {@link TupleMask}
-	 * from a set of string keys.
-	 *
-	 * @param first key
-	 * @param rest of keys
-	 */
-	public AssertBlock(String first, String... rest) {
-		this(new TupleMask<T>(first,rest));
-	}
-
-	/**
-	 * Factory method accessing the default constructor.
-	 *
-	 * @param mask {@link TupleMask} to use.
-	 * @param <T>  type of output
-	 * @return new instance of {@link AssertBlock}
-	 */
-	public static <T extends Tuple> AssertBlock<T> fromMask(TupleMask<T> mask) {
-		return new AssertBlock<T>(mask);
-	}
-
-	/**
-	 * Add a new assertion to the list.
-	 *
-	 * @param key   of the field
-	 * @param match matcher to use on the field
-	 */
-	public AssertBlock<T> assertThat(String key, Matcher match) {
-		matchers.add(KeyMatcherPair.of(key, match));
-		return this;
-	}
+	private List<Matcher<? super T>> matchers = new ArrayList<>();
 
 	/**
 	 * Expect the record to fulfill at least one of the specified asserts.
@@ -106,7 +49,7 @@ public class AssertBlock<T extends Tuple> {
 	 * the output.
 	 */
 	public ResultMatcher<T> anyOfThem() {
-		return new ResultMatcher<>(TupleMapMatchers.any(matchers, mask));
+		return new ResultMatcher<>(MatcherCombiner.any(matchers));
 	}
 
 	/**
@@ -116,9 +59,18 @@ public class AssertBlock<T extends Tuple> {
 	 * the output.
 	 */
 	public ResultMatcher<T> oneOfThem() {
-		return new ResultMatcher<>(TupleMapMatchers.one(matchers, mask));
+		return new ResultMatcher<>(MatcherCombiner.one(matchers));
 	}
 
+
+	/**
+	 * Add a {@link Matcher} to the list of assertions to verify.
+	 * @param matcher testing the output records
+	 */
+	public AssertOutput<T> assertThat(Matcher<? super T> matcher) {
+		matchers.add(matcher);
+		return this;
+	}
 //	/**
 //	 * Expect the record to fulfill all of the specified asserts.
 //	 *
@@ -137,7 +89,7 @@ public class AssertBlock<T extends Tuple> {
 	 * the output.
 	 */
 	public ResultMatcher<T> exactlyNOfThem(int n) {
-		return new ResultMatcher<>(TupleMapMatchers.exactly(matchers, mask, n));
+		return new ResultMatcher<>(MatcherCombiner.exactly(matchers, n));
 	}
 
 	/**
@@ -148,7 +100,7 @@ public class AssertBlock<T extends Tuple> {
 	 * the output.
 	 */
 	public ResultMatcher<T> atLeastNOfThem(int n) {
-		return new ResultMatcher<>(TupleMapMatchers.atLeast(matchers, mask, n));
+		return new ResultMatcher<>(MatcherCombiner.atLeast(matchers, n));
 	}
 
 	/**
@@ -159,7 +111,7 @@ public class AssertBlock<T extends Tuple> {
 	 * the output.
 	 */
 	public ResultMatcher<T> atMostNOfThem(int n) {
-		return new ResultMatcher<>(TupleMapMatchers.atMost(matchers, mask, n));
+		return new ResultMatcher<>(MatcherCombiner.atMost(matchers, n));
 	}
 
 	/**
@@ -169,7 +121,7 @@ public class AssertBlock<T extends Tuple> {
 	 * @return {@link OutputMatcherFactory}
 	 */
 	public OutputMatcher<T> onAnyRecord() {
-		ResultMatcher<T> matcher = new ResultMatcher<>(TupleMapMatchers.each(matchers, mask));
+		ResultMatcher<T> matcher = new ResultMatcher<>(MatcherCombiner.each(matchers));
 		return OutputMatcherFactory.create(matcher.onAnyRecord());
 	}
 
@@ -180,7 +132,7 @@ public class AssertBlock<T extends Tuple> {
 	 * @return {@link OutputMatcherFactory}
 	 */
 	public OutputMatcher<T> onEachRecord() {
-		ResultMatcher<T> matcher = new ResultMatcher<>(TupleMapMatchers.each(matchers, mask));
+		ResultMatcher<T> matcher = new ResultMatcher<>(MatcherCombiner.each(matchers));
 		return OutputMatcherFactory.create(matcher.onEachRecord());
 	}
 
@@ -191,7 +143,7 @@ public class AssertBlock<T extends Tuple> {
 	 * @return {@link OutputMatcherFactory}
 	 */
 	public OutputMatcher<T> onOneRecord() {
-		ResultMatcher<T> matcher = new ResultMatcher<>(TupleMapMatchers.each(matchers, mask));
+		ResultMatcher<T> matcher = new ResultMatcher<>(MatcherCombiner.each(matchers));
 		return OutputMatcherFactory.create(matcher.onOneRecord());
 	}
 
@@ -202,7 +154,7 @@ public class AssertBlock<T extends Tuple> {
 	 * @return {@link OutputMatcherFactory}
 	 */
 	public OutputMatcher<T> onNoRecord() {
-		ResultMatcher<T> matcher = new ResultMatcher<>(TupleMapMatchers.each(matchers, mask));
+		ResultMatcher<T> matcher = new ResultMatcher<>(MatcherCombiner.each(matchers));
 		return OutputMatcherFactory.create(matcher.onNoRecord());
 	}
 
@@ -213,7 +165,7 @@ public class AssertBlock<T extends Tuple> {
 	 * @return {@link OutputMatcherFactory}
 	 */
 	public OutputMatcher<T> onExactlyNRecords(int n) {
-		ResultMatcher<T> matcher = new ResultMatcher<>(TupleMapMatchers.each(matchers, mask));
+		ResultMatcher<T> matcher = new ResultMatcher<>(MatcherCombiner.each(matchers));
 		return OutputMatcherFactory.create(matcher.onExactlyNRecords(n));
 	}
 
@@ -224,7 +176,7 @@ public class AssertBlock<T extends Tuple> {
 	 * @return {@link OutputMatcherFactory}
 	 */
 	public OutputMatcher<T> onAtLeastNRecords(int n) {
-		ResultMatcher<T> matcher = new ResultMatcher<>(TupleMapMatchers.each(matchers, mask));
+		ResultMatcher<T> matcher = new ResultMatcher<>(MatcherCombiner.each(matchers));
 		return OutputMatcherFactory.create(matcher.onAtLeastNRecords(n));
 	}
 
@@ -235,12 +187,12 @@ public class AssertBlock<T extends Tuple> {
 	 * @return {@link OutputMatcherFactory}
 	 */
 	public OutputMatcher<T> onAtMostNRecords(int n) {
-		ResultMatcher<T> matcher = new ResultMatcher<>(TupleMapMatchers.each(matchers, mask));
+		ResultMatcher<T> matcher = new ResultMatcher<>(MatcherCombiner.each(matchers));
 		return OutputMatcherFactory.create(matcher.onAtMostNRecords(n));
 	}
 
 	@VisibleForTesting
-	List<KeyMatcherPair> getKeyMatcherPairs() {
+	List<Matcher<? super T>> getMatchers() {
 		return matchers;
 	}
 

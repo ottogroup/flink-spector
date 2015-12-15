@@ -17,10 +17,6 @@
 package org.flinkspector.core.table.tuple;
 
 import com.google.common.collect.Iterables;
-import org.apache.flink.api.java.tuple.Tuple;
-import org.flinkspector.core.KeyMatcherPair;
-import org.flinkspector.core.table.TupleMap;
-import org.flinkspector.core.table.TupleMask;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
@@ -28,35 +24,24 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class UntilTuple<T extends Tuple> extends TypeSafeDiagnosingMatcher<T> {
+public abstract class UntilMatcherCombiner<T> extends TypeSafeDiagnosingMatcher<T> {
 
-	private final Iterable<KeyMatcherPair> keyMatcherPairs;
-	private final TupleMask<T> table;
+	private final Iterable<Matcher<? super T>> matchers;
 
-	public UntilTuple(Iterable<KeyMatcherPair> keyMatcherPairs,
-					TupleMask<T> table) {
-		this.table = table;
-		this.keyMatcherPairs = keyMatcherPairs;
+	public UntilMatcherCombiner(Iterable<Matcher<? super T>> matchers) {
+		this.matchers = matchers;
 	}
 
 	@Override
-	public boolean matchesSafely(T tuple, Description mismatch) {
+	public boolean matchesSafely(T object, Description mismatch) {
 		int matches = 0;
-		int possibleMatches = Iterables.size(keyMatcherPairs);
-		TupleMap<T> tupleMap = table.apply(tuple);
+		int possibleMatches = Iterables.size(matchers);
 
-		for (KeyMatcherPair keyMatcherPair : keyMatcherPairs) {
-			String key = keyMatcherPair.key;
-			Object object = tupleMap.get(key);
-			Matcher matcher = keyMatcherPair.matcher;
+		for (Matcher<? super T> matcher : matchers) {
 			if (!matcher.matches(object)) {
 				if(!mismatch.toString().endsWith("but: ")) {
 					mismatch.appendText("\n          ");
 				}
-				mismatch
-						.appendText("[" + key + "] ")
-						.appendDescriptionOf(matcher)
-						.appendText(", ");
 				matcher.describeMismatch(object, mismatch);
 			} else {
 				matches++;
@@ -73,12 +58,11 @@ public abstract class UntilTuple<T extends Tuple> extends TypeSafeDiagnosingMatc
 		List<Matcher> matchers = new ArrayList<>();
 		description.appendText(prefix());
 		description.appendText(" ( ");
-		for (KeyMatcherPair m : keyMatcherPairs) {
+		for (Matcher m : this.matchers) {
 			if(!description.toString().endsWith("( ")) {
 				description.appendText("; ");
 			}
-			description.appendText("[" + m.key + "] ");
-			description.appendDescriptionOf(m.matcher);
+			description.appendDescriptionOf(m);
 		}
 		description.appendText(") ");
 	}
