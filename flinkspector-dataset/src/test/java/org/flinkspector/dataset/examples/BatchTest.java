@@ -24,8 +24,12 @@ import org.flinkspector.core.table.AssertTuples;
 import org.flinkspector.core.collection.ExpectedRecords;
 =======
 import org.flinkspector.core.collection.ExpectedRecords;
+<<<<<<< 1edd65ff562d112c56ada46c377b21c9152e047f
 import org.flinkspector.core.table.AssertBlock;
 >>>>>>> +code documentation conform
+=======
+import org.flinkspector.core.table.AssertTuples;
+>>>>>>> extracted AssertOutput matcher builder
 import org.flinkspector.core.table.OutputMatcher;
 import org.flinkspector.core.trigger.FinishAtCount;
 import org.flinkspector.dataset.TestBase;
@@ -82,11 +86,7 @@ public class BatchTest extends TestBase {
 		 */
 		OutputMatcher<Tuple2<String, Integer>> matcher =
 				//name the values in your tuple with keys:
-<<<<<<< 0758c2a67d00031858b9c4a176bcf25f4c9319eb
 				new AssertTuples<Tuple2<String, Integer>>("name", "value")
-=======
-				new AssertBlock<Tuple2<String, Integer>>("name", "value")
->>>>>>> +code documentation conform
 						//add an assertion using a value and hamcrest matchers
 						.assertThat("name", isA(String.class))
 						.assertThat("value", lessThan(5))
