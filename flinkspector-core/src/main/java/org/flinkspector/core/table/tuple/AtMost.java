@@ -17,27 +17,26 @@
 package org.flinkspector.core.table.tuple;
 
 import org.apache.flink.api.java.tuple.Tuple;
-import org.flinkspector.core.KeyMatcherPair;
-import org.flinkspector.core.table.TupleMask;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
+import org.hamcrest.Matcher;
 
 /**
  * Provides a {@link org.hamcrest.Matcher} inspecting a {@link Tuple} and expecting it to
  * fulfill at most one of the specified matchers.
  */
-public class AtMost<T extends Tuple> extends WhileTuple<T> {
+public class AtMost<T> extends WhileMatcherCombiner<T> {
 
 	private final int n;
 
 	/**
 	 * Default constructor
 	 *
-	 * @param matchers {@link Iterable} of {@link KeyMatcherPair}
+	 * @param matchers {@link Iterable} of {@link Matcher}
 	 * @param n        number of expected matches
 	 */
-	public AtMost(Iterable<KeyMatcherPair> matchers, TupleMask<T> mask, int n) {
-		super(matchers, mask);
+	public AtMost(Iterable<Matcher<? super T>> matchers, int n) {
+		super(matchers);
 		this.n = n;
 	}
 
@@ -56,9 +55,8 @@ public class AtMost<T extends Tuple> extends WhileTuple<T> {
 	}
 
 	@Factory
-	public static <T extends Tuple> AtMost<T> atMost(Iterable<KeyMatcherPair> matchers,
-													TupleMask<T> mask,
+	public static <T> AtMost<T> atMost(Iterable<Matcher<? super T>> matchers,
 													int n) {
-		return new AtMost<T>(matchers, mask, n);
+		return new AtMost<T>(matchers, n);
 	}
 }
