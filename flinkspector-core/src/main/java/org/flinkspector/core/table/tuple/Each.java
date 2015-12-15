@@ -17,23 +17,22 @@
 package org.flinkspector.core.table.tuple;
 
 import org.apache.flink.api.java.tuple.Tuple;
-import org.flinkspector.core.KeyMatcherPair;
-import org.flinkspector.core.table.TupleMask;
 import org.hamcrest.Factory;
+import org.hamcrest.Matcher;
 
 /**
  * Provides a {@link org.hamcrest.Matcher} inspecting a {@link Tuple} and expecting it to
  * fulfill at each of the specified matchers.
  */
-public class Each<T extends Tuple> extends UntilTuple<T> {
+public class Each<T> extends UntilMatcherCombiner<T> {
 
 	/**
 	 * Default constructor
 	 *
-	 * @param matchers {@link Iterable} of {@link KeyMatcherPair}
+	 * @param matchers {@link Iterable} of {@link Matcher<? super T>}
 	 */
-	public Each(Iterable<KeyMatcherPair> matchers, TupleMask<T> mask) {
-		super(matchers, mask);
+	public Each(Iterable<Matcher<? super T>> matchers) {
+		super(matchers);
 	}
 
 	@Override
@@ -47,8 +46,7 @@ public class Each<T extends Tuple> extends UntilTuple<T> {
 	}
 
 	@Factory
-	public static <T extends Tuple> Each<T> each(Iterable<KeyMatcherPair> matchers,
-												TupleMask<T> mask) {
-		return new Each<T>(matchers, mask);
+	public static <T> Each<T> each(Iterable<Matcher<? super T>> matchers) {
+		return new Each<T>(matchers);
 	}
 }

@@ -32,12 +32,9 @@ class AssertBlockSpec extends CoreSpec {
     block.assertThat("2", matcher)
 
     val pairs = block.getKeyMatcherPairs
-    pairs.get(0).key shouldBe "1"
-    pairs.get(0).matcher shouldBe matcher
-    pairs.get(1).key shouldBe "2"
-    pairs.get(2).key shouldBe "2"
-    pairs.get(1).matcher shouldBe matcher
-    pairs.get(2).matcher shouldBe matcher
+
+    pairs.get(0) shouldBe matcher
+    pairs.get(1) shouldBe matcher
   }
 
   it should "use each per default" in new AssertBlockCase {

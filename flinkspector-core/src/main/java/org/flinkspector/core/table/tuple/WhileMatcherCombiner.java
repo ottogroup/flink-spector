@@ -16,47 +16,28 @@
 
 package org.flinkspector.core.table.tuple;
 
-import org.apache.flink.api.java.tuple.Tuple;
-import org.flinkspector.core.KeyMatcherPair;
-import org.flinkspector.core.table.TupleMap;
-import org.flinkspector.core.table.TupleMask;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-import java.util.ArrayList;
-import java.util.List;
-
-abstract public class WhileTuple<T extends Tuple> extends TypeSafeDiagnosingMatcher<T> {
+abstract public class WhileMatcherCombiner<T> extends TypeSafeDiagnosingMatcher<T> {
 	//TODO play with description
 
-	private final Iterable<KeyMatcherPair> keyMatcherPairs;
-	private final TupleMask<T> table;
+	private final Iterable<Matcher<? super T>> matchers;
 
-	public WhileTuple(Iterable<KeyMatcherPair> matchers,
-					TupleMask<T> table) {
-		this.keyMatcherPairs = matchers;
-		this.table = table;
+	public WhileMatcherCombiner(Iterable<Matcher<? super T>> matchers) {
+		this.matchers = matchers;
 	}
 
 	@Override
-	public boolean matchesSafely(T tuple, Description mismatch) {
-
-		TupleMap tupleMap = table.apply(tuple);
+	public boolean matchesSafely(T item, Description mismatch) {
 		int matches = 0;
 		Description mismatches = new StringDescription();
 		mismatch.appendText("\n          ");
-		for (KeyMatcherPair keyMatcherPair : keyMatcherPairs) {
-			String key = keyMatcherPair.key;
-			Object object = tupleMap.get(key);
-			Matcher matcher = keyMatcherPair.matcher;
-			if (!matcher.matches(object)) {
-				mismatches
-						.appendText("[" + key + "] ")
-						.appendDescriptionOf(matcher)
-						.appendText(", ");
-				matcher.describeMismatch(object, mismatches);
+		for (Matcher<? super T> matcher : matchers) {
+			if (!matcher.matches(item)) {
+				matcher.describeMismatch(item, mismatches);
 				mismatches.appendText("; ");
 			} else {
 				matches++;
@@ -91,15 +72,13 @@ abstract public class WhileTuple<T extends Tuple> extends TypeSafeDiagnosingMatc
 
 	@Override
 	public void describeTo(Description description) {
-		List<Matcher> matchers = new ArrayList<>();
 		description.appendText(prefix());
 		description.appendText("(");
-		for (KeyMatcherPair m : keyMatcherPairs) {
+		for (Matcher m : this.matchers) {
 			if(!description.toString().endsWith("(")) {
 				description.appendText("; ");
 			}
-			description.appendText("[" + m.key + "] ");
-			description.appendDescriptionOf(m.matcher);
+			description.appendDescriptionOf(m);
 		}
 		description.appendText(")");
 	}
