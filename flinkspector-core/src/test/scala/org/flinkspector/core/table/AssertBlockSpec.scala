@@ -24,17 +24,16 @@ import scala.collection.JavaConversions._
 
 class AssertBlockSpec extends CoreSpec {
 
-  "The AssertBlock" should "store a list of [[KeyMatcherPair]]s" in {
+  "The AssertTuples" should "store a list of [[KeyMatcherPair]]s" in {
     val matcher = Is.is(1)
-    val block = new AssertBlock[Fluple3[Int, Int, Int]]("1", "2", "3")
+    val block = new AssertTuples[Fluple3[Int, Int, Int]]("1", "2", "3")
     block.assertThat("1", matcher)
     block.assertThat("2", matcher)
     block.assertThat("2", matcher)
 
-    val pairs = block.getKeyMatcherPairs
+    val pairs = block.getMatchers
 
-    pairs.get(0) shouldBe matcher
-    pairs.get(1) shouldBe matcher
+    pairs.size() shouldBe 3
   }
 
   it should "use each per default" in new AssertBlockCase {
@@ -90,7 +89,7 @@ class AssertBlockSpec extends CoreSpec {
   trait AssertBlockCase {
     val matcher = Is.is(1)
     val block =
-      new AssertBlock[Fluple4[Int, Int, Int, Int]]("1", "2", "3", "4")
+      new AssertTuples[Fluple4[Int, Int, Int, Int]]("1", "2", "3", "4")
     block.assertThat("1", matcher)
     block.assertThat("2", matcher)
     block.assertThat("3", matcher)
