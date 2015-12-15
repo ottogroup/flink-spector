@@ -23,7 +23,6 @@ import org.hamcrest.core.Is
 import scala.collection.JavaConversions._
 
 class MatchTuplesSpec extends CoreSpec {
-
   "The MatchTuples" should "store a list of [[KeyMatcherPair]]s" in {
     val matcher = Is.is(1)
     val block = new MatchTuples[Fluple3[Int, Int, Int]]("1", "2", "3")

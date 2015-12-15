@@ -70,8 +70,8 @@ public class BatchTest extends DataSetTestBase {
 		output.refine().only().inOrder(strict);
 
 		/*
-		 * Creates an OutputMatcher using MatchTuples.
-		 * MatchTuples builds an OutputMatcher working on Tuples.
+		 * Creates an OutputMatcher using AssertTuples.
+		 * AssertTuples builds an OutputMatcher working on Tuples.
 		 * You assign String identifiers to your Tuple,
 		 * and add hamcrest matchers testing the values.
 		 */
