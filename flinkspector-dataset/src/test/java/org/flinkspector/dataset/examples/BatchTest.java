@@ -20,7 +20,7 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.flinkspector.core.collection.ExpectedRecords;
-import org.flinkspector.core.table.AssertBlock;
+import org.flinkspector.core.table.AssertTuples;
 import org.flinkspector.core.table.OutputMatcher;
 import org.flinkspector.core.trigger.FinishAtCount;
 import org.flinkspector.dataset.TestBase;
@@ -70,14 +70,14 @@ public class BatchTest extends TestBase {
 		output.refine().only().inOrder(strict);
 
 		/*
-		 * Creates an OutputMatcher using AssertBlock.
-		 * AssertBlock builds an OutputMatcher working on Tuples.
+		 * Creates an OutputMatcher using AssertTuples.
+		 * AssertTuples builds an OutputMatcher working on Tuples.
 		 * You assign String identifiers to your Tuple,
 		 * and add hamcrest matchers testing the values.
 		 */
 		OutputMatcher<Tuple2<String, Integer>> matcher =
 				//name the values in your tuple with keys:
-				new AssertBlock<Tuple2<String, Integer>>("name", "value")
+				new AssertTuples<Tuple2<String, Integer>>("name", "value")
 						//add an assertion using a value and hamcrest matchers
 						.assertThat("name", isA(String.class))
 						.assertThat("value", lessThan(5))

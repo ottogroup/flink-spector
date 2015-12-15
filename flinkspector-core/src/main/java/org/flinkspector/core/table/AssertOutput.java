@@ -17,88 +17,30 @@
 package org.flinkspector.core.table;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.flink.api.java.tuple.Tuple;
 import org.flinkspector.core.KeyMatcherPair;
 import org.flinkspector.core.table.tuple.MatcherCombiner;
-import org.flinkspector.core.table.tuple.TupleMatcher;
 import org.hamcrest.Matcher;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Enables the use of a {@link TupleMask} to map a {@link Tuple} to string keys.
- * And then use these keys in combination with hamcrest's {@link Matcher}s to define
- * expectations that query the output like a table.
- * <p/>
- * The class holds a list of matcher and string key pairs.
- * The user can add a set of pairs and in the next step define,
- * how many of these matchers have to be valid for a defined set of
- * records.
- * <p/>
+ * Lets you build a list of assertion and define how often they should match your output
  * <pre>
  * {@code
- * new AssertBlock<Tuple2<String,Integer>>("name","age")
- * 		.assertThat("age", greaterThan(21))
- * 		.assertThat("name", either(is("fritz")).or(is("peter")))
- * 		.eachOfThem().onAnyRecord();
+ * new AssertOutput<Integer>("name","age")
+ * 		.assertThat(greaterThan(21))
+ * 		.assertThat(lessThan(11))
+ * 		anyOfThem().onEachRecord();
  * </pre>
- *
  * @param <T>
  */
-public class AssertBlock<T extends Tuple> {
-
-	/**
-	 * {@link TupleMask} used to map the keys to the inspected tuples.
-	 */
-	private final TupleMask<T> mask;
+public class AssertOutput<T> {
 
 	/**
 	 * List of {@link KeyMatcherPair} representing the assertions.
 	 */
 	private List<Matcher<? super T>> matchers = new ArrayList<>();
-
-	/**
-	 * Default Constructor.
-	 *
-	 * @param mask {@link TupleMask} to use.
-	 */
-	public AssertBlock(TupleMask<T> mask) {
-		this.mask = mask;
-	}
-
-	/**
-	 * Constructor that provides a {@link TupleMask}
-	 * from a set of string keys.
-	 *
-	 * @param first key
-	 * @param rest of keys
-	 */
-	public AssertBlock(String first, String... rest) {
-		this(new TupleMask<T>(first,rest));
-	}
-
-	/**
-	 * Factory method accessing the default constructor.
-	 *
-	 * @param mask {@link TupleMask} to use.
-	 * @param <T>  type of output
-	 * @return new instance of {@link AssertBlock}
-	 */
-	public static <T extends Tuple> AssertBlock<T> fromMask(TupleMask<T> mask) {
-		return new AssertBlock<T>(mask);
-	}
-
-	/**
-	 * Add a new assertion to the list.
-	 *
-	 * @param key   of the field
-	 * @param match matcher to use on the field
-	 */
-	public AssertBlock<T> assertThat(String key, Matcher match) {
-		matchers.add(new TupleMatcher<T>(KeyMatcherPair.of(key, match),mask));
-		return this;
-	}
 
 	/**
 	 * Expect the record to fulfill at least one of the specified asserts.
@@ -120,6 +62,15 @@ public class AssertBlock<T extends Tuple> {
 		return new ResultMatcher<>(MatcherCombiner.one(matchers));
 	}
 
+
+	/**
+	 * Add a {@link Matcher} to the list of assertions to verify.
+	 * @param matcher testing the output records
+	 */
+	public AssertOutput<T> assertThat(Matcher<? super T> matcher) {
+		matchers.add(matcher);
+		return this;
+	}
 //	/**
 //	 * Expect the record to fulfill all of the specified asserts.
 //	 *
@@ -241,7 +192,7 @@ public class AssertBlock<T extends Tuple> {
 	}
 
 	@VisibleForTesting
-	List<Matcher<? super T>> getKeyMatcherPairs() {
+	List<Matcher<? super T>> getMatchers() {
 		return matchers;
 	}
 

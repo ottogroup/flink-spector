@@ -18,7 +18,7 @@ package org.flinkspector.datastream.examples;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.flinkspector.core.table.AssertBlock;
+import org.flinkspector.core.table.AssertTuples;
 import org.flinkspector.core.table.OutputMatcher;
 import org.flinkspector.datastream.StreamTestBase;
 
@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.is;
 
 /**
  * This example shows how to startWith test input with time characteristics.
- * And the usage of {@link AssertBlock} to build an {@link OutputMatcher}.
+ * And the usage of {@link AssertTuples} to build an {@link OutputMatcher}.
  * <p/>
  * To ensure test cases run in a few seconds the framework sets the time characteristic of the data flow, to
  * EventTime. The test source emitting the input, calculates and emits watermarks based on the timestamped input.
@@ -79,14 +79,14 @@ public class WindowingTest extends StreamTestBase {
 						.close();
 
 		/*
-		 * Creates an OutputMatcher using AssertBlock.
-		 * AssertBlock builds an OutputMatcher working on Tuples.
+		 * Creates an OutputMatcher using AssertTuples.
+		 * AssertTuples builds an OutputMatcher working on Tuples.
 		 * You assign String identifiers to your Tuple,
 		 * and add hamcrest matchers testing the values.
 		 */
 		OutputMatcher<Tuple2<Integer, String>> matcher =
 				//name the values in your tuple with keys:
-				new AssertBlock<Tuple2<Integer, String>>("value", "name")
+				new AssertTuples<Tuple2<Integer, String>>("value", "name")
 						//add an assertion using a value and hamcrest matchers
 						.assertThat("value", is(3))
 						.assertThat("name", either(is("fritz")).or(is("peter")))
