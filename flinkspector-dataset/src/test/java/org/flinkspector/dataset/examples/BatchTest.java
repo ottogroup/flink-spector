@@ -19,23 +19,14 @@ package org.flinkspector.dataset.examples;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
-<<<<<<< 0758c2a67d00031858b9c4a176bcf25f4c9319eb
-import org.flinkspector.core.table.AssertTuples;
 import org.flinkspector.core.collection.ExpectedRecords;
-=======
-import org.flinkspector.core.collection.ExpectedRecords;
-<<<<<<< 1edd65ff562d112c56ada46c377b21c9152e047f
-import org.flinkspector.core.table.AssertBlock;
->>>>>>> +code documentation conform
-=======
-import org.flinkspector.core.table.AssertTuples;
->>>>>>> extracted AssertOutput matcher builder
-import org.flinkspector.core.table.OutputMatcher;
+import org.flinkspector.core.quantify.AssertTuples;
+import org.flinkspector.core.quantify.OutputMatcher;
 import org.flinkspector.core.trigger.FinishAtCount;
 import org.flinkspector.dataset.TestBase;
 import org.junit.Test;
 
-import static org.flinkspector.core.table.OutputMatchers.anyOf;
+import static org.flinkspector.core.quantify.OutputMatchers.anyOf;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.lessThan;
 

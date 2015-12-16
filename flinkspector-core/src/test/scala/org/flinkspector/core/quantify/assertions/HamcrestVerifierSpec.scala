@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-package org.flinkspector.core.collection;
+package org.flinkspector.core.quantify.assertions
 
-import org.flinkspector.core.quantify.HamcrestVerifier;
-import org.hamcrest.Matcher;
+import org.flinkspector.core.CoreSpec
+import org.flinkspector.core.quantify.HamcrestVerifier
+import org.hamcrest.core.IsCollectionContaining
 
-abstract public class MatcherTranslator<IN, OUT> extends VerifierTranslator<IN, OUT> {
+import scala.collection.JavaConversions._
 
-	public MatcherTranslator(Matcher<Iterable<OUT>> matcher) {
-		super(new HamcrestVerifier<OUT>(matcher));
-	}
+class HamcrestVerifierSpec extends CoreSpec {
+
+  "The verifier" should "wrap a hamcrest matcher" in {
+    val matcher = IsCollectionContaining.hasItem("test")
+    val verifier = new HamcrestVerifier(matcher)
+
+    verifier.verify(List("test","hans"))
+
+    an [AssertionError] shouldBe thrownBy {
+      verifier.verify(List("susi", "hans"))
+    }
+  }
 
 }

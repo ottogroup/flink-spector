@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-package org.flinkspector.core.collection;
+package org.flinkspector.core.quantify;
 
-import org.flinkspector.core.quantify.HamcrestVerifier;
+import org.flinkspector.core.runtime.FlinkTestFailedException;
+import org.flinkspector.core.runtime.SimpleOutputVerifier;
 import org.hamcrest.Matcher;
+import org.junit.Assert;
 
-abstract public class MatcherTranslator<IN, OUT> extends VerifierTranslator<IN, OUT> {
+import java.util.List;
 
-	public MatcherTranslator(Matcher<Iterable<OUT>> matcher) {
-		super(new HamcrestVerifier<OUT>(matcher));
+public class HamcrestVerifier<T> extends SimpleOutputVerifier<T> {
+
+	public final Matcher<? super Iterable<T>> matcher;
+
+	public HamcrestVerifier(Matcher<? super Iterable<T>> matcher) {
+		this.matcher = matcher;
 	}
 
+	@Override
+	public void verify(List<T> output) throws FlinkTestFailedException {
+		Assert.assertThat(output, matcher);
+	}
 }

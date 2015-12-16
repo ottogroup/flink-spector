@@ -21,7 +21,7 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.flinkspector.core.collection.ExpectedRecords;
-import org.flinkspector.core.table.TupleMask;
+import org.flinkspector.core.quantify.TupleMask;
 import org.flinkspector.datastream.StreamTestBase;
 
 
@@ -74,7 +74,7 @@ public class MapperTest extends StreamTestBase {
 				.expect(Tuple2.of("test", 1))
 				.expect(Tuple2.of("foo", 2));
 		// refine your expectations by adding requirements
-		expectedRecords.refine().noDuplicates().inOrder(strict).all();
+		expectedRecords.refine().sameFrequency().inOrder(strict).all();
 
 		TupleMask<Tuple3<String,String,String>> mask = TupleMask.create("flip", "flop", "flup");
 

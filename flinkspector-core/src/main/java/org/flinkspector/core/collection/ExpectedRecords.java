@@ -16,7 +16,7 @@
 
 package org.flinkspector.core.collection;
 
-import org.flinkspector.core.table.OutputMatcher;
+import org.flinkspector.core.quantify.OutputMatcher;
 import org.hamcrest.Description;
 
 import java.util.ArrayList;

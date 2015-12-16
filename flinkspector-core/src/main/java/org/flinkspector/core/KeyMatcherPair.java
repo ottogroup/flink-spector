@@ -16,7 +16,7 @@
 
 package org.flinkspector.core;
 
-import org.flinkspector.core.table.TupleMap;
+import org.flinkspector.core.quantify.TupleMap;
 import org.hamcrest.Matcher;
 
 import java.util.Objects;

@@ -16,7 +16,7 @@
 
 package org.flinkspector.core.collection;
 
-import org.flinkspector.core.table.OutputMatcher;
+import org.flinkspector.core.quantify.OutputMatcher;
 import org.flinkspector.matcher.ListMatcherBuilder;
 import org.hamcrest.Description;
 
@@ -45,11 +45,11 @@ public class MatcherBuilder<T> extends OutputMatcher<T> {
 	}
 
 	/**
-	 * Tests whether the output contains no duplicates in reference
-	 * to the expected output
+	 * Tests whether the output has the same number of occurrences for each element
+	 * in the expected output
 	 */
-	public MatcherBuilder<T> noDuplicates() {
-		builder.noDuplicates();
+	public MatcherBuilder<T> sameFrequency() {
+		builder.sameFrequency();
 		return this;
 	}
 

@@ -18,8 +18,8 @@ package org.flinkspector.datastream.examples;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.flinkspector.core.table.AssertTuples;
-import org.flinkspector.core.table.OutputMatcher;
+import org.flinkspector.core.quantify.AssertTuples;
+import org.flinkspector.core.quantify.OutputMatcher;
 import org.flinkspector.datastream.StreamTestBase;
 
 import static org.hamcrest.Matchers.anyOf;

@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package org.flinkspector.core.collection;
+package org.flinkspector.core.quantify;
 
-import org.flinkspector.core.quantify.HamcrestVerifier;
-import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 
-abstract public class MatcherTranslator<IN, OUT> extends VerifierTranslator<IN, OUT> {
+/**
+ * Used to cover up {@link TypeSafeMatcher}s for {@link Iterable}s to provide a more consize
+ * matcher type to use for verifying test results.
+ * @param <T>
+ */
+public abstract class OutputMatcher<T> extends TypeSafeMatcher<Iterable<T>> {
 
-	public MatcherTranslator(Matcher<Iterable<OUT>> matcher) {
-		super(new HamcrestVerifier<OUT>(matcher));
-	}
-
+	@Override
+	protected abstract boolean matchesSafely(Iterable<T> item);
 }

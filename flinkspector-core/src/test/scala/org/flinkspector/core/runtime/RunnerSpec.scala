@@ -112,8 +112,8 @@ class RunnerSpec extends CoreSpec {
 
         val ser = (x: String) =>
           Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
-        publisher.send(ser("OPEN 0 3 "), 0)
-        publisher.send(ser("OPEN 2 3 "), 0)
+        publisher.send(ser("OPEN 0 2 "), 0)
+        publisher.send(ser("OPEN 1 2 "), 0)
         sendString(publisher, "1")
         publisher.send("CLOSE 0 1", 0)
         sendString(publisher, "2")
@@ -128,6 +128,37 @@ class RunnerSpec extends CoreSpec {
 
     runner.registerListener(verifier,countTrigger)
     runner.executeTest()
+
+    verify(verifier).init()
+    verify(verifier).receive("1")
+    verify(verifier).receive("2")
+    verify(verifier).finish()
+  }
+
+  it should "throw a timeout if finished trigger fired" in new RunnerCase {
+    val runner : Runner = new Runner(cluster) {
+      override protected def executeEnvironment(): Unit = {
+        //open a socket to push data
+        val context = ZMQ.context(1)
+        val publisher = context.socket(ZMQ.PUSH)
+        publisher.connect("tcp://localhost:" + 5555)
+
+        val ser = (x: String) =>
+          Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
+        publisher.send(ser("OPEN 0 2 "), 0)
+        publisher.send(ser("OPEN 1 2 "), 0)
+        sendString(publisher, "1")
+        publisher.send("CLOSE 0 1", 0)
+        sendString(publisher, "2")
+        sendString(publisher, "3")
+        Thread.sleep(1000)
+      }
+    }
+    runner.setTimeoutInterval(500)
+    runner.registerListener(verifier,countTrigger)
+    runner.executeTest()
+
+    runner.hasBeenStopped shouldBe true
 
     verify(verifier).init()
     verify(verifier).receive("1")
