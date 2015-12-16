@@ -15,7 +15,7 @@ Check out the [**wiki**](https://github.com/ottogroup/flink-spector/wiki) to lea
 
 ###Minimal:
 ```java
-class Test extends TestBase {
+class Test extends DataSetTestBase {
     
     @org.junit.Test
     public myTest() {
@@ -46,8 +46,8 @@ public void testWindowing() {
 					.close();
 
 		
-	// Lets you query the output like a table:
-	OutputMatcher<Tuple2<Integer, String>> matcher =
+	// Lets you query the output tuples like a table:
+	MatchTuples<Tuple2<Integer, String>> matcher =
 			//define keys for the values in your tuple:
 			new AssertBlock<Tuple2<Integer, String>>("value", "name")
 					.assertThat("value", is(3))

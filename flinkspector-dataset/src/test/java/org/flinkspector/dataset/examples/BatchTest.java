@@ -19,18 +19,18 @@ package org.flinkspector.dataset.examples;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.flinkspector.core.collection.ExpectedOutput;
-import org.flinkspector.core.table.AssertTuples;
-import org.flinkspector.core.table.OutputMatcher;
+import org.flinkspector.core.collection.ExpectedRecords;
+import org.flinkspector.core.quantify.MatchTuples;
+import org.flinkspector.core.quantify.OutputMatcher;
 import org.flinkspector.core.trigger.FinishAtCount;
-import org.flinkspector.dataset.TestBase;
+import org.flinkspector.dataset.DataSetTestBase;
 import org.junit.Test;
 
-import static org.flinkspector.core.table.OutputMatchers.anyOf;
+import static org.flinkspector.core.quantify.OutputMatchers.anyOf;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.lessThan;
 
-public class BatchTest extends TestBase {
+public class BatchTest extends DataSetTestBase {
 
 	private DataSet<Tuple2<String, Integer>> swap(DataSet<Tuple2<Integer, String>> set) {
 		return set.map(new MapFunction<Tuple2<Integer, String>, Tuple2<String, Integer>>() {
@@ -62,7 +62,7 @@ public class BatchTest extends TestBase {
 		 * Define the output you expect from the the transformation under test.
 		 * Add the tuples you want to see with .expect(record).
 		 */
-		ExpectedOutput<Tuple2<String, Integer>> output = ExpectedOutput
+		ExpectedRecords<Tuple2<String, Integer>> output = ExpectedRecords
 				.create(Tuple2.of("test", 1))
 				.expect(Tuple2.of("why", 2))
 				.expect(Tuple2.of("not", 3));
@@ -77,7 +77,7 @@ public class BatchTest extends TestBase {
 		 */
 		OutputMatcher<Tuple2<String, Integer>> matcher =
 				//name the values in your tuple with keys:
-				new AssertTuples<Tuple2<String, Integer>>("name", "value")
+				new MatchTuples<Tuple2<String, Integer>>("name", "value")
 						//add an assertion using a value and hamcrest matchers
 						.assertThat("name", isA(String.class))
 						.assertThat("value", lessThan(5))
@@ -88,7 +88,7 @@ public class BatchTest extends TestBase {
 
 		/*
 		 * Use assertDataSet to map DataSet to an OutputMatcher.
-		 * ExpectedOutput extends OutputMatcher and thus can be used in this way.
+		 * ExpectedRecords extends OutputMatcher and thus can be used in this way.
 		 * Combine the created matchers with anyOf(), implicating that at least one of
 		 * the matchers must be positive.
 		 */

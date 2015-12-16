@@ -119,14 +119,14 @@ object ListMatchers extends Matchers {
 
   /**
    * Provides a [[ListMatcher]] to tests whether a list contains
-   * an element more often than another list.
+   * an element with the same number of occurrences.
    *
    * @example List(1,2,2,3,4,4) matched against List(1,2,2) is valid.
    * @param right expected list
    * @tparam T type to match
    * @return concrete [[ListMatcher]]
    */
-  def containsNoDuplicates[T](right: List[T]): ListMatcher[T] = {
+  def sameFrequency[T](right: List[T]): ListMatcher[T] = {
     new ListMatcher[T](right) {
       override def matchesSafely(left: List[T]): Boolean = {
 
@@ -140,7 +140,7 @@ object ListMatchers extends Matchers {
         rightDuplicates.foreach {
           case (elem, count) =>
             if(leftDuplicates.contains(elem)) {
-              if (leftDuplicates(elem) > count) {
+              if (leftDuplicates(elem) != count) {
                 return false
               }
             }

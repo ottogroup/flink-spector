@@ -17,31 +17,30 @@
 package org.flinkspector.dataset
 
 import org.apache.flink.api.java.DataSet
-import org.flinkspector.core.collection.ExpectedOutput
-
+import org.flinkspector.core.collection.ExpectedRecords
 import scala.collection.JavaConversions._
 
 class TestBaseSpec extends CoreSpec{
 
   it should "run a basic test" in {
-    val base = new TestBase
+    val base = new DataSetTestBase
     base.initialize()
 
     val coll : java.util.Collection[Int] = List(1,2,3,4)
     val dataSet : DataSet[Int] = base.createTestDataSet(coll)
-    val matcher = ExpectedOutput.create(coll)
+    val matcher = ExpectedRecords.create(coll)
 
     base.assertDataSet(dataSet,matcher)
     base.executeTest()
   }
 
   it should "fail a basic test" in {
-    val base = new TestBase
+    val base = new DataSetTestBase
     base.initialize()
 
     val coll : java.util.Collection[Int] = List(1,2,3,4)
     val dataSet : DataSet[Int] = base.createTestDataSet(List(1,2,3))
-    val matcher = ExpectedOutput.create(coll)
+    val matcher = ExpectedRecords.create(coll)
 
     base.assertDataSet(dataSet,matcher)
     an [AssertionError] shouldBe thrownBy(base.executeTest())
@@ -49,13 +48,13 @@ class TestBaseSpec extends CoreSpec{
 
 
   it should "run a basic test with two sinks" in {
-    val base = new TestBase
+    val base = new DataSetTestBase
     base.initialize()
 
     val coll : java.util.Collection[Int] = List(1,2,3,4)
     val dataSet1 : DataSet[Int] = base.createTestDataSet(coll)
     val dataSet2 : DataSet[Int] = base.createTestDataSet(coll)
-    val matcher = ExpectedOutput.create(coll)
+    val matcher = ExpectedRecords.create(coll)
 
     base.assertDataSet(dataSet1,matcher)
     base.assertDataSet(dataSet2,matcher)
@@ -63,13 +62,13 @@ class TestBaseSpec extends CoreSpec{
   }
 
   it should "fail a basic test with two sinks" in {
-    val base = new TestBase
+    val base = new DataSetTestBase
     base.initialize()
 
     val coll : java.util.Collection[Int] = List(1,2,3,4)
     val dataSet1 : DataSet[Int] = base.createTestDataSet(coll)
     val dataSet2 : DataSet[Int] = base.createTestDataSet(List(1,2,3))
-    val matcher = ExpectedOutput.create(coll)
+    val matcher = ExpectedRecords.create(coll)
 
     base.assertDataSet(dataSet1,matcher)
     base.assertDataSet(dataSet2,matcher)

@@ -57,11 +57,11 @@ class ListMatcherBuilder[T](val right: List[T]) extends TypeSafeDiagnosingMatche
   }
 
   /**
-   * Tests whether the output contains no duplicates in reference
-   * to the expected output.
+   * Tests whether the output has the same number of occurrences for each element
+   * in the expected output
    */
-  def noDuplicates() = {
-    constraints += ListMatchers.containsNoDuplicates[T](right)
+  def sameFrequency() = {
+    constraints += ListMatchers.sameFrequency[T](right)
     this
   }
 

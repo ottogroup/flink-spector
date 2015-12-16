@@ -29,7 +29,7 @@ class ListMatcherBuilderSpec extends CoreSpec {
 
   it should "check for all if only was not defined" in {
     val builder = new ListMatcherBuilder[Int](List(1, 2, 3, 4))
-    builder.noDuplicates()
+    builder.sameFrequency()
 
     builder.matches(List(1, 2, 3, 4)) shouldBe true
     builder.matches(List(1, 2, 3)) shouldBe false
@@ -47,7 +47,7 @@ class ListMatcherBuilderSpec extends CoreSpec {
   it should "check for only if only was defined in combination" in {
     val onlyBuilder = new ListMatcherBuilder[Int](List(1, 2, 3, 4))
       .only()
-      .noDuplicates()
+      .sameFrequency()
 
     onlyBuilder.matches(List(1, 2, 3, 4)) shouldBe true
     onlyBuilder.matches(List(1, 2, 3)) shouldBe false
@@ -117,7 +117,7 @@ class ListMatcherBuilderSpec extends CoreSpec {
   }
   it should "check for duplicates" in {
     val builder = new ListMatcherBuilder[Int](List(1, 2, 3, 4))
-    builder.noDuplicates()
+    builder.sameFrequency()
 
     builder.matches(List(1,2,3,4,5)) shouldBe true
     builder.matches(List(1,2,3,4,4)) shouldBe false
@@ -125,7 +125,7 @@ class ListMatcherBuilderSpec extends CoreSpec {
 
   it should "check for duplicates in combination" in {
     val builder = new ListMatcherBuilder[Int](List(1, 2, 3, 4))
-    builder.noDuplicates().only()
+    builder.sameFrequency().only()
 
     builder.matches(List(1,2,3,4)) shouldBe true
     builder.matches(List(1,2,3,4,5)) shouldBe false

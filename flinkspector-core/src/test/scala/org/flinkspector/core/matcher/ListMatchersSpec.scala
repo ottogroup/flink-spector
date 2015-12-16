@@ -34,28 +34,34 @@ class ListMatchersSpec extends CoreSpec {
 
   }
 
-  "the noDuplicates matcher" should "succeed when handed a list without duplicates" in {
+  "the sameFrequency matcher" should "succeed when handed a list without duplicates" in {
     ListMatchers
-      .containsNoDuplicates[Integer](List(1, 2, 3, 4))
+      .sameFrequency[Integer](List(1, 2, 3, 4))
       .matches(List(1, 2, 3, 4)) shouldBe true
   }
 
   it should "fail when handed duplicates" in {
     ListMatchers
-       .containsNoDuplicates[Integer](List(3))
+       .sameFrequency[Integer](List(3))
       .matches(List(1, 2, 3, 4, 3)) shouldBe false
   }
 
   it should "succeed when the same duplicates" in {
     ListMatchers
-       .containsNoDuplicates[Integer](List(3,3))
+       .sameFrequency[Integer](List(3,3))
       .matches(List(1, 2, 3, 4, 3, 4)) shouldBe true
   }
 
   it should "fail when handed more of the same elements" in {
     ListMatchers
-       .containsNoDuplicates[Integer](List(3, 3, 4, 4))
+       .sameFrequency[Integer](List(3, 3, 4, 4))
       .matches(List(1, 2, 3, 4, 3, 3)) shouldBe false
+  }
+
+  it should "fail when handed less of the same elements" in {
+    ListMatchers
+       .sameFrequency[Integer](List(3, 3, 4, 4))
+      .matches(List(1, 2, 3, 4, 4)) shouldBe false
   }
 
   "the inOrder matcher" should "succeed when handed elements in order" in {

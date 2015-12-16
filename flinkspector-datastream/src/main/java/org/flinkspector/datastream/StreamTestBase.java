@@ -20,13 +20,13 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.LocalStreamEnvironment;
-import org.flinkspector.core.collection.ExpectedOutput;
+import org.flinkspector.core.collection.ExpectedRecords;
 import org.flinkspector.core.collection.MatcherBuilder;
 import org.flinkspector.core.input.Input;
 import org.flinkspector.core.input.InputBuilder;
+import org.flinkspector.core.quantify.HamcrestVerifier;
+import org.flinkspector.core.quantify.OutputMatcherFactory;
 import org.flinkspector.core.runtime.OutputVerifier;
-import org.flinkspector.core.table.HamcrestVerifier;
-import org.flinkspector.core.table.OutputMatcherFactory;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.flinkspector.datastream.functions.TestSink;
 import org.flinkspector.datastream.input.EventTimeInput;
@@ -269,8 +269,8 @@ public class StreamTestBase {
 		return InputBuilder.startWith(elem);
 	}
 
-	public static <T> ExpectedOutput<T> expectOutput(T record) {
-		return ExpectedOutput.create(record);
+	public static <T> ExpectedRecords<T> expectOutput(T record) {
+		return ExpectedRecords.create(record);
 	}
 
 	public static int times(int n) {
