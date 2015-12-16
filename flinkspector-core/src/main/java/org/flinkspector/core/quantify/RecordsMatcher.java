@@ -26,7 +26,7 @@ import org.hamcrest.Matcher;
  * fulfill the expectation.
  * @param <T>
  */
-public class ResultMatcher<T> {
+public class RecordsMatcher<T> {
 
 	/**
 	 * wrapped {@link Matcher}
@@ -38,7 +38,7 @@ public class ResultMatcher<T> {
 	 *
 	 * @param matcher
 	 */
-	public ResultMatcher(Matcher<T> matcher) {
+	public RecordsMatcher(Matcher<T> matcher) {
 		this.matcher = matcher;
 	}
 

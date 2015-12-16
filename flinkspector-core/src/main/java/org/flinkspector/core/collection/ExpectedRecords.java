@@ -31,12 +31,12 @@ import java.util.List;
 public class ExpectedRecords<T> extends OutputMatcher<T> {
 
 	/** list of expected records */
-	private List<T> expectedOutput;
+	private List<T> expectedRecords;
 	/** matcher to test the output */
 	private MatcherBuilder<T> matcher;
 
 	public ExpectedRecords() {
-		expectedOutput = new ArrayList<>();
+		expectedRecords = new ArrayList<>();
 	}
 
 	public static <T> ExpectedRecords<T> create(T record) {
@@ -56,7 +56,7 @@ public class ExpectedRecords<T> extends OutputMatcher<T> {
 	 */
 	public MatcherBuilder<T> refine() {
 		if (matcher == null) {
-			matcher = new MatcherBuilder<>(expectedOutput);
+			matcher = new MatcherBuilder<>(expectedRecords);
 		}
 		return matcher;
 	}
@@ -66,7 +66,7 @@ public class ExpectedRecords<T> extends OutputMatcher<T> {
 	 * @param record to add
 	 */
 	public ExpectedRecords<T> expect(T record) {
-		expectedOutput.add(record);
+		expectedRecords.add(record);
 		return this;
 	}
 
@@ -75,7 +75,33 @@ public class ExpectedRecords<T> extends OutputMatcher<T> {
 	 * @param records to add
 	 */
 	public ExpectedRecords<T> expectAll(Collection<T> records) {
-		expectedOutput.addAll(records);
+		expectedRecords.addAll(records);
+		return this;
+	}
+
+	/**
+	 * Adds an record to the collection of expected output
+	 * @param record to add
+	 */
+	public ExpectedRecords<T> expect(T record, int times) {
+		if(record == null) {
+			throw new IllegalArgumentException("Record has too be not null!");
+		}
+		expectedRecords.add(record);
+		return this;
+	}
+
+	/**
+	 * Expect the current output a number of times
+	 *
+	 * @param times number of times the input ist will be repeated
+	 */
+	public ExpectedRecords<T> repeatAll(int times) {
+		List<T> toAppend = new ArrayList<>();
+		for (int i = 0; i < times; i++) {
+			toAppend.addAll(expectedRecords);
+		}
+		expectedRecords.addAll(toAppend);
 		return this;
 	}
 

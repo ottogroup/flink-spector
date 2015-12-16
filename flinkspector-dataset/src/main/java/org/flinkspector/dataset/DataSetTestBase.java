@@ -32,7 +32,7 @@ import java.util.Collection;
 /**
  * Offers a base to test Apache Flink dataset application.
  */
-public class TestBase {
+public class DataSetTestBase {
 
 	/**
 	 * Test Environment

@@ -20,9 +20,9 @@ import org.flinkspector.core.CoreSpec
 
 import scala.collection.JavaConversions._
 
-class ExpectedOutputSpec extends CoreSpec {
+class ExpectedRecordsSpec extends CoreSpec {
 
-  "expected output" should "check for all per default" in {
+  "expected records" should "check for all per default" in {
     val expectOutput = new ExpectedRecords[Int]
 
     expectOutput.expectAll(List(1,2,3,4))

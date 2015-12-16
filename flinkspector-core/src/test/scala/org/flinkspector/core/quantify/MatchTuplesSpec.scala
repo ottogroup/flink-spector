@@ -22,11 +22,11 @@ import org.hamcrest.core.Is
 
 import scala.collection.JavaConversions._
 
-class AssertBlockSpec extends CoreSpec {
+class MatchTuplesSpec extends CoreSpec {
 
-  "The AssertTuples" should "store a list of [[KeyMatcherPair]]s" in {
+  "The MatchTuples" should "store a list of [[KeyMatcherPair]]s" in {
     val matcher = Is.is(1)
-    val block = new AssertTuples[Fluple3[Int, Int, Int]]("1", "2", "3")
+    val block = new MatchTuples[Fluple3[Int, Int, Int]]("1", "2", "3")
     block.assertThat("1", matcher)
     block.assertThat("2", matcher)
     block.assertThat("2", matcher)
@@ -89,7 +89,7 @@ class AssertBlockSpec extends CoreSpec {
   trait AssertBlockCase {
     val matcher = Is.is(1)
     val block =
-      new AssertTuples[Fluple4[Int, Int, Int, Int]]("1", "2", "3", "4")
+      new MatchTuples[Fluple4[Int, Int, Int, Int]]("1", "2", "3", "4")
     block.assertThat("1", matcher)
     block.assertThat("2", matcher)
     block.assertThat("3", matcher)

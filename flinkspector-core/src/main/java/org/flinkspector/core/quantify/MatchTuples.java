@@ -33,7 +33,7 @@ import org.hamcrest.Matcher;
  * <p/>
  * <pre>
  * {@code
- * new AssertTuples<Tuple2<String,Integer>>("name","age")
+ * new MatchTuples<Tuple2<String,Integer>>("name","age")
  * 		.assertThat("age", greaterThan(21))
  * 		.assertThat("name", either(is("fritz")).or(is("peter")))
  * 		.anyOfThem().onEachRecord();
@@ -41,7 +41,7 @@ import org.hamcrest.Matcher;
  *
  * @param <T>
  */
-public class AssertTuples<T extends Tuple> extends AssertOutput<T> {
+public class MatchTuples<T extends Tuple> extends MatchRecords<T> {
 
 	/**
 	 * {@link TupleMask} used to map the keys to the inspected tuples.
@@ -53,10 +53,10 @@ public class AssertTuples<T extends Tuple> extends AssertOutput<T> {
 	 *
 	 * @param mask {@link TupleMask} to use.
 	 * @param <T>  type of output
-	 * @return new instance of {@link AssertTuples}
+	 * @return new instance of {@link MatchTuples}
 	 */
-	public static <T extends Tuple> AssertTuples<T> fromMask(TupleMask<T> mask) {
-		return new AssertTuples<T>(mask);
+	public static <T extends Tuple> MatchTuples<T> fromMask(TupleMask<T> mask) {
+		return new MatchTuples<T>(mask);
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class AssertTuples<T extends Tuple> extends AssertOutput<T> {
 	 *
 	 * @param mask {@link TupleMask} to use.
 	 */
-	public AssertTuples(TupleMask<T> mask) {
+	public MatchTuples(TupleMask<T> mask) {
 		super();
 		this.mask = mask;
 	}
@@ -76,7 +76,7 @@ public class AssertTuples<T extends Tuple> extends AssertOutput<T> {
 	 * @param first key
 	 * @param rest of keys
 	 */
-	public AssertTuples(String first, String... rest) {
+	public MatchTuples(String first, String... rest) {
 		this(new TupleMask<T>(first,rest));
 	}
 
@@ -86,7 +86,7 @@ public class AssertTuples<T extends Tuple> extends AssertOutput<T> {
 	 * @param key   of the field
 	 * @param match matcher to use on the field
 	 */
-	public AssertTuples<T> assertThat(String key, Matcher match) {
+	public MatchTuples<T> assertThat(String key, Matcher match) {
 		assertThat(new TupleMatcher<T>(KeyMatcherPair.of(key, match),mask));
 		return this;
 	}
@@ -95,7 +95,7 @@ public class AssertTuples<T extends Tuple> extends AssertOutput<T> {
 	 * Add a {@link Matcher} to the list of assertions to verify.
 	 * @param matcher testing the output records
 	 */
-	public AssertTuples<T> assertThatRecord(Matcher<? super T> matcher) {
+	public MatchTuples<T> assertThatRecord(Matcher<? super T> matcher) {
 		super.assertThat(matcher);
 		return this;
 	}

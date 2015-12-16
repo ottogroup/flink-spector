@@ -28,14 +28,14 @@ import java.util.List;
  * Lets you build a list of assertion and define how often they should match your output
  * <pre>
  * {@code
- * new AssertOutput<Integer>("name","age")
+ * new MatchRecords<Integer>("name","age")
  * 		.assertThat(greaterThan(21))
  * 		.assertThat(lessThan(11))
  * 		anyOfThem().onEachRecord();
  * </pre>
  * @param <T>
  */
-public class AssertOutput<T> {
+public class MatchRecords<T> {
 
 	/**
 	 * List of {@link KeyMatcherPair} representing the assertions.
@@ -45,21 +45,21 @@ public class AssertOutput<T> {
 	/**
 	 * Expect the record to fulfill at least one of the specified asserts.
 	 *
-	 * @return {@link ResultMatcher} to define the number of matching records in
+	 * @return {@link RecordsMatcher} to define the number of matching records in
 	 * the output.
 	 */
-	public ResultMatcher<T> anyOfThem() {
-		return new ResultMatcher<>(MatcherCombiner.any(matchers));
+	public RecordsMatcher<T> anyOfThem() {
+		return new RecordsMatcher<>(MatcherCombiner.any(matchers));
 	}
 
 	/**
 	 * Expect the record to fulfill exactly one of the specified asserts.
 	 *
-	 * @return {@link ResultMatcher} to define the number of matching records in
+	 * @return {@link RecordsMatcher} to define the number of matching records in
 	 * the output.
 	 */
-	public ResultMatcher<T> oneOfThem() {
-		return new ResultMatcher<>(MatcherCombiner.one(matchers));
+	public RecordsMatcher<T> oneOfThem() {
+		return new RecordsMatcher<>(MatcherCombiner.one(matchers));
 	}
 
 
@@ -67,51 +67,51 @@ public class AssertOutput<T> {
 	 * Add a {@link Matcher} to the list of assertions to verify.
 	 * @param matcher testing the output records
 	 */
-	public AssertOutput<T> assertThat(Matcher<? super T> matcher) {
+	public MatchRecords<T> assertThat(Matcher<? super T> matcher) {
 		matchers.add(matcher);
 		return this;
 	}
 //	/**
 //	 * Expect the record to fulfill all of the specified asserts.
 //	 *
-//	 * @return {@link ResultMatcher} to define the number of matching records in
+//	 * @return {@link RecordsMatcher} to define the number of matching records in
 //	 * the output.
 //	 */
-//	public ResultMatcher<T> eachOfThem() {
-//		return new ResultMatcher<>(TupleMapMatchers.each(matchers, mask));
+//	public RecordsMatcher<T> eachOfThem() {
+//		return new RecordsMatcher<>(TupleMapMatchers.each(matchers, mask));
 //	}
 
 	/**
 	 * Expect the record to fulfill at least exactly n of the specified asserts.
 	 *
 	 * @param n number of expected positive matches.
-	 * @return {@link ResultMatcher} to define the number of matching records in
+	 * @return {@link RecordsMatcher} to define the number of matching records in
 	 * the output.
 	 */
-	public ResultMatcher<T> exactlyNOfThem(int n) {
-		return new ResultMatcher<>(MatcherCombiner.exactly(matchers, n));
+	public RecordsMatcher<T> exactlyNOfThem(int n) {
+		return new RecordsMatcher<>(MatcherCombiner.exactly(matchers, n));
 	}
 
 	/**
 	 * Expect the record to fulfill at least a number of the specified asserts.
 	 *
 	 * @param n number of minimum matches.
-	 * @return {@link ResultMatcher} to define the number of matching records in
+	 * @return {@link RecordsMatcher} to define the number of matching records in
 	 * the output.
 	 */
-	public ResultMatcher<T> atLeastNOfThem(int n) {
-		return new ResultMatcher<>(MatcherCombiner.atLeast(matchers, n));
+	public RecordsMatcher<T> atLeastNOfThem(int n) {
+		return new RecordsMatcher<>(MatcherCombiner.atLeast(matchers, n));
 	}
 
 	/**
 	 * Expect record to fulfill at most a number of the specified asserts.
 	 *
 	 * @param n number of maximum matches.
-	 * @return {@link ResultMatcher} to define the number of matching records in
+	 * @return {@link RecordsMatcher} to define the number of matching records in
 	 * the output.
 	 */
-	public ResultMatcher<T> atMostNOfThem(int n) {
-		return new ResultMatcher<>(MatcherCombiner.atMost(matchers, n));
+	public RecordsMatcher<T> atMostNOfThem(int n) {
+		return new RecordsMatcher<>(MatcherCombiner.atMost(matchers, n));
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class AssertOutput<T> {
 	 * @return {@link OutputMatcherFactory}
 	 */
 	public OutputMatcher<T> onAnyRecord() {
-		ResultMatcher<T> matcher = new ResultMatcher<>(MatcherCombiner.each(matchers));
+		RecordsMatcher<T> matcher = new RecordsMatcher<>(MatcherCombiner.each(matchers));
 		return OutputMatcherFactory.create(matcher.onAnyRecord());
 	}
 
@@ -132,7 +132,7 @@ public class AssertOutput<T> {
 	 * @return {@link OutputMatcherFactory}
 	 */
 	public OutputMatcher<T> onEachRecord() {
-		ResultMatcher<T> matcher = new ResultMatcher<>(MatcherCombiner.each(matchers));
+		RecordsMatcher<T> matcher = new RecordsMatcher<>(MatcherCombiner.each(matchers));
 		return OutputMatcherFactory.create(matcher.onEachRecord());
 	}
 
@@ -143,7 +143,7 @@ public class AssertOutput<T> {
 	 * @return {@link OutputMatcherFactory}
 	 */
 	public OutputMatcher<T> onOneRecord() {
-		ResultMatcher<T> matcher = new ResultMatcher<>(MatcherCombiner.each(matchers));
+		RecordsMatcher<T> matcher = new RecordsMatcher<>(MatcherCombiner.each(matchers));
 		return OutputMatcherFactory.create(matcher.onOneRecord());
 	}
 
@@ -154,7 +154,7 @@ public class AssertOutput<T> {
 	 * @return {@link OutputMatcherFactory}
 	 */
 	public OutputMatcher<T> onNoRecord() {
-		ResultMatcher<T> matcher = new ResultMatcher<>(MatcherCombiner.each(matchers));
+		RecordsMatcher<T> matcher = new RecordsMatcher<>(MatcherCombiner.each(matchers));
 		return OutputMatcherFactory.create(matcher.onNoRecord());
 	}
 
@@ -165,7 +165,7 @@ public class AssertOutput<T> {
 	 * @return {@link OutputMatcherFactory}
 	 */
 	public OutputMatcher<T> onExactlyNRecords(int n) {
-		ResultMatcher<T> matcher = new ResultMatcher<>(MatcherCombiner.each(matchers));
+		RecordsMatcher<T> matcher = new RecordsMatcher<>(MatcherCombiner.each(matchers));
 		return OutputMatcherFactory.create(matcher.onExactlyNRecords(n));
 	}
 
@@ -176,7 +176,7 @@ public class AssertOutput<T> {
 	 * @return {@link OutputMatcherFactory}
 	 */
 	public OutputMatcher<T> onAtLeastNRecords(int n) {
-		ResultMatcher<T> matcher = new ResultMatcher<>(MatcherCombiner.each(matchers));
+		RecordsMatcher<T> matcher = new RecordsMatcher<>(MatcherCombiner.each(matchers));
 		return OutputMatcherFactory.create(matcher.onAtLeastNRecords(n));
 	}
 
@@ -187,7 +187,7 @@ public class AssertOutput<T> {
 	 * @return {@link OutputMatcherFactory}
 	 */
 	public OutputMatcher<T> onAtMostNRecords(int n) {
-		ResultMatcher<T> matcher = new ResultMatcher<>(MatcherCombiner.each(matchers));
+		RecordsMatcher<T> matcher = new RecordsMatcher<>(MatcherCombiner.each(matchers));
 		return OutputMatcherFactory.create(matcher.onAtMostNRecords(n));
 	}
 

@@ -20,17 +20,17 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.flinkspector.core.collection.ExpectedRecords;
-import org.flinkspector.core.quantify.AssertTuples;
+import org.flinkspector.core.quantify.MatchTuples;
 import org.flinkspector.core.quantify.OutputMatcher;
 import org.flinkspector.core.trigger.FinishAtCount;
-import org.flinkspector.dataset.TestBase;
+import org.flinkspector.dataset.DataSetTestBase;
 import org.junit.Test;
 
 import static org.flinkspector.core.quantify.OutputMatchers.anyOf;
 import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.lessThan;
 
-public class BatchTest extends TestBase {
+public class BatchTest extends DataSetTestBase {
 
 	private DataSet<Tuple2<String, Integer>> swap(DataSet<Tuple2<Integer, String>> set) {
 		return set.map(new MapFunction<Tuple2<Integer, String>, Tuple2<String, Integer>>() {
@@ -70,14 +70,14 @@ public class BatchTest extends TestBase {
 		output.refine().only().inOrder(strict);
 
 		/*
-		 * Creates an OutputMatcher using AssertTuples.
-		 * AssertTuples builds an OutputMatcher working on Tuples.
+		 * Creates an OutputMatcher using MatchTuples.
+		 * MatchTuples builds an OutputMatcher working on Tuples.
 		 * You assign String identifiers to your Tuple,
 		 * and add hamcrest matchers testing the values.
 		 */
 		OutputMatcher<Tuple2<String, Integer>> matcher =
 				//name the values in your tuple with keys:
-				new AssertTuples<Tuple2<String, Integer>>("name", "value")
+				new MatchTuples<Tuple2<String, Integer>>("name", "value")
 						//add an assertion using a value and hamcrest matchers
 						.assertThat("name", isA(String.class))
 						.assertThat("value", lessThan(5))

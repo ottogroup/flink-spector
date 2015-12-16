@@ -22,7 +22,7 @@ import org.hamcrest.core.IsCollectionContaining
 
 import scala.collection.JavaConversions._
 
-class OutputMatcherFactoryCase extends CoreSpec {
+class OutputMatcherFactorySpec extends CoreSpec {
 
   "The factory" should "wrap an existing matcher" in {
     val matcher = IsCollectionContaining.hasItem("test")

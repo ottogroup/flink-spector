@@ -23,7 +23,7 @@ import scala.collection.JavaConversions._
 class TestBaseSpec extends CoreSpec{
 
   it should "run a basic test" in {
-    val base = new TestBase
+    val base = new DataSetTestBase
     base.initialize()
 
     val coll : java.util.Collection[Int] = List(1,2,3,4)
@@ -35,7 +35,7 @@ class TestBaseSpec extends CoreSpec{
   }
 
   it should "fail a basic test" in {
-    val base = new TestBase
+    val base = new DataSetTestBase
     base.initialize()
 
     val coll : java.util.Collection[Int] = List(1,2,3,4)
@@ -48,7 +48,7 @@ class TestBaseSpec extends CoreSpec{
 
 
   it should "run a basic test with two sinks" in {
-    val base = new TestBase
+    val base = new DataSetTestBase
     base.initialize()
 
     val coll : java.util.Collection[Int] = List(1,2,3,4)
@@ -62,7 +62,7 @@ class TestBaseSpec extends CoreSpec{
   }
 
   it should "fail a basic test with two sinks" in {
-    val base = new TestBase
+    val base = new DataSetTestBase
     base.initialize()
 
     val coll : java.util.Collection[Int] = List(1,2,3,4)

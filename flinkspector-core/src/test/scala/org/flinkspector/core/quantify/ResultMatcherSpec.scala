@@ -23,9 +23,9 @@ import scala.collection.JavaConversions._
 
 class ResultMatcherSpec extends CoreSpec {
 
-  "The ResultMatcher" should "provide eachOf" in {
+  "The RecordsMatcher" should "provide eachOf" in {
     val matcher = Is.is(1)
-    val resultMatcher = new ResultMatcher[Int](matcher)
+    val resultMatcher = new RecordsMatcher[Int](matcher)
 
     resultMatcher.onEachRecord().matchesSafely(List(1, 1, 1, 1)) shouldBe true
     resultMatcher.onEachRecord().matchesSafely(List(1, 1, 0, 1)) shouldBe false
@@ -33,7 +33,7 @@ class ResultMatcherSpec extends CoreSpec {
 
   it should "provide anyOf" in {
     val matcher = Is.is(1)
-    val resultMatcher = new ResultMatcher[Int](matcher)
+    val resultMatcher = new RecordsMatcher[Int](matcher)
 
     resultMatcher.onAnyRecord().matchesSafely(List(1, 1, 1, 1)) shouldBe true
     resultMatcher.onAnyRecord().matchesSafely(List(1, 1, 0, 1)) shouldBe true
@@ -42,7 +42,7 @@ class ResultMatcherSpec extends CoreSpec {
 
   it should "provide noneOf" in {
     val matcher = Is.is(1)
-    val resultMatcher = new ResultMatcher[Int](matcher)
+    val resultMatcher = new RecordsMatcher[Int](matcher)
 
     resultMatcher.onNoRecord().matchesSafely(List(1, 0, 1, 1)) shouldBe false
     resultMatcher.onNoRecord().matchesSafely(List(0, 0, 0, 0)) shouldBe true
@@ -50,7 +50,7 @@ class ResultMatcherSpec extends CoreSpec {
 
   it should "provide oneOf" in {
     val matcher = Is.is(1)
-    val resultMatcher = new ResultMatcher[Int](matcher)
+    val resultMatcher = new RecordsMatcher[Int](matcher)
 
     resultMatcher.onOneRecord().matchesSafely(List(1, 0, 1, 1)) shouldBe false
     resultMatcher.onOneRecord().matchesSafely(List(0, 1, 0, 0)) shouldBe true
@@ -58,7 +58,7 @@ class ResultMatcherSpec extends CoreSpec {
 
   it should "provide atLeast" in {
     val matcher = Is.is(1)
-    val resultMatcher = new ResultMatcher[Int](matcher)
+    val resultMatcher = new RecordsMatcher[Int](matcher)
 
     resultMatcher.onAtLeastNRecords(2).matchesSafely(List(1, 0, 1, 1)) shouldBe true
     resultMatcher.onAtLeastNRecords(2).matchesSafely(List(0, 1, 0, 0)) shouldBe false
@@ -67,7 +67,7 @@ class ResultMatcherSpec extends CoreSpec {
 
   it should "provide atMost" in {
     val matcher = Is.is(1)
-    val resultMatcher = new ResultMatcher[Int](matcher)
+    val resultMatcher = new RecordsMatcher[Int](matcher)
 
     resultMatcher.onAtMostNRecords(2).matchesSafely(List(1, 0, 1, 1)) shouldBe false
     resultMatcher.onAtMostNRecords(2).matchesSafely(List(0, 1, 0, 0)) shouldBe true
@@ -76,7 +76,7 @@ class ResultMatcherSpec extends CoreSpec {
 
   it should "provide exactly" in {
     val matcher = Is.is(1)
-    val resultMatcher = new ResultMatcher[Int](matcher)
+    val resultMatcher = new RecordsMatcher[Int](matcher)
 
     resultMatcher.onExactlyNRecords(2).matchesSafely(List(1, 0, 1, 1)) shouldBe false
     resultMatcher.onExactlyNRecords(2).matchesSafely(List(0, 1, 0, 0)) shouldBe false

@@ -22,12 +22,11 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.flinkspector.core.input.Input;
 import org.flinkspector.core.input.InputBuilder;
 import org.flinkspector.core.input.InputTranslator;
-import org.flinkspector.dataset.TestBase;
-import org.junit.Test;
+import org.flinkspector.dataset.DataSetTestBase;
 
 import static java.util.Arrays.asList;
 
-public class InputDefinitionTest extends TestBase {
+public class InputDefinitionTest extends DataSetTestBase {
 
 	private DataSet<Tuple2<String, Integer>> swap(DataSet<Tuple2<String, Integer>> set) {
 		return set.map(new MapFunction<Tuple2<String, Integer>, Tuple2<String, Integer>>() {
