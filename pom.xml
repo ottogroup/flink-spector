@@ -43,6 +43,7 @@
     <modules>
         <module>flinkspector-dataset</module>
         <module>flinkspector-datastream</module>
+        <module>flinkspector-datastream-scala</module>
         <module>flinkspector-core</module>
     </modules>
 
