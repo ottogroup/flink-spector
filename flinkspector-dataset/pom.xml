@@ -25,17 +25,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>flinkspector-dataset</artifactId>
+    <artifactId>flinkspector-dataset_${scala.binary.version}</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>org.flinkspector</groupId>
-            <artifactId>flinkspector-core</artifactId>
+            <artifactId>flinkspector-core_${scala.binary.version}</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-java</artifactId>
+            <artifactId>flink-java_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
     </dependencies>

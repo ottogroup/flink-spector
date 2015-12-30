@@ -25,7 +25,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>flinkspector-core</artifactId>
+    <artifactId>flinkspector-core_${scala.binary.version}</artifactId>
 
     <build>
         <plugins>
