@@ -222,7 +222,6 @@ trait FlinkDataStream extends BeforeAndAfterEach { this: Suite =>
   val seconds: TimeUnit = TimeUnit.SECONDS
   val minutes: TimeUnit = TimeUnit.MINUTES
   val hours: TimeUnit = TimeUnit.HOURS
-  val ignore: String = null
 
   implicit def convertToAnyShouldWrapper[T](o: DataStream[T]): StreamShouldWrapper[T] = new StreamShouldWrapper[T](o)
 
