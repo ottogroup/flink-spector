@@ -18,10 +18,8 @@ package org.flinkspector.datastream.examples;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.flinkspector.core.collection.ExpectedRecords;
-import org.flinkspector.core.quantify.TupleMask;
 import org.flinkspector.datastream.StreamTestBase;
 
 
@@ -75,8 +73,6 @@ public class MapperTest extends StreamTestBase {
 				.expect(Tuple2.of("foo", 2));
 		// refine your expectations by adding requirements
 		expectedRecords.refine().sameFrequency().inOrder(strict).all();
-
-		TupleMask<Tuple3<String,String,String>> mask = TupleMask.create("flip", "flop", "flup");
 
 		/*
 		 * Use assertStream to map DataStream to an OutputMatcher.

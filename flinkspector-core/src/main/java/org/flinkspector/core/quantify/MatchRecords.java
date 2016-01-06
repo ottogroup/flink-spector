@@ -28,7 +28,7 @@ import java.util.List;
  * Lets you build a list of assertion and define how often they should match your output
  * <pre>
  * {@code
- * new MatchRecords<Integer>("name","age")
+ * new MatchRecords<Integer>()
  * 		.assertThat(greaterThan(21))
  * 		.assertThat(lessThan(11))
  * 		anyOfThem().onEachRecord();

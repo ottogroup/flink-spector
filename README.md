@@ -47,9 +47,9 @@ public void testWindowing() {
 
 		
 	// Lets you query the output tuples like a table:
-	MatchTuples<Tuple2<Integer, String>> matcher =
+	OutputMatcher<Tuple2<Integer, String>> matcher =
 			//define keys for the values in your tuple:
-			new AssertBlock<Tuple2<Integer, String>>("value", "name")
+			new MatchTuples<Tuple2<Integer, String>>("value", "name")
 					.assertThat("value", is(3))
 					.assertThat("name", either(is("fritz")).or(is("peter")))
 					.onEachRecord();
