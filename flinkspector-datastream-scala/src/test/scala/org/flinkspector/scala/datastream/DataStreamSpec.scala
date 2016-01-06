@@ -15,63 +15,49 @@ package org.flinkspector.scala.datastream
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
 import org.apache.flink.api.scala._
 import org.flinkspector.core.collection.ExpectedRecords
 import org.flinkspector.core.input.InputBuilder
-import org.flinkspector.core.quantify.HamcrestVerifier
 
+//needs to be defined top level
 case class Output(key: String, value: Int)
 
-class DataStreamTest extends CoreSpec {
+class DataStreamSpec extends CoreSpec with FlinkDataStream{
 
   "basic test" should "work" in {
 
-    val env = DataStreamTestEnvironment.createTestEnvironment(1)
-    val stream = env.fromCollection(List(1, 2, 3, 4)).map(_ + 1)
+    //create a test stream
+    val stream = createTestStream(List(1, 2, 3, 4)).map(_ + 1)
 
+    //build a matcher
     val expected = ExpectedRecords
       .create(2)
       .expect(3)
       .expect(4)
       .expect(5)
-    
-    val verifier = new HamcrestVerifier[Int](expected)
 
-    val sink = env.createTestSink(verifier)
-
-    stream.addSink(sink)
-
-    env.executeTest()
+    //use the matcher on the datastream
+    stream should fulfill(expected)
   }
+
 
   "assert test" should "work" in {
 
-    /**
-     * Use a case class as a mask
-     */
-    val block = new AssertBlock[Output]{
-      assertThat(v.key shouldBe a[String])
-      assertThat(v.value should be > 5)
-    }
-
-    val env = DataStreamTestEnvironment.createTestEnvironment(1)
     val input = InputBuilder.startWith(("test", 9))
       .emit(("check", 5))
       .emit(("check", 6))
       .emit(("check", 15))
       .emit(("check", 23))
 
-    val stream = env.fromInput(input)
+    val stream = createTestStream(input)
 
-    val verifier = new HamcrestVerifier[(String, Int)](block)
-
-    val sink = env.createTestSink(verifier)
-
-    stream.addSink(sink)
-
-    an [AssertionError] shouldBe thrownBy (env.executeTest())
+    stream should fulfill {
+      //use a case class to map the tuple
+      new AssertBlock[(String,Int),Output] {
+        field(v.key shouldBe a[String])
+        field(v.value should be > 4)
+      }
+    }
   }
 }
 

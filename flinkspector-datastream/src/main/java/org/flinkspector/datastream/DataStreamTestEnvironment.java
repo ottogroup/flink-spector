@@ -268,6 +268,4 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
     public void setTimeoutInterval(long interval) {
         runner.setTimeoutInterval(interval);
     }
-
-
 }

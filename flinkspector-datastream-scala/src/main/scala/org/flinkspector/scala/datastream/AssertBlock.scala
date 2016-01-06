@@ -21,19 +21,19 @@ import scala.collection.mutable.ArrayBuffer
 import java.lang.{Iterable => JIterable}
 import scala.collection.JavaConversions._
 
-class AssertBlock[T <: Product : Manifest]
-  extends TypeSafeDiagnosingMatcher[JIterable[_ <: Product]] {
+class AssertBlock[T <: Product,M <: Product : Manifest]
+  extends TypeSafeDiagnosingMatcher[JIterable[T]] {
 
-  var v: T = _
+  var v: M = _
 
   val assertions = ArrayBuffer.empty[() => Unit]
 
-  def assertThat[V](assert: => Unit) = {
+  def field(assert: => Unit) = {
     assertions += (() => assert)
   }
 
   def valid(product: Product): Option[String] = {
-    v = productToCaseClass[T](product)
+    v = productToCaseClass[M](product)
     assertions.foreach { assert =>
       try {
         assert()
@@ -45,7 +45,7 @@ class AssertBlock[T <: Product : Manifest]
     None
   }
 
-  override def matchesSafely(iterable: JIterable[_ <: Product], mismatchDescription: Description): Boolean = {
+  override def matchesSafely(iterable: JIterable[T], mismatchDescription: Description): Boolean = {
     iterable.foreach { item =>
       valid(item) match {
         case None => true

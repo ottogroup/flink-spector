@@ -16,29 +16,21 @@
 
 package org.flinkspector.scala.datastream
 
-import java.util.Arrays
-
-import com.google.common.base.Preconditions
 import org.apache.flink.api.common.typeinfo.TypeInformation
-import org.apache.flink.api.java.typeutils.TypeExtractor
 import org.apache.flink.runtime.StreamingMode
-import org.apache.flink.streaming.api.datastream.DataStreamSource
-import org.apache.flink.streaming.api.functions.source.FromElementsFunction
-import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.apache.flink.streaming.api.environment.{StreamExecutionEnvironment => JavaEnv}
+import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord
-import org.apache.flink.test.util.{TestBaseUtils, ForkableFlinkMiniCluster}
+import org.apache.flink.test.util.{ForkableFlinkMiniCluster, TestBaseUtils}
 import org.flinkspector.core.input.Input
 import org.flinkspector.core.runtime.OutputVerifier
-import org.flinkspector.core.trigger.{DefaultTestTrigger, VerifyFinishedTrigger}
-import org.flinkspector.datastream.functions
+import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.flinkspector.datastream.functions.TestSink
 import org.flinkspector.datastream.input.EventTimeInput
-import scala.collection.JavaConverters._
-import scala.reflect.ClassTag
-import org.apache.flink.streaming.api.environment.{StreamExecutionEnvironment => JavaEnv}
-
 
 import _root_.scala.language.implicitConversions
+import scala.collection.JavaConverters._
+import scala.reflect.ClassTag
 
 class DataStreamTestEnvironment(testEnv: org.flinkspector.datastream.DataStreamTestEnvironment) extends StreamExecutionEnvironment(testEnv) {
 
@@ -85,7 +77,7 @@ class DataStreamTestEnvironment(testEnv: org.flinkspector.datastream.DataStreamT
    * @param data  The array of elements to startWith the data stream from.
    * @return The data stream representing the given array of elements
    */
-  @SafeVarargs def fromElementsWithTimeStamp[OUT: ClassTag: TypeInformation](data: StreamRecord[OUT]*): DataStreamSource[OUT] = {
+  @SafeVarargs def fromElementsWithTimeStamp[OUT: ClassTag: TypeInformation](data: StreamRecord[OUT]*): DataStream[OUT] = {
     val typeInfo = implicitly[TypeInformation[OUT]]
     testEnv.fromCollectionWithTimestamp(data.asJava,typeInfo)
   }
@@ -96,7 +88,7 @@ class DataStreamTestEnvironment(testEnv: org.flinkspector.datastream.DataStreamT
    * @param input The { @link EventTimeInput} to startWith the data stream from.
    * @return The data stream representing the given input.
    */
-  def fromInput[OUT: ClassTag: TypeInformation](input: EventTimeInput[OUT]): DataStreamSource[OUT] = {
+  def fromInput[OUT: ClassTag: TypeInformation](input: EventTimeInput[OUT]): DataStream[OUT] = {
     val typeInfo = implicitly[TypeInformation[OUT]]
     testEnv.fromInput(input,typeInfo)
   }
@@ -107,7 +99,7 @@ class DataStreamTestEnvironment(testEnv: org.flinkspector.datastream.DataStreamT
    * @param input The { @link Input} to startWith the data stream from.
    * @return The data stream representing the given input.
    */
-  def fromInput[OUT: ClassTag: TypeInformation](input: Input[OUT]): DataStreamSource[OUT] = {
+  def fromInput[OUT: ClassTag: TypeInformation](input: Input[OUT]): DataStream[OUT] = {
     val typeInfo = implicitly[TypeInformation[OUT]]
     testEnv.fromInput(input,typeInfo)
   }
@@ -126,7 +118,7 @@ class DataStreamTestEnvironment(testEnv: org.flinkspector.datastream.DataStreamT
    * @param data  The collection of elements to startWith the data stream from.
    * @return The data stream representing the given collection
    */
-  def fromCollectionWithTimestamp[OUT: ClassTag: TypeInformation](data: Seq[StreamRecord[OUT]]): DataStreamSource[OUT] = {
+  def fromCollectionWithTimestamp[OUT: ClassTag: TypeInformation](data: Seq[StreamRecord[OUT]]): DataStream[OUT] = {
     val typeInfo = implicitly[TypeInformation[OUT]]
     testEnv.fromCollectionWithTimestamp(data.asJava,typeInfo)
   }
@@ -159,6 +151,10 @@ class DataStreamTestEnvironment(testEnv: org.flinkspector.datastream.DataStreamT
    */
   def setTimeoutInterval(interval: Long) {
     testEnv.setTimeoutInterval(interval)
+  }
+
+  def close(): Unit = {
+    testEnv.terminate()
   }
 }
 
