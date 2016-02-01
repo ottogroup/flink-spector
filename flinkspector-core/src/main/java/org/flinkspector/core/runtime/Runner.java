@@ -261,11 +261,9 @@ public abstract class Runner {
 
 			@Override
 			public void onSuccess(ResultState state) {
-				if (state != ResultState.SUCCESS) {
 					if (runningListeners.decrementAndGet() == 0) {
 						stopExecution();
 					}
-				}
 			}
 
 			@Override
