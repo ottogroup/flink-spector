@@ -98,7 +98,7 @@ public class ParallelFromStreamRecordsFunction<T> extends RichEventTimeSourceFun
 		//-----------------------------------------------------------------
 
 		int numberOfSubTasks = getRuntimeContext().getNumberOfParallelSubtasks();
-		int indexofThisSubTask = getRuntimeContext().getIndexOfThisSubtask();
+		int indexOfThisSubTask = getRuntimeContext().getIndexOfThisSubtask();
 
 		ByteArrayInputStream bais = new ByteArrayInputStream(elementsSerialized);
 		final DataInputView input = new InputViewDataInputStreamWrapper(new DataInputStream(bais));
@@ -117,7 +117,7 @@ public class ParallelFromStreamRecordsFunction<T> extends RichEventTimeSourceFun
 			}
 
 			outputSplit = InputUtil.splitList(output,
-					indexofThisSubTask,
+					indexOfThisSubTask,
 					numberOfSubTasks);
 		}else{
 			outputSplit = output;

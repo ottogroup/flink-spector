@@ -23,5 +23,5 @@ public interface TimeSpan {
 	 *
 	 * @return time span in milliseconds
 	 */
-	public long getTimeSpan();
+	long getMillis();
 }

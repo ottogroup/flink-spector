@@ -35,7 +35,7 @@ public class EventTimeSourceBuilder<T> {
 
 	public EventTimeSourceBuilder(DataStreamTestEnvironment env, T record) {
 		this.env = env;
-		this.builder = EventTimeInputBuilder.create(record);
+		this.builder = EventTimeInputBuilder.startWith(record);
 	}
 
 	/**

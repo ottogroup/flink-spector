@@ -73,6 +73,12 @@ public enum MessageType {
 		return ArrayUtils.subarray(message, length, message.length);
 	}
 
+	/**
+	 * Extracts the serializer from an open message.
+	 * @param message byte array representing the message.
+	 * @return serialized serializer.
+	 * @throws UnsupportedEncodingException
+	 */
 	private byte[] getOpenPayload(byte[] message) throws UnsupportedEncodingException {
 		int length = new String(message,"UTF-8").indexOf(";") + 1;
 		return ArrayUtils.subarray(message, length, message.length);

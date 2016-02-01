@@ -47,11 +47,39 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 	 * @param <T>
 	 * @return {@link EventTimeInputBuilder}
 	 */
-	public static <T> EventTimeInputBuilder<T> create(T record) {
+	public static <T> EventTimeInputBuilder<T> startWith(T record) {
 		if (record == null) {
 			throw new IllegalArgumentException("Elem has to be not null!");
 		}
 		return new EventTimeInputBuilder<T>(new StreamRecord<T>(record, 0));
+	}
+
+	/**
+	 *  Create an {@link EventTimeInputBuilder} with the first record as input.
+	 *
+	 * @param record value
+	 * @param <T>
+	 * @return {@link EventTimeInputBuilder}
+	 */
+	public static <T> EventTimeInputBuilder<T> startWith(T record, long timeStamp) {
+		if (record == null) {
+			throw new IllegalArgumentException("Elem has to be not null!");
+		}
+		return new EventTimeInputBuilder<T>(new StreamRecord<T>(record, timeStamp));
+	}
+
+	/**
+	 *  Create an {@link EventTimeInputBuilder} with the first record as input.
+	 *
+	 * @param record value
+	 * @param <T>
+	 * @return {@link EventTimeInputBuilder}
+	 */
+	public static <T> EventTimeInputBuilder<T> startWith(T record, TimeSpan span) {
+		if (record == null) {
+			throw new IllegalArgumentException("Elem has to be not null!");
+		}
+		return new EventTimeInputBuilder<T>(new StreamRecord<T>(record, span.getMillis()));
 	}
 
 	/**
@@ -61,7 +89,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 	 * @param <T>
 	 * @return {@link EventTimeInputBuilder}
 	 */
-	public static <T> EventTimeInputBuilder<T> create(StreamRecord<T> streamRecord) {
+	public static <T> EventTimeInputBuilder<T> startWith(StreamRecord<T> streamRecord) {
 		if (streamRecord == null) {
 			throw new IllegalArgumentException("Record has to be not null!");
 		}
@@ -99,7 +127,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 			throw new IllegalArgumentException("TimeBetween has to bo not null!");
 		}
 		long lastTimeStamp = input.get(input.size() - 1).getTimestamp();
-		long newTimeStamp = lastTimeStamp + timeSpan.getTimeSpan();
+		long newTimeStamp = lastTimeStamp + timeSpan.getMillis();
 		emit(record, newTimeStamp);
 		return this;
 	}
@@ -132,7 +160,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 		}
 		long ts = input.get(input.size() - 1).getTimestamp();
 		for (int i = 0; i < times; i++) {
-			ts = ts + timeInterval.getTimeSpan();
+			ts = ts + timeInterval.getMillis();
 			emit(elem, ts);
 		}
 		return this;
@@ -150,7 +178,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 		long start = input.get(input.size() - 1).getTimestamp();
 		List<StreamRecord<T>> toAppend = new ArrayList<>();
 		for (int i = 0; i < times; i++) {
-			toAppend.addAll(repeatInput(timeSpan.getTimeSpan(), start));
+			toAppend.addAll(repeatInput(timeSpan.getMillis(), start));
 			start = toAppend.get(toAppend.size() - 1).getTimestamp();
 		}
 		input.addAll(toAppend);

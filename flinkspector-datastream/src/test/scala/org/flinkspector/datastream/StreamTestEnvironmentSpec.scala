@@ -82,7 +82,7 @@ class StreamTestEnvironmentSpec extends CoreSpec {
 
   it should "provide a time-stamped DataStreamSource" in {
     val env = DataStreamTestEnvironment.createTestEnvironment(1)
-    val input = EventTimeInputBuilder.create[Int](new StreamRecord[Int](1,1))
+    val input = EventTimeInputBuilder.startWith[Int](new StreamRecord[Int](1,1))
       .emit(new StreamRecord[Int](2, 2))
       .emit(new StreamRecord[Int](3, 3))
       .emit(new StreamRecord[Int](4, 4))

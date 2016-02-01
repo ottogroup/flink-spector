@@ -78,7 +78,8 @@ public class TestSink<IN> extends RichSinkFunction<IN> {
 			//push serializer to output receiver
 			try {
 				handler.sendOpen(indexofThisSubTask,
-						numberOfSubTasks, SerializeUtil.serialize(serializer));
+						numberOfSubTasks,
+						SerializeUtil.serialize(serializer));
 
 			} catch (IOException e) {
 				LOG.error("Could not serialize TypeSerializer", e);

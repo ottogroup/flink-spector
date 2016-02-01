@@ -120,7 +120,7 @@ object InputUtil {
    * @return part of the list.
    */
   def splitList[T](input: JList[T], index: Int, numPartitions: Int): JList[T] = {
-    val split: ArrayBuffer[T] = ArrayBuffer.empty[T]
+    val split = ArrayBuffer.empty[T]
     var i: Int = index
     while (i < input.size) {
       split.add(input.get(i))

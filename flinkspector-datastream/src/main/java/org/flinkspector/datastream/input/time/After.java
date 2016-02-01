@@ -36,7 +36,7 @@ public class After implements TimeSpan {
 	 * Getter for defined time span
 	 * @return time span in milliseconds
 	 */
-	public long getTimeSpan() {
+	public long getMillis() {
 		return timeSpan;
 	}
 }

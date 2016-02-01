@@ -82,7 +82,7 @@ class ParallelFromStreamRecordsFunctionSpec extends CoreSpec {
   }
 
   it should "emit continuously rising watermarks" in {
-    val input = EventTimeInputBuilder.create("1")
+    val input = EventTimeInputBuilder.startWith("1")
       .emit("2", After.period(1, TimeUnit.SECONDS))
       .emit("3", After.period(1, TimeUnit.SECONDS))
       .emit("4", After.period(1, TimeUnit.SECONDS))

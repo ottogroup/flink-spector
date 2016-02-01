@@ -63,7 +63,6 @@ public class MapperTest extends StreamTestBase {
 						.emit(Tuple2.of(3, "bar"))
 						.close();
 
-
 		/*
 		 * Define the output you expect from the the transformation under test.
 		 * Add the tuples you want to see with .expect(record).

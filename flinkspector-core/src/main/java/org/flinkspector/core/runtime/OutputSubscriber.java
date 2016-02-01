@@ -122,7 +122,7 @@ public class OutputSubscriber<OUT> implements Callable<OutputSubscriber.ResultSt
 	 * Signals the final state of the {@link OutputSubscriber}
 	 * SUCCESS if the verification process has been finished.
 	 * TRIGGERED if a trigger stopped the verification.
-	 * FAILURE if the verification protocol was breached.
+	 * FAILURE if the verification protocol was interrupted.
 	 */
 	public enum ResultState {
 		TRIGGERED, SUCCESS, FAILURE

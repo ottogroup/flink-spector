@@ -38,7 +38,7 @@ public class Before implements TimeSpan {
 	 *
 	 * @return time span in milliseconds
 	 */
-	public long getTimeSpan() {
+	public long getMillis() {
 		return timeSpan * -1;
 	}
 }

@@ -262,7 +262,7 @@ public class StreamTestBase {
 	}
 
 	public static <T> EventTimeInputBuilder<T> startWith(T record) {
-		return EventTimeInputBuilder.create(record);
+		return EventTimeInputBuilder.startWith(record);
 	}
 
 	public static <T> InputBuilder<T> emit(T elem) {

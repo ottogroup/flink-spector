@@ -17,6 +17,7 @@
 package org.flinkspector.datastream.input;
 
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
+import org.flinkspector.core.input.Input;
 
 import java.util.List;
 
@@ -25,6 +26,6 @@ import java.util.List;
  * timestamped input for tests.
  * @param <T>
  */
-public interface EventTimeInput<T> {
+public interface EventTimeInput<T> extends Input<StreamRecord<T>> {
 	List<StreamRecord<T>> getInput();
 }

@@ -26,7 +26,7 @@ import scala.collection.JavaConversions._
 class EventTimeInputBuilderSpec extends CoreSpec {
 
   trait EventTimeInputBuilderCase {
-    val builder = EventTimeInputBuilder.create(1)
+    val builder = EventTimeInputBuilder.startWith(1)
       .emit(2, After.period(2, TimeUnit.SECONDS))
       .emit(3, After.period(1, TimeUnit.SECONDS))
       .emit(4, After.period(3, TimeUnit.SECONDS))
@@ -69,7 +69,7 @@ class EventTimeInputBuilderSpec extends CoreSpec {
     }
 
   "the builder" should "repeat an element two times" in {
-    val builder = EventTimeInputBuilder.create(1)
+    val builder = EventTimeInputBuilder.startWith(1)
       .emit(2,After.period(1,TimeUnit.SECONDS),4)
 
     builder.getInput.toList shouldBe List(
