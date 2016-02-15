@@ -115,10 +115,10 @@ public class MatchRecords<T> {
 	}
 
 	/**
-	 * Creates a {@link OutputMatcherFactory} matching when at least one
+	 * Creates a {@link OutputMatcher} matching when at least one
 	 * inspected tuple returns a positive match.
 	 *
-	 * @return {@link OutputMatcherFactory}
+	 * @return {@link OutputMatcher}
 	 */
 	public OutputMatcher<T> onAnyRecord() {
 		RecordsMatcher<T> matcher = new RecordsMatcher<>(MatcherCombiner.each(matchers));
@@ -126,10 +126,10 @@ public class MatchRecords<T> {
 	}
 
 	/**
-	 * Creates a {@link OutputMatcherFactory} matching when all
+	 * Creates a {@link OutputMatcher} matching when all
 	 * inspected tuples return a positive match.
 	 *
-	 * @return {@link OutputMatcherFactory}
+	 * @return {@link OutputMatcher}
 	 */
 	public OutputMatcher<T> onEachRecord() {
 		RecordsMatcher<T> matcher = new RecordsMatcher<>(MatcherCombiner.each(matchers));
@@ -137,10 +137,10 @@ public class MatchRecords<T> {
 	}
 
 	/**
-	 * Creates a {@link OutputMatcherFactory} matching when exactly one inspected tuple
+	 * Creates a {@link OutputMatcher} matching when exactly one inspected tuple
 	 * return a positive match.
 	 *
-	 * @return {@link OutputMatcherFactory}
+	 * @return {@link OutputMatcher}
 	 */
 	public OutputMatcher<T> onOneRecord() {
 		RecordsMatcher<T> matcher = new RecordsMatcher<>(MatcherCombiner.each(matchers));
@@ -148,10 +148,10 @@ public class MatchRecords<T> {
 	}
 
 	/**
-	 * Creates a {@link OutputMatcherFactory} matching when no inspected tuple
+	 * Creates a {@link OutputMatcher} matching when no inspected tuple
 	 * return a positive match.
 	 *
-	 * @return {@link OutputMatcherFactory}
+	 * @return {@link OutputMatcher}
 	 */
 	public OutputMatcher<T> onNoRecord() {
 		RecordsMatcher<T> matcher = new RecordsMatcher<>(MatcherCombiner.each(matchers));
@@ -159,10 +159,10 @@ public class MatchRecords<T> {
 	}
 
 	/**
-	 * Creates a {@link OutputMatcherFactory} matching when a exact number of
+	 * Creates a {@link OutputMatcher} matching when a exact number of
 	 * inspected tuples return a positive match.
 	 *
-	 * @return {@link OutputMatcherFactory}
+	 * @return {@link OutputMatcher}
 	 */
 	public OutputMatcher<T> onExactlyNRecords(int n) {
 		RecordsMatcher<T> matcher = new RecordsMatcher<>(MatcherCombiner.each(matchers));
@@ -170,10 +170,10 @@ public class MatchRecords<T> {
 	}
 
 	/**
-	 * Creates a {@link OutputMatcherFactory} matching when at least a number of
+	 * Creates a {@link OutputMatcher} matching when at least a number of
 	 * inspected tuples return a positive match.
 	 *
-	 * @return {@link OutputMatcherFactory}
+	 * @return {@link OutputMatcher}
 	 */
 	public OutputMatcher<T> onAtLeastNRecords(int n) {
 		RecordsMatcher<T> matcher = new RecordsMatcher<>(MatcherCombiner.each(matchers));
@@ -181,10 +181,10 @@ public class MatchRecords<T> {
 	}
 
 	/**
-	 * Creates a {@link OutputMatcherFactory} matching when at most a number of
+	 * Creates a {@link OutputMatcher} matching when at most a number of
 	 * inspected tuples return a positive match.
 	 *
-	 * @return {@link OutputMatcherFactory}
+	 * @return {@link OutputMatcher}
 	 */
 	public OutputMatcher<T> onAtMostNRecords(int n) {
 		RecordsMatcher<T> matcher = new RecordsMatcher<>(MatcherCombiner.each(matchers));

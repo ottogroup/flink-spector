@@ -26,7 +26,7 @@ import org.hamcrest.Matcher;
  *
  * @param <T>
  */
-public class AtLeast<T> extends UntilList<T> {
+public class OnAtLeast<T> extends UntilList<T> {
 
 	private final int n;
 
@@ -36,7 +36,7 @@ public class AtLeast<T> extends UntilList<T> {
 	 * @param matcher to apply to the {@link Iterable}
 	 * @param n       number of expected positive matches
 	 */
-	public AtLeast(Matcher<T> matcher, int n) {
+	public OnAtLeast(Matcher<T> matcher, int n) {
 		super(matcher);
 		this.n = n;
 	}
@@ -57,8 +57,8 @@ public class AtLeast<T> extends UntilList<T> {
 	}
 
 	@Factory
-	public static <T> AtLeast<T> atLeast(Matcher<T> matcher, int n) {
-		return new AtLeast<>(matcher, n);
+	public static <T> OnAtLeast<T> atLeast(Matcher<T> matcher, int n) {
+		return new OnAtLeast<>(matcher, n);
 	}
 
 }

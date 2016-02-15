@@ -34,7 +34,7 @@ public class ListQuantifyMatchers {
 	 * @return {@link Matcher}
 	 */
 	public static <T> Matcher<Iterable<T>> any(Matcher<T> matcher) {
-		return AnyOf.<T>any(matcher);
+		return OnAny.<T>any(matcher);
 	}
 
 	/**
@@ -45,7 +45,7 @@ public class ListQuantifyMatchers {
 	 * @return {@link Matcher}
 	 */
 	public static <T> Matcher<Iterable<T>> each(Matcher<T> matcher) {
-		return EachOf.<T>each(matcher);
+		return OnEach.<T>each(matcher);
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class ListQuantifyMatchers {
 	 * @return {@link Matcher}
 	 */
 	public static  <T> Matcher<Iterable<T>> one(Matcher<T> matcher) {
-		return OneOf.<T>one(matcher);
+		return OnOne.<T>one(matcher);
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class ListQuantifyMatchers {
 	 * @return {@link Matcher}
 	 */
 	public static <T> Matcher<Iterable<T>> atLeast(Matcher<T> matcher, int n) {
-		return AtLeast.<T>atLeast(matcher,n);
+		return OnAtLeast.<T>atLeast(matcher,n);
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class ListQuantifyMatchers {
 	 * @return {@link Matcher}
 	 */
 	public static <T> Matcher<Iterable<T>> atMost(Matcher<T> matcher, int n) {
-		return AtMost.<T>atMost(matcher,n);
+		return OnAtMost.<T>atMost(matcher,n);
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class ListQuantifyMatchers {
 	 * @return {@link Matcher}
 	 */
 	public static <T> Matcher<Iterable<T>> exactly(Matcher<T> matcher, int n) {
-		return Exactly.<T>exactly(matcher,n);
+		return OnExactly.<T>exactly(matcher,n);
 	}
 
 	/**

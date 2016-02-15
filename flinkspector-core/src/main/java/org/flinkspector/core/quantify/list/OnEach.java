@@ -25,13 +25,13 @@ import org.hamcrest.Matcher;
  * the items in the examined {@link Iterable} is a positive match.
  * @param <T>
  */
-public class EachOf<T> extends WhileList<T> {
+public class OnEach<T> extends WhileList<T> {
 
 	/**
 	 * Default Constructor
 	 * @param matcher to apply to {@link Iterable}.
 	 */
-	public EachOf(Matcher<T> matcher) {
+	public OnEach(Matcher<T> matcher) {
 		super(matcher);
 	}
 
@@ -50,7 +50,7 @@ public class EachOf<T> extends WhileList<T> {
 		return "each record ";
 	}
 
-	public static <T> EachOf<T> each(Matcher<T> matcher) {
-		return new EachOf<>(matcher);
+	public static <T> OnEach<T> each(Matcher<T> matcher) {
+		return new OnEach<>(matcher);
 	}
 }

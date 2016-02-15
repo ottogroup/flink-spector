@@ -27,7 +27,8 @@ import org.hamcrest.Matcher;
  *
  * @param <T>
  */
-public class One<T> extends WhileMatcherCombiner<T> {
+public class
+One<T> extends WhileCombineMatcher<T> {
 
 	/**
 	 * Default constructor

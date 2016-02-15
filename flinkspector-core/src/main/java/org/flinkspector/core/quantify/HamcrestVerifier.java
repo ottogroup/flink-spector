@@ -25,7 +25,7 @@ import java.util.List;
 
 public class HamcrestVerifier<T> extends SimpleOutputVerifier<T> {
 
-	public final Matcher<? super Iterable<T>> matcher;
+	private final Matcher<? super Iterable<T>> matcher;
 
 	public HamcrestVerifier(Matcher<? super Iterable<T>> matcher) {
 		this.matcher = matcher;
@@ -34,5 +34,9 @@ public class HamcrestVerifier<T> extends SimpleOutputVerifier<T> {
 	@Override
 	public void verify(List<T> output) throws FlinkTestFailedException {
 		Assert.assertThat(output, matcher);
+	}
+
+	public static <T> HamcrestVerifier<T> create(Matcher<? super Iterable<T>> matcher) {
+		return new HamcrestVerifier<T>(matcher);
 	}
 }

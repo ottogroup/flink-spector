@@ -26,7 +26,7 @@ import org.hamcrest.Matcher;
  *
  * @param <T>
  */
-public class Exactly<T> extends WhileMatcherCombiner<T> {
+public class Exactly<T> extends WhileCombineMatcher<T> {
 
 	private final int n;
 

@@ -25,58 +25,58 @@ class QuantifyMatchersSpec extends CoreSpec {
   //TODO make this test better readable
   val list = List(1,2,3,4,5,6,7,8)
 
-  "The AnyOf matcher" should "implement any" in {
-    AnyOf.any(Matchers.is(2))
+  "The OnAny matcher" should "implement any" in {
+    OnAny.any(Matchers.is(2))
       .matches(list.asJava) should be(true)
-    AnyOf.any(Matchers.greaterThan(new Integer(2)))
+    OnAny.any(Matchers.greaterThan(new Integer(2)))
       .matches(list.asJava) should be(true)
-    AnyOf.any(Matchers.lessThan(new Integer(12)))
+    OnAny.any(Matchers.lessThan(new Integer(12)))
       .matches(list.asJava) should be(true)
-    AnyOf.any(Matchers.greaterThan(new Integer(12)))
+    OnAny.any(Matchers.greaterThan(new Integer(12)))
       .matches(list.asJava) should be(false)
   }
 
-  "The EachOf matcher" should "implement each" in {
-    EachOf.each(Matchers.is(2))
+  "The OnEach matcher" should "implement each" in {
+    OnEach.each(Matchers.is(2))
       .matches(list.asJava) should be(false)
-    EachOf.each(Matchers.greaterThan(new Integer(2)))
+    OnEach.each(Matchers.greaterThan(new Integer(2)))
       .matches(list.asJava) should be(false)
-    EachOf.each(Matchers.lessThan(new Integer(12)))
+    OnEach.each(Matchers.lessThan(new Integer(12)))
       .matches(list.asJava) should be(true)
-    EachOf.each(Matchers.greaterThan(new Integer(12)))
+    OnEach.each(Matchers.greaterThan(new Integer(12)))
       .matches(list.asJava) should be(false)
   }
 
-  "The OneOf matcher" should "implement one" in {
-    OneOf.one(Matchers.is(2))
+  "The OnOne matcher" should "implement one" in {
+    OnOne.one(Matchers.is(2))
       .matches(list.asJava) should be(true)
-    OneOf.one(Matchers.greaterThan(new Integer(2)))
+    OnOne.one(Matchers.greaterThan(new Integer(2)))
       .matches(list.asJava) should be(false)
-    OneOf.one(Matchers.lessThan(new Integer(12)))
+    OnOne.one(Matchers.lessThan(new Integer(12)))
       .matches(list.asJava) should be(false)
-    OneOf.one(Matchers.greaterThan(new Integer(12)))
+    OnOne.one(Matchers.greaterThan(new Integer(12)))
       .matches(list.asJava) should be(false)
   }
 
-  "The AtLeast matcher" should "implement atLeast" in {
-    AtLeast.atLeast(Matchers.is(2),2)
+  "The OnAtLeast matcher" should "implement atLeast" in {
+    OnAtLeast.atLeast(Matchers.is(2),2)
       .matches(list.asJava) should be(false)
-    AtLeast.atLeast(Matchers.greaterThan(new Integer(6)),2)
+    OnAtLeast.atLeast(Matchers.greaterThan(new Integer(6)),2)
       .matches(list.asJava) should be(true)
-    AtLeast.atLeast(Matchers.lessThan(new Integer(12)),2)
+    OnAtLeast.atLeast(Matchers.lessThan(new Integer(12)),2)
       .matches(list.asJava) should be(true)
-    AtLeast.atLeast(Matchers.greaterThan(new Integer(12)),2)
+    OnAtLeast.atLeast(Matchers.greaterThan(new Integer(12)),2)
       .matches(list.asJava) should be(false)
   }
 
-  "The Exactly matcher" should "implement atMost" in {
-    Exactly.exactly(Matchers.is(2),2)
+  "The OnExactly matcher" should "implement atMost" in {
+    OnExactly.exactly(Matchers.is(2),2)
       .matches(list.asJava) should be(false)
-    Exactly.exactly(Matchers.greaterThan(new Integer(6)),2)
+    OnExactly.exactly(Matchers.greaterThan(new Integer(6)),2)
       .matches(list.asJava) should be(true)
-    Exactly.exactly(Matchers.lessThan(new Integer(12)),2)
+    OnExactly.exactly(Matchers.lessThan(new Integer(12)),2)
       .matches(list.asJava) should be(false)
-    Exactly.exactly(Matchers.greaterThan(new Integer(12)),2)
+    OnExactly.exactly(Matchers.greaterThan(new Integer(12)),2)
       .matches(list.asJava) should be(false)
   }
 

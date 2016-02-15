@@ -25,7 +25,7 @@ import org.hamcrest.Matcher;
  * items in the examined {@link Iterable} is a positive match.
  * @param <T>
  */
-public class AtMost<T> extends WhileList<T> {
+public class OnAtMost<T> extends WhileList<T> {
 
 	private final int n;
 
@@ -34,7 +34,7 @@ public class AtMost<T> extends WhileList<T> {
 	 * @param matcher to apply to the {@link Iterable}
 	 *                @param n number of expected matches
 	 */
-	public AtMost(Matcher<T> matcher, int n) {
+	public OnAtMost(Matcher<T> matcher, int n) {
 		super(matcher);
 		this.n = n;
 	}
@@ -55,7 +55,7 @@ public class AtMost<T> extends WhileList<T> {
 	}
 
 	@Factory
-	public static <T> AtMost<T> atMost(Matcher<T> matcher, int n) {
-		return new AtMost<T>(matcher,n);
+	public static <T> OnAtMost<T> atMost(Matcher<T> matcher, int n) {
+		return new OnAtMost<T>(matcher,n);
 	}
 }

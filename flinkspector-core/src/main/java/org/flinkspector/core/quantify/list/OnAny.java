@@ -20,51 +20,39 @@ import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 
-
 /**
- * Provides a {@link Matcher} that is successful if exactly n
- * items in the examined {@link Iterable} is a positive match.
- *
+ * Provides a {@link Matcher}s that is successful if at least one
+ * item in the examined {@link Iterable} is a positive match.
  * @param <T>
  */
-public class Exactly<T> extends WhileList<T> {
-
-	private final int n;
+public class OnAny<T> extends UntilList<T> {
 
 	/**
-	 * Default constructor
-	 *
+	 * Default Constructor
 	 * @param matcher to apply to the {@link Iterable}
-	 * @param n number of expected positive matches
 	 */
-	public Exactly(Matcher<T> matcher, int n) {
+	public OnAny(Matcher<T> matcher) {
 		super(matcher);
-		this.n = n;
 	}
 
 	@Override
 	protected Description describeCondition(Description description) {
-		return description.appendText("exactly ").appendValue(n);
+		return description.appendText("at least ").appendValue(1);
+	}
+
+	@Override
+	protected boolean validWhen(int matches, int possibleMatches) {
+		return matches == 1;
 	}
 
 	@Override
 	public String prefix() {
-		return "exactly n records";
-	}
-
-	@Override
-	public boolean validWhile(int matches, int mismatches) {
-		return matches <= n;
-	}
-
-	@Override
-	public boolean validAfter(int numMatches) {
-		return numMatches == n;
+		return "any record ";
 	}
 
 	@Factory
-	public static <T> Exactly<T> exactly(Matcher<T> matcher, int n) {
-		return new Exactly<T>(matcher,n);
+	public static <T> OnAny<T> any(Matcher<T> matcher) {
+		return new OnAny<>(matcher);
 	}
-}
 
+}
