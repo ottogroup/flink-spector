@@ -43,8 +43,6 @@ trait FlinkDataStream extends BeforeAndAfterEach { this: Suite =>
    */
   private var testEnv: DataStreamTestEnvironment = _
 
-  private var executed = false
-
   override def beforeEach() {
     testEnv = DataStreamTestEnvironment.createTestEnvironment(1)
     testEnv.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
@@ -55,16 +53,12 @@ trait FlinkDataStream extends BeforeAndAfterEach { this: Suite =>
     try super.afterEach() // To be stackable, must call super.afterEach
     finally {
       testEnv.close()
-      executed = false
     }
   }
 
 
   def executeTest(): Unit = {
-    if(!executed) {
-      executed = true
       testEnv.executeTest()
-    }
   }
 
   /**
@@ -172,7 +166,6 @@ trait FlinkDataStream extends BeforeAndAfterEach { this: Suite =>
           case None =>
             stream.addSink(createTestSink(matcher))
         }
-        executeTest()
       }
   }
 

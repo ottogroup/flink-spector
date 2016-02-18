@@ -15,6 +15,7 @@ package org.flinkspector.scala.datastream
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import org.apache.flink.api.scala._
 import org.flinkspector.core.collection.ExpectedRecords
 import org.flinkspector.core.input.InputBuilder
@@ -38,6 +39,8 @@ class DataStreamSpec extends CoreSpec with FlinkDataStream{
 
     //use the matcher on the datastream
     stream should fulfill(expected)
+    executeTest()
+
   }
 
 
@@ -58,6 +61,7 @@ class DataStreamSpec extends CoreSpec with FlinkDataStream{
         field(v.value should be > 4)
       }
     }
+    executeTest()
   }
 }
 

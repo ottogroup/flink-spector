@@ -18,6 +18,7 @@ package org.flinkspector.datastream.examples;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.flinkspector.core.quantify.MatchRecords;
 import org.flinkspector.core.quantify.MatchTuples;
 import org.flinkspector.core.quantify.OutputMatcher;
 import org.flinkspector.datastream.DataStreamTestBase;
@@ -71,8 +72,8 @@ public class WindowingTest extends DataStreamTestBase {
                         .close();
 
 		/*
-		 * Creates an OutputMatcher using MatchTuples.
-		 * MatchTuples builds an OutputMatcher working on Tuples.
+		 * Creates an OutputMatcher using MatchFields.
+		 * MatchFields builds an OutputMatcher working on Tuples.
 		 * You assign String identifiers to your Tuple,
 		 * and add hamcrest matchers testing the values.
 		 */
@@ -86,6 +87,12 @@ public class WindowingTest extends DataStreamTestBase {
                         .anyOfThem()
                         //define how many records need to fulfill the
                         .onEachRecord();
+
+
+		OutputMatcher<Tuple2<Integer,String>> records =
+				new MatchRecords<Tuple2<Integer,String>>()
+						.assertThat(is(Tuple2.of(3, "fritz")))
+						.onAnyRecord();
 
 		/*
 		 * Use assertStream to map DataStream to an OutputMatcher.

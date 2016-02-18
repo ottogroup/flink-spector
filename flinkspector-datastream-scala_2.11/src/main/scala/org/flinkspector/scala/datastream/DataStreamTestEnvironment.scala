@@ -32,7 +32,8 @@ import _root_.scala.language.implicitConversions
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
 
-class DataStreamTestEnvironment(testEnv: org.flinkspector.datastream.DataStreamTestEnvironment) extends StreamExecutionEnvironment(testEnv) {
+class DataStreamTestEnvironment(testEnv: org.flinkspector.datastream.DataStreamTestEnvironment)
+  extends StreamExecutionEnvironment(testEnv) {
 
 
   @throws(classOf[Throwable])
