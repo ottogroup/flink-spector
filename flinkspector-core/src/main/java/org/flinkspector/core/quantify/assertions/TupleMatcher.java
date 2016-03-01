@@ -50,7 +50,7 @@ public class TupleMatcher<T extends Tuple> extends TypeSafeDiagnosingMatcher<T> 
 					.appendText("[" + key + "] ")
 					.appendDescriptionOf(matcher)
 					.appendText(", ");
-			matcher.describeMismatch(item, mismatchDescription);
+			matcher.describeMismatch(tupleMap.get(key), mismatchDescription);
 			return false;
 		}
 		return true;

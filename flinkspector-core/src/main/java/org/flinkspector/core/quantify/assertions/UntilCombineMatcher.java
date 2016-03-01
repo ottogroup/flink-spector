@@ -24,11 +24,11 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class UntilMatcherCombiner<T> extends TypeSafeDiagnosingMatcher<T> {
+public abstract class UntilCombineMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
 
 	private final Iterable<Matcher<? super T>> matchers;
 
-	public UntilMatcherCombiner(Iterable<Matcher<? super T>> matchers) {
+	public UntilCombineMatcher(Iterable<Matcher<? super T>> matchers) {
 		this.matchers = matchers;
 	}
 

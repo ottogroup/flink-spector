@@ -24,7 +24,7 @@ import org.hamcrest.Matcher;
  * Provides a {@link org.hamcrest.Matcher} inspecting a {@link Tuple} and expecting it to
  * fulfill at each of the specified matchers.
  */
-public class Each<T> extends UntilMatcherCombiner<T> {
+public class Each<T> extends UntilCombineMatcher<T> {
 
 	/**
 	 * Default constructor

@@ -21,12 +21,12 @@ import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-abstract public class WhileMatcherCombiner<T> extends TypeSafeDiagnosingMatcher<T> {
+abstract public class WhileCombineMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
 	//TODO play with description
 
 	private final Iterable<Matcher<? super T>> matchers;
 
-	public WhileMatcherCombiner(Iterable<Matcher<? super T>> matchers) {
+	public WhileCombineMatcher(Iterable<Matcher<? super T>> matchers) {
 		this.matchers = matchers;
 	}
 

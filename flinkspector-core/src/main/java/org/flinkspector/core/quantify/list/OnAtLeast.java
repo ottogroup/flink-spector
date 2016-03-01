@@ -21,38 +21,44 @@ import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 
 /**
- * Provides a {@link Matcher}s that is successful if at least one
- * item in the examined {@link Iterable} is a positive match.
+ * Provides a {@link Matcher}s that is successful if at least n
+ * items in the examined {@link Iterable} is a positive match.
+ *
  * @param <T>
  */
-public class AnyOf<T> extends UntilList<T> {
+public class OnAtLeast<T> extends UntilList<T> {
+
+	private final int n;
 
 	/**
 	 * Default Constructor
+	 *
 	 * @param matcher to apply to the {@link Iterable}
+	 * @param n       number of expected positive matches
 	 */
-	public AnyOf(Matcher<T> matcher) {
+	public OnAtLeast(Matcher<T> matcher, int n) {
 		super(matcher);
+		this.n = n;
 	}
 
 	@Override
 	protected Description describeCondition(Description description) {
-		return description.appendText("at least ").appendValue(1);
+		return description.appendText("at least ").appendValue(n);
 	}
 
 	@Override
-	protected boolean validWhen(int matches, int possibleMatches) {
-		return matches == 1;
+	protected boolean validWhen(int numMatches, int possibleMatches) {
+		return numMatches == n;
 	}
 
 	@Override
 	public String prefix() {
-		return "any record ";
+		return "at least" + n + " records";
 	}
 
 	@Factory
-	public static <T> AnyOf<T> any(Matcher<T> matcher) {
-		return new AnyOf<>(matcher);
+	public static <T> OnAtLeast<T> atLeast(Matcher<T> matcher, int n) {
+		return new OnAtLeast<>(matcher, n);
 	}
 
 }

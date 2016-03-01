@@ -24,7 +24,7 @@ import org.apache.flink.api.java.tuple.Tuple;
  *
  * @param <T>
  */
-public class TupleMap<T extends Tuple> {
+public class TupleMap <T extends Tuple> {
 
 	private final T tuple;
 	private String[] keys;

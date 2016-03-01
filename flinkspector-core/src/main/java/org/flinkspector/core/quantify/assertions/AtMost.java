@@ -25,7 +25,7 @@ import org.hamcrest.Matcher;
  * Provides a {@link org.hamcrest.Matcher} inspecting a {@link Tuple} and expecting it to
  * fulfill at most one of the specified matchers.
  */
-public class AtMost<T> extends WhileMatcherCombiner<T> {
+public class AtMost<T> extends WhileCombineMatcher<T> {
 
 	private final int n;
 

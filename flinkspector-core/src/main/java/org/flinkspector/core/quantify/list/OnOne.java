@@ -25,13 +25,13 @@ import org.hamcrest.Matcher;
  * item in the examined {@link Iterable} is a positive match.
  * @param <T>
  */
-public class OneOf<T> extends WhileList<T> {
+public class OnOne<T> extends WhileList<T> {
 
 	/**
 	 * Default constructor
 	 * @param matcher to apply to the {@link Iterable}
 	 */
-	public OneOf(Matcher<T> matcher) {
+	public OnOne(Matcher<T> matcher) {
 		super(matcher);
 	}
 
@@ -42,7 +42,7 @@ public class OneOf<T> extends WhileList<T> {
 
 	@Override
 	public String prefix() {
-		return "one of ";
+		return "one of";
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class OneOf<T> extends WhileList<T> {
 	}
 
 	@Factory
-	public static <T> OneOf<T> one(Matcher<T> matcher) {
-		return new OneOf<T>(matcher);
+	public static <T> OnOne<T> one(Matcher<T> matcher) {
+		return new OnOne<T>(matcher);
 	}
 }

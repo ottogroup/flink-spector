@@ -61,7 +61,8 @@ public abstract class WhileList<T> extends TypeSafeDiagnosingMatcher<Iterable<T>
 
 	@Override
 	public void describeTo(Description description) {
-		description.appendText(prefix());
+		description.appendText(prefix())
+				.appendText(", to be ");
 		description.appendDescriptionOf(matcher);
 	}
 

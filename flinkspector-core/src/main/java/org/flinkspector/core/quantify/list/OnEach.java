@@ -17,54 +17,40 @@
 package org.flinkspector.core.quantify.list;
 
 import org.hamcrest.Description;
-import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 
 
 /**
- * Provides a {@link Matcher} that is successful if exactly n
- * items in the examined {@link Iterable} is a positive match.
- *
+ * Provides a {@link Matcher} that is successful if each of
+ * the items in the examined {@link Iterable} is a positive match.
  * @param <T>
  */
-public class Exactly<T> extends WhileList<T> {
-
-	private final int n;
+public class OnEach<T> extends WhileList<T> {
 
 	/**
-	 * Default constructor
-	 *
-	 * @param matcher to apply to the {@link Iterable}
-	 * @param n number of expected positive matches
+	 * Default Constructor
+	 * @param matcher to apply to {@link Iterable}.
 	 */
-	public Exactly(Matcher<T> matcher, int n) {
+	public OnEach(Matcher<T> matcher) {
 		super(matcher);
-		this.n = n;
 	}
 
 	@Override
 	protected Description describeCondition(Description description) {
-		return description.appendText("exactly ").appendValue(n);
+		return description.appendText("<all>");
+	}
+
+	@Override
+	public boolean validWhile(int numMatches, int numMismatches) {
+		return numMismatches <= 0;
 	}
 
 	@Override
 	public String prefix() {
-		return "exactly n records";
+		return "each record";
 	}
 
-	@Override
-	public boolean validWhile(int matches, int mismatches) {
-		return matches <= n;
-	}
-
-	@Override
-	public boolean validAfter(int numMatches) {
-		return numMatches == n;
-	}
-
-	@Factory
-	public static <T> Exactly<T> exactly(Matcher<T> matcher, int n) {
-		return new Exactly<T>(matcher,n);
+	public static <T> OnEach<T> each(Matcher<T> matcher) {
+		return new OnEach<>(matcher);
 	}
 }
-

@@ -77,7 +77,7 @@ public abstract class UntilList<T> extends TypeSafeDiagnosingMatcher<Iterable<T>
 
 	@Override
 	public void describeTo(Description description) {
-		description.appendText(prefix()).appendDescriptionOf(matcher);
+		description.appendText(prefix()).appendText(", to be ").appendDescriptionOf(matcher);
 	}
 
 
