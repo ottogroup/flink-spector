@@ -23,9 +23,11 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.apache.flink.runtime.client.JobTimeoutException;
 import org.apache.flink.test.util.ForkableFlinkMiniCluster;
+import org.apache.flink.test.util.TestBaseUtils;
 import org.flinkspector.core.runtime.OutputSubscriber.ResultState;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.zeromq.ZMQ;
+import scala.concurrent.duration.FiniteDuration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -152,7 +155,11 @@ public abstract class Runner {
 		stopped.set(true);
 		stopTimer.cancel();
 		stopTimer.purge();
-		cluster.shutdown();
+		try {
+			TestBaseUtils.stopCluster(cluster, new FiniteDuration(1000, TimeUnit.SECONDS));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -262,10 +269,12 @@ public abstract class Runner {
 			@Override
 			public void onSuccess(ResultState state) {
 				System.out.println("Success");
+				if(state != ResultState.SUCCESS) {
 					if (runningListeners.decrementAndGet() == 0) {
 						System.out.println("kill-s");
 						stopExecution();
 					}
+				}
 			}
 
 			@Override

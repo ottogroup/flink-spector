@@ -68,6 +68,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	 */
 	public static DataStreamTestEnvironment createTestEnvironment(int parallelism) throws Exception {
 		int tasksSlots = Runtime.getRuntime().availableProcessors();
+
 		ForkableFlinkMiniCluster cluster =
 				TestBaseUtils.startCluster(
 						1,
