@@ -26,6 +26,7 @@ import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.scalatest.exceptions.TestFailedException
 
 import scala.collection.JavaConversions._
+import org.scalatest.time.SpanSugar._
 
 class DataSetEnvironmentSpec extends CoreSpec {
 
@@ -107,7 +108,8 @@ class DataSetEnvironmentSpec extends CoreSpec {
       })
     val outputFormat = env.createTestOutputFormat(happyVerifier)
     dataSet.output(outputFormat)
-    env.executeTest()
+
+      env.executeTest()
 
     //check if a forceful stop was invoked
     env.hasBeenStopped shouldBe true
@@ -135,7 +137,10 @@ class DataSetEnvironmentSpec extends CoreSpec {
     val outputFormat = env.createTestOutputFormat(sadVerifier)
     dataSet.output(outputFormat)
 //    failAfter(Span(10,Seconds)) {
+
       an [FlinkTestFailedException] shouldBe thrownBy (env.executeTest())
+
+
 //    }
     //check if a forceful stop was invoked
     env.hasBeenStopped shouldBe true

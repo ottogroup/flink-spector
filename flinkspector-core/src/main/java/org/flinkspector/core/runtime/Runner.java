@@ -268,10 +268,8 @@ public abstract class Runner {
 
 			@Override
 			public void onSuccess(ResultState state) {
-				System.out.println("Success");
 				if(state != ResultState.SUCCESS) {
 					if (runningListeners.decrementAndGet() == 0) {
-						System.out.println("kill-s");
 						stopExecution();
 					}
 				}
@@ -280,9 +278,7 @@ public abstract class Runner {
 			@Override
 			public void onFailure(Throwable throwable) {
 				//check if other sockets are still running
-				System.out.println("Failure");
 				if (runningListeners.decrementAndGet() == 0) {
-					System.out.println("kill-f");
 					stopExecution();
 				}
 			}
