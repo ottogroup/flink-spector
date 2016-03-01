@@ -42,7 +42,7 @@ public class OnOne<T> extends WhileList<T> {
 
 	@Override
 	public String prefix() {
-		return "one of ";
+		return "one of";
 	}
 
 	@Override

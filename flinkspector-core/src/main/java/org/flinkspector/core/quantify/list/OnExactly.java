@@ -49,7 +49,7 @@ public class OnExactly<T> extends WhileList<T> {
 
 	@Override
 	public String prefix() {
-		return "exactly n records";
+		return "exactly " + n + " records";
 	}
 
 	@Override

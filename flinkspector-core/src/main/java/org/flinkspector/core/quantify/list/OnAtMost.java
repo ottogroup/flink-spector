@@ -41,12 +41,12 @@ public class OnAtMost<T> extends WhileList<T> {
 
 	@Override
 	protected Description describeCondition(Description description) {
-		return description.appendText("at Most ").appendValue(n);
+		return description.appendText("at most ").appendValue(n);
 	}
 
 	@Override
 	public String prefix() {
-		return "at most n records";
+		return "at most " + n +" records";
 	}
 
 	@Override

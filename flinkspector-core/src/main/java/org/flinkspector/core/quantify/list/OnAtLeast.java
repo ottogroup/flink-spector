@@ -53,7 +53,7 @@ public class OnAtLeast<T> extends UntilList<T> {
 
 	@Override
 	public String prefix() {
-		return "at least n records ";
+		return "at least" + n + " records";
 	}
 
 	@Factory

@@ -47,7 +47,7 @@ public class OnAny<T> extends UntilList<T> {
 
 	@Override
 	public String prefix() {
-		return "any record ";
+		return "any record";
 	}
 
 	@Factory

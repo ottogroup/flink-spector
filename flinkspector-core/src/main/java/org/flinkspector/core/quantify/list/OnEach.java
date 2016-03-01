@@ -47,7 +47,7 @@ public class OnEach<T> extends WhileList<T> {
 
 	@Override
 	public String prefix() {
-		return "each record ";
+		return "each record";
 	}
 
 	public static <T> OnEach<T> each(Matcher<T> matcher) {
