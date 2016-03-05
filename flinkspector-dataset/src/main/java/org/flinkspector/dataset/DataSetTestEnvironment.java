@@ -17,7 +17,6 @@
 package org.flinkspector.dataset;
 
 import org.apache.flink.api.java.DataSet;
-import org.apache.flink.runtime.StreamingMode;
 import org.apache.flink.test.util.ForkableFlinkMiniCluster;
 import org.apache.flink.test.util.TestBaseUtils;
 import org.apache.flink.test.util.TestEnvironment;
@@ -56,7 +55,6 @@ public class DataSetTestEnvironment extends TestEnvironment{
 				TestBaseUtils.startCluster(
 						1,
 						taskSlots,
-						StreamingMode.BATCH_ONLY,
 						false,
 						false,
 						true

@@ -19,7 +19,6 @@ package org.flinkspector.datastream;
 import com.google.common.base.Preconditions;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
-import org.apache.flink.runtime.StreamingMode;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.functions.source.FromElementsFunction;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
@@ -73,7 +72,6 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 				TestBaseUtils.startCluster(
 						1,
 						tasksSlots,
-						StreamingMode.STREAMING,
 						false,
 						false,
 						true

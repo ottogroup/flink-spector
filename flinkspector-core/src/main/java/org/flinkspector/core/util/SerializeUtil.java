@@ -18,8 +18,8 @@ package org.flinkspector.core.util;
 
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.core.memory.DataInputView;
-import org.apache.flink.core.memory.InputViewDataInputStreamWrapper;
-import org.apache.flink.core.memory.OutputViewDataOutputStreamWrapper;
+import org.apache.flink.core.memory.DataInputViewStreamWrapper;
+import org.apache.flink.core.memory.DataOutputViewStreamWrapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -48,7 +48,7 @@ public class SerializeUtil {
 	 */
 	public static <IN> byte[] serialize(IN object, TypeSerializer<IN> serializer) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		OutputViewDataOutputStreamWrapper wrapper = new OutputViewDataOutputStreamWrapper(new DataOutputStream(baos));
+		DataOutputViewStreamWrapper wrapper = new DataOutputViewStreamWrapper(new DataOutputStream(baos));
 		serializer.serialize(object, wrapper);
 		return baos.toByteArray();
 	}
@@ -63,7 +63,7 @@ public class SerializeUtil {
 	 */
 	public static <OUT> OUT deserialize(byte[] bytes, TypeSerializer<OUT> serializer) throws IOException {
 		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-		final DataInputView input = new InputViewDataInputStreamWrapper(new DataInputStream(bais));
+		final DataInputView input = new DataInputViewStreamWrapper(new DataInputStream(bais));
 		return serializer.deserialize(input);
 	}
 
