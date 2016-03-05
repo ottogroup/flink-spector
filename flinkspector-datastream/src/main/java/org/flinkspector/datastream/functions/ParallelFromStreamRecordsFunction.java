@@ -19,10 +19,10 @@ package org.flinkspector.datastream.functions;
 import com.google.common.collect.Iterables;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.core.memory.DataInputView;
-import org.apache.flink.core.memory.InputViewDataInputStreamWrapper;
-import org.apache.flink.core.memory.OutputViewDataOutputStreamWrapper;
+import org.apache.flink.core.memory.DataInputViewStreamWrapper;
+import org.apache.flink.core.memory.DataOutputViewStreamWrapper;
 import org.apache.flink.streaming.api.checkpoint.CheckpointedAsynchronously;
-import org.apache.flink.streaming.api.functions.source.RichEventTimeSourceFunction;
+import org.apache.flink.streaming.api.functions.source.RichParallelSourceFunction;
 import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.flinkspector.datastream.util.InputUtil;
@@ -45,7 +45,7 @@ import java.util.List;
  *
  * @param <T> The type of elements returned by this function.
  */
-public class ParallelFromStreamRecordsFunction<T> extends RichEventTimeSourceFunction<T>
+public class ParallelFromStreamRecordsFunction<T> extends RichParallelSourceFunction<T>
 		implements CheckpointedAsynchronously<Integer> {
 
 	private static final long serialVersionUID = 1L;
@@ -101,7 +101,7 @@ public class ParallelFromStreamRecordsFunction<T> extends RichEventTimeSourceFun
 		int indexOfThisSubTask = getRuntimeContext().getIndexOfThisSubtask();
 
 		ByteArrayInputStream bais = new ByteArrayInputStream(elementsSerialized);
-		final DataInputView input = new InputViewDataInputStreamWrapper(new DataInputStream(bais));
+		final DataInputView input = new DataInputViewStreamWrapper(new DataInputStream(bais));
 
 		List<StreamRecord<T>> output = new ArrayList<>();
 		//materialize input
@@ -206,7 +206,7 @@ public class ParallelFromStreamRecordsFunction<T> extends RichEventTimeSourceFun
 	private static <T> ByteArrayOutputStream serializeOutput(Iterable<StreamRecord<T>> elements,
 	                                                        TypeSerializer<StreamRecord<T>> serializer) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		OutputViewDataOutputStreamWrapper wrapper = new OutputViewDataOutputStreamWrapper(new DataOutputStream(baos));
+		DataOutputViewStreamWrapper wrapper = new DataOutputViewStreamWrapper(new DataOutputStream(baos));
 
 		try {
 			for (StreamRecord<T> element : elements) {
