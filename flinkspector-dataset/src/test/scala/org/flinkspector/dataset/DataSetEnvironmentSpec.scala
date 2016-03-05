@@ -88,7 +88,7 @@ class DataSetEnvironmentSpec extends CoreSpec {
     env.executeTest()
   }
 
-  it should "trigger a successful time-out" in {
+  ignore should "trigger a successful time-out" in {
     val happyVerifier = new SimpleOutputVerifier[Integer] {
       override def verify(output: util.List[Integer]): Unit = {}
     }
@@ -116,7 +116,7 @@ class DataSetEnvironmentSpec extends CoreSpec {
 
   }
 
-  it should "trigger a failed time-out" in {
+  ignore should "trigger a failed time-out" in {
     val sadVerifier = new SimpleOutputVerifier[Integer] {
       override def verify(output: util.List[Integer]): Unit = {
         throw new FlinkTestFailedException(new AssertionError())

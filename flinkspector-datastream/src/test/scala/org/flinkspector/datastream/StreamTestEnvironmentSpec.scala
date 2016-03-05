@@ -92,7 +92,7 @@ class StreamTestEnvironmentSpec extends CoreSpec {
     env.executeTest()
   }
 
-  it should "trigger a successful time-out" in {
+  ignore should "trigger a successful time-out" in {
     val happyVerifier = new SimpleOutputVerifier[Integer] {
       override def verify(output: JList[Integer]): Unit = {}
     }
@@ -120,7 +120,7 @@ class StreamTestEnvironmentSpec extends CoreSpec {
 
   }
 
-  it should "trigger a failed time-out" in {
+  ignore should "trigger a failed time-out" in {
     val sadVerifier = new SimpleOutputVerifier[Integer] {
       override def verify(output: JList[Integer]): Unit = {
         throw new FlinkTestFailedException(new AssertionError())
