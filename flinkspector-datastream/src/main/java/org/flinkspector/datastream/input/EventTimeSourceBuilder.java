@@ -19,6 +19,7 @@ package org.flinkspector.datastream.input;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.flinkspector.datastream.DataStreamTestEnvironment;
+import org.flinkspector.datastream.input.time.Moment;
 import org.flinkspector.datastream.input.time.TimeSpan;
 
 /**
@@ -81,8 +82,20 @@ public class EventTimeSourceBuilder<T> {
 	 * @param timeSpan {@link TimeSpan}
 	 * @return
 	 */
-	public EventTimeSourceBuilder<T> emit(T elem, TimeSpan timeSpan) {
+	public EventTimeSourceBuilder<T> emit(T elem, Moment timeSpan) {
 		builder.emit(elem, timeSpan);
+		return this;
+	}
+
+	/**
+	 * Add an element with object,
+	 * defining the time between the previous and the new record.
+	 *
+	 * @param elem
+	 * @return
+	 */
+	public EventTimeSourceBuilder<T> emit(T elem) {
+		builder.emit(elem);
 		return this;
 	}
 
@@ -102,7 +115,7 @@ public class EventTimeSourceBuilder<T> {
 	 *
 	 * @param times number of times the input ist will be repeated.
 	 */
-	public EventTimeSourceBuilder<T> emit(T elem, TimeSpan timeInterval, int times) {
+	public EventTimeSourceBuilder<T> emit(T elem, Moment timeInterval, int times) {
 		builder.emit(elem, timeInterval, times);
 		return this;
 	}

@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord
 import org.flinkspector.CoreSpec
-import org.flinkspector.datastream.input.time.After
+import org.flinkspector.datastream.input.time.{InWindow, After}
 
 import scala.collection.JavaConversions._
 
@@ -68,7 +68,7 @@ class EventTimeInputBuilderSpec extends CoreSpec {
       )
     }
 
-  "the builder" should "repeat an element two times" in {
+  "the builder" should "repeat an element four times" in {
     val builder = EventTimeInputBuilder.startWith(1)
       .emit(2,After.period(1,TimeUnit.SECONDS),4)
 
@@ -81,5 +81,26 @@ class EventTimeInputBuilderSpec extends CoreSpec {
     )
   }
 
+  "the builder" should "put elements in windows" in {
+    val builder = EventTimeInputBuilder.startWith(1)
+      .emit(2,InWindow.to(1,TimeUnit.SECONDS))
+
+    builder.getInput.toList shouldBe List(
+      new StreamRecord[Integer](1, 0),
+      new StreamRecord[Integer](2, 999)
+    )
+  }
+
+  "the builder" should "repeat elements in windows" in {
+    val builder = EventTimeInputBuilder.startWith(1)
+      .emit(2,InWindow.to(1,TimeUnit.SECONDS),3)
+
+    builder.getInput.toList shouldBe List(
+      new StreamRecord[Integer](1, 0),
+      new StreamRecord[Integer](2, 999),
+      new StreamRecord[Integer](2, 999),
+      new StreamRecord[Integer](2, 999)
+    )
+  }
 
 }

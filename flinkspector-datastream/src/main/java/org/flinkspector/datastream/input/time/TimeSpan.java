@@ -16,12 +16,16 @@
 
 package org.flinkspector.datastream.input.time;
 
-public interface TimeSpan {
+public abstract class TimeSpan implements Moment {
 
 	/**
 	 * Getter for defined time span
-	 *
 	 * @return time span in milliseconds
 	 */
-	long getMillis();
+	public abstract long getTimeSpan();
+
+	@Override
+	public long getTimestamp(long currentTimestamp) {
+		return currentTimestamp + getTimeSpan();
+	}
 }
