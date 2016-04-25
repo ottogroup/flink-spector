@@ -17,6 +17,7 @@
 package org.flinkspector.datastream.input;
 
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
+import org.flinkspector.datastream.input.time.Moment;
 import org.flinkspector.datastream.input.time.TimeSpan;
 
 import java.util.ArrayList;
@@ -36,12 +37,14 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 	 */
 	private ArrayList<StreamRecord<T>> input = new ArrayList<>();
 
+	private Boolean flushWindows = false;
+
 	private EventTimeInputBuilder(StreamRecord<T> record) {
 		input.add(record);
 	}
 
 	/**
-	 *  Create an {@link EventTimeInputBuilder} with the first record as input.
+	 * Create an {@link EventTimeInputBuilder} with the first record as input.
 	 *
 	 * @param record value
 	 * @param <T>
@@ -55,7 +58,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 	}
 
 	/**
-	 *  Create an {@link EventTimeInputBuilder} with the first record as input.
+	 * Create an {@link EventTimeInputBuilder} with the first record as input.
 	 *
 	 * @param record value
 	 * @param <T>
@@ -69,17 +72,17 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 	}
 
 	/**
-	 *  Create an {@link EventTimeInputBuilder} with the first record as input.
+	 * Create an {@link EventTimeInputBuilder} with the first record as input.
 	 *
 	 * @param record value
 	 * @param <T>
 	 * @return {@link EventTimeInputBuilder}
 	 */
-	public static <T> EventTimeInputBuilder<T> startWith(T record, TimeSpan span) {
+	public static <T> EventTimeInputBuilder<T> startWith(T record, Moment span) {
 		if (record == null) {
 			throw new IllegalArgumentException("Elem has to be not null!");
 		}
-		return new EventTimeInputBuilder<T>(new StreamRecord<T>(record, span.getMillis()));
+		return new EventTimeInputBuilder<T>(new StreamRecord<T>(record, span.getTimestamp(0)));
 	}
 
 	/**
@@ -115,6 +118,21 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 	}
 
 	/**
+	 * Add an element with the timestamp of the previous record to the input.
+	 *
+	 * @param record
+	 * @return
+	 */
+	public EventTimeInputBuilder<T> emit(T record) {
+		if (record == null) {
+			throw new IllegalArgumentException("Elem has to be not null!");
+		}
+		Long timeStamp = input.get(input.size() - 1).getTimestamp();
+		input.add(new StreamRecord<T>(record, timeStamp));
+		return this;
+	}
+
+	/**
 	 * Add an element with an {@link TimeSpan} object,
 	 * defining the time between the previous and the new record.
 	 *
@@ -122,12 +140,12 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 	 * @param timeSpan {@link TimeSpan}
 	 * @return
 	 */
-	public EventTimeInputBuilder<T> emit(T record, TimeSpan timeSpan) {
+	public EventTimeInputBuilder<T> emit(T record, Moment timeSpan) {
 		if (timeSpan == null) {
 			throw new IllegalArgumentException("TimeBetween has to bo not null!");
 		}
 		long lastTimeStamp = input.get(input.size() - 1).getTimestamp();
-		long newTimeStamp = lastTimeStamp + timeSpan.getMillis();
+		long newTimeStamp = timeSpan.getTimestamp(lastTimeStamp);
 		emit(record, newTimeStamp);
 		return this;
 	}
@@ -151,7 +169,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 	 *
 	 * @param times number of times the input ist will be repeated.
 	 */
-	public EventTimeInputBuilder<T> emit(T elem, TimeSpan timeInterval, int times) {
+	public EventTimeInputBuilder<T> emit(T elem, Moment timeInterval, int times) {
 		if (timeInterval == null) {
 			throw new IllegalArgumentException("TimeBetween has to bo not null!");
 		}
@@ -160,7 +178,8 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 		}
 		long ts = input.get(input.size() - 1).getTimestamp();
 		for (int i = 0; i < times; i++) {
-			ts = ts + timeInterval.getMillis();
+
+			ts = timeInterval.getTimestamp(ts);
 			emit(elem, ts);
 		}
 		return this;
@@ -178,10 +197,18 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 		long start = input.get(input.size() - 1).getTimestamp();
 		List<StreamRecord<T>> toAppend = new ArrayList<>();
 		for (int i = 0; i < times; i++) {
-			toAppend.addAll(repeatInput(timeSpan.getMillis(), start));
+			toAppend.addAll(repeatInput(timeSpan.getTimestamp(0), start));
 			start = toAppend.get(toAppend.size() - 1).getTimestamp();
 		}
 		input.addAll(toAppend);
+		return this;
+	}
+
+	/**
+	 * Causes the last timestamp to be MAX_VALUE.
+	 */
+	public EventTimeInputBuilder<T> flushOpenWindowsOnTermination() {
+		flushWindows = true;
 		return this;
 	}
 
@@ -196,6 +223,11 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 			builder.append("value: " + r.getValue() + " timestamp: " + r.getTimestamp() + "\n");
 		}
 		return builder.toString();
+	}
+
+	@Override
+	public Boolean getFlushWindowsSetting() {
+		return flushWindows;
 	}
 
 	@Override

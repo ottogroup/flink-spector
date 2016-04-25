@@ -27,5 +27,8 @@ import java.util.List;
  * @param <T>
  */
 public interface EventTimeInput<T> extends Input<StreamRecord<T>> {
+
+	Boolean getFlushWindowsSetting();
+
 	List<StreamRecord<T>> getInput();
 }

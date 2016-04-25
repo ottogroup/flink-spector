@@ -29,6 +29,11 @@ class InputUtilSpec extends CoreSpec{
     InputUtil.produceWatermarks(list) shouldBe List(-1, 1, -1, 3, -1, 5, -1, -1, 8, 11)
   }
 
+  "insertWatermarks" should "produce a list of watermarks with max value" in {
+    val list: List[Long] = List(3, 1, 11, 2, 5, 4, 10, 8, 7, 9)
+    InputUtil.produceWatermarks(list,true) shouldBe List(-1, 1, -1, 3, -1, 5, -1, -1, 8, Long.MaxValue)
+  }
+
   it should "produce a list of sorted watermarks" in {
     val list: List[Long] = List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     InputUtil.produceWatermarks(list) shouldBe List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)

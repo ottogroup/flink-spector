@@ -38,7 +38,7 @@ import java.util.List;
 
 /**
  * A stream source function that returns a sequence of elements with given TimeStamps.
- *
+ * <p>
  * <p>Upon construction, this source function serializes the elements using Flink's type information.
  * That way, any object transport using Java serialization will not be affected by the serializability
  * of the elements.</p>
@@ -80,11 +80,24 @@ public class ParallelFromStreamRecordsFunction<T> extends RichParallelSourceFunc
 	 */
 	private volatile boolean isRunning = true;
 
+	/**
+	 * flushOpenWindowsOnTermination
+	 */
+	Boolean flushOpenWindows = false;
+
 	public ParallelFromStreamRecordsFunction(TypeSerializer<StreamRecord<T>> serializer,
-											Iterable<StreamRecord<T>> input) throws IOException {
+											 Iterable<StreamRecord<T>> input) throws IOException {
 		this.serializer = serializer;
 		elementsSerialized = serializeOutput(input, serializer).toByteArray();
 		numElements = Iterables.size(input);
+	}
+
+	public ParallelFromStreamRecordsFunction(TypeSerializer<StreamRecord<T>> serializer,
+											 Iterable<StreamRecord<T>> input,
+											 Boolean flushOpenWindows
+	) throws IOException {
+		this(serializer, input);
+		this.flushOpenWindows = flushOpenWindows;
 	}
 
 	@Override
@@ -110,7 +123,7 @@ public class ParallelFromStreamRecordsFunction<T> extends RichParallelSourceFunc
 		}
 
 		//split output if parallelism is greater than 1
-		if(numberOfSubTasks > 1) {
+		if (numberOfSubTasks > 1) {
 			if (numberOfSubTasks > output.size()) {
 				throw new IllegalStateException("Parallelism of source is higher than the" +
 						" maximum number of parallel sources");
@@ -119,11 +132,11 @@ public class ParallelFromStreamRecordsFunction<T> extends RichParallelSourceFunc
 			outputSplit = InputUtil.splitList(output,
 					indexOfThisSubTask,
 					numberOfSubTasks);
-		}else{
+		} else {
 			outputSplit = output;
 		}
 		//calculate watermarks
-		watermarks = InputUtil.calculateWatermarks(outputSplit);
+		watermarks = InputUtil.calculateWatermarks(outputSplit, flushOpenWindows);
 		// if we restored from a checkpoint and need to skip elements, skip them now.
 		this.numElementsEmitted = this.numElementsToSkip;
 
@@ -204,7 +217,7 @@ public class ParallelFromStreamRecordsFunction<T> extends RichParallelSourceFunc
 	}
 
 	private static <T> ByteArrayOutputStream serializeOutput(Iterable<StreamRecord<T>> elements,
-	                                                        TypeSerializer<StreamRecord<T>> serializer) throws IOException {
+															 TypeSerializer<StreamRecord<T>> serializer) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		DataOutputViewStreamWrapper wrapper = new DataOutputViewStreamWrapper(new DataOutputStream(baos));
 
@@ -212,8 +225,7 @@ public class ParallelFromStreamRecordsFunction<T> extends RichParallelSourceFunc
 			for (StreamRecord<T> element : elements) {
 				serializer.serialize(element, wrapper);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new IOException("Serializing the source elements failed: " + e.getMessage(), e);
 		}
 		return baos;

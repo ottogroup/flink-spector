@@ -35,6 +35,7 @@ import org.flinkspector.datastream.input.EventTimeSourceBuilder;
 import org.flinkspector.datastream.input.SourceBuilder;
 import org.flinkspector.datastream.input.time.After;
 import org.flinkspector.datastream.input.time.Before;
+import org.flinkspector.datastream.input.time.InWindow;
 import org.hamcrest.Matcher;
 
 import java.util.Collection;
@@ -238,6 +239,17 @@ public class StreamTestBase {
 	//================================================================================
 	// Syntactic sugar stuff
 	//================================================================================
+
+	/**
+	 * Creates an {@link org.flinkspector.datastream.input.time.InWindow} object.
+	 *
+	 * @param time value.
+	 * @param unit of time.
+	 * @return {@link org.flinkspector.datastream.input.time.InWindow}
+	 */
+	public static InWindow inWindow(long time, TimeUnit unit) {
+		return InWindow.to(time, unit);
+	}
 
 	/**
 	 * Creates an {@link After} object.

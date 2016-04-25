@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Helper for defining a time span between to StreamRecords
  */
-public class Before implements TimeSpan {
+public class Before extends TimeSpan {
 
 	private long timeSpan;
 
@@ -38,7 +38,8 @@ public class Before implements TimeSpan {
 	 *
 	 * @return time span in milliseconds
 	 */
-	public long getMillis() {
+	@Override
+	public long getTimeSpan() {
 		return timeSpan * -1;
 	}
 }

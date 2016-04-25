@@ -127,23 +127,25 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	 */
 	@SafeVarargs
 	public final <OUT> DataStreamSource<OUT> fromElementsWithTimeStamp(StreamRecord<OUT>... data) {
-	    return fromCollectionWithTimestamp(Arrays.asList(data));
+		return fromCollectionWithTimestamp(Arrays.asList(data), false);
 	}
 
 	/**
 	 * Creates a data stream form the given non-empty {@link EventTimeInput} object.
 	 * The type of the data stream is that of the {@link EventTimeInput}.
+	 *
 	 * @param input The {@link EventTimeInput} to startWith the data stream from.
 	 * @param <OUT> The generic type of the returned data stream.
 	 * @return The data stream representing the given input.
 	 */
 	public <OUT> DataStreamSource<OUT> fromInput(EventTimeInput<OUT> input) {
-		return fromCollectionWithTimestamp(input.getInput());
+		return fromCollectionWithTimestamp(input.getInput(), input.getFlushWindowsSetting());
 	}
 
 	/**
 	 * Creates a data stream form the given non-empty {@link Input} object.
 	 * The type of the data stream is that of the {@link Input}.
+	 *
 	 * @param input The {@link Input} to startWith the data stream from.
 	 * @param <OUT> The generic type of the returned data stream.
 	 * @return The data stream representing the given input.
@@ -163,11 +165,12 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	 * <p>Note that this operation will result in a non-parallel data stream source, i.e. a data stream source with a
 	 * parallelism one.</p>
 	 *
-	 * @param data  The collection of elements to startWith the data stream from.
-	 * @param <OUT> The generic type of the returned data stream.
+	 * @param <OUT>        The generic type of the returned data stream.
+	 * @param data         The collection of elements to startWith the data stream from.
+	 * @param flushWindows Specifies whether open windows should be flushed on termination.
 	 * @return The data stream representing the given collection
 	 */
-	public <OUT> DataStreamSource<OUT> fromCollectionWithTimestamp(Collection<StreamRecord<OUT>> data) {
+	public <OUT> DataStreamSource<OUT> fromCollectionWithTimestamp(Collection<StreamRecord<OUT>> data, Boolean flushWindows) {
 		Preconditions.checkNotNull(data, "Collection must not be null");
 		if (data.isEmpty()) {
 			throw new IllegalArgumentException("Collection must not be empty");
@@ -186,7 +189,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 					+ "; please specify the TypeInformation manually via "
 					+ "StreamExecutionEnvironment#fromElements(Collection, TypeInformation)");
 		}
-		return fromCollectionWithTimestamp(data, typeInfo);
+		return fromCollectionWithTimestamp(data, typeInfo, flushWindows);
 	}
 
 	/**
@@ -195,13 +198,14 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	 * <p>Note that this operation will result in a non-parallel data stream source,
 	 * i.e., a data stream source with a parallelism one.</p>
 	 *
-	 * @param data    The collection of elements to startWith the data stream from
-	 * @param outType The TypeInformation for the produced data stream
-	 * @param <OUT>   The type of the returned data stream
+	 * @param <OUT>        The type of the returned data stream
+	 * @param data         The collection of elements to startWith the data stream from
+	 * @param outType      The TypeInformation for the produced data stream
+	 * @param flushWindows
 	 * @return The data stream representing the given collection
 	 */
 	public <OUT> DataStreamSource<OUT> fromCollectionWithTimestamp(Collection<StreamRecord<OUT>> data,
-																   TypeInformation<OUT> outType) {
+																   TypeInformation<OUT> outType, Boolean flushWindows) {
 		Preconditions.checkNotNull(data, "Collection must not be null");
 
 		TypeInformation<StreamRecord<OUT>> typeInfo;
@@ -219,11 +223,13 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 
 		SourceFunction<OUT> function;
 		try {
-			function = new ParallelFromStreamRecordsFunction<OUT>(typeInfo.createSerializer(getConfig()), data);
+			function = new ParallelFromStreamRecordsFunction<OUT>(typeInfo.createSerializer(getConfig()),
+					data,
+					flushWindows);
 		} catch (IOException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
-		return addSource(function, "Collection Source", outType).setParallelism(1);
+		return addSource(function, "Collection Source", outType);
 	}
 
 	public <OUT> DataStreamSource<OUT> fromInput(Collection<OUT> input) {

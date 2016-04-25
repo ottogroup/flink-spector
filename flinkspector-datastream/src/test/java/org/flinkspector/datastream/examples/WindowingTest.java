@@ -21,9 +21,11 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 import org.flinkspector.core.quantify.MatchTuples;
 import org.flinkspector.core.quantify.OutputMatcher;
 import org.flinkspector.datastream.StreamTestBase;
+import org.flinkspector.datastream.input.time.InWindow;
 
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.either;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
@@ -65,17 +67,11 @@ public class WindowingTest extends StreamTestBase {
 		 */
 		DataStream<Tuple2<Integer, String>> testStream =
 				createTimedTestStreamWith(Tuple2.of(1, "fritz"))
-						.emit(Tuple2.of(1, "hans"), after(15, seconds))
+						.emit(Tuple2.of(2, "fritz"))
 						//it's possible to generate unsorted input
-						.emit(Tuple2.of(1, "heidi"), before(5, seconds))
+						.emit(Tuple2.of(2, "fritz"))
 						//emit the tuple multiple times, with the time span between:
-						.emit(Tuple2.of(3, "peter"), after(20, seconds), times(10))
-						/*
-						 * Emit all input defined up to this point multiple times.
-						 * The span sets the time between reruns.
-					     * The spans between record defined previously will be kept.
-					     */
-						.repeatAll(after(10, seconds), times(1))
+						.emit(Tuple2.of(1, "peter"), InWindow.to(20,seconds),times(2))
 						.close();
 
 		/*
@@ -88,7 +84,7 @@ public class WindowingTest extends StreamTestBase {
 				//name the values in your tuple with keys:
 				new MatchTuples<Tuple2<Integer, String>>("value", "name")
 						//add an assertion using a value and hamcrest matchers
-						.assertThat("value", is(3))
+						.assertThat("value", greaterThan(2))
 						.assertThat("name", either(is("fritz")).or(is("peter")))
 						//express how many matchers must return true for your test to pass:
 						.anyOfThem()
@@ -99,10 +95,10 @@ public class WindowingTest extends StreamTestBase {
 		 * Use assertStream to map DataStream to an OutputMatcher.
 		 * You're also able to combine OutputMatchers with any
 		 * OutputMatcher. E.g:
-		 * assertStream(swap(stream), and(matcher, .outputWithSize(.greaterThan(4))
+		 * assertStream(swap(stream), and(matcher, outputWithSize(greaterThan(4))
 		 * would additionally assert that the number of produced records is exactly 3.
 		 */
-		assertStream(window(testStream), anyOf(matcher, hasItem(Tuple2.of(3,"fritz"))));
+		assertStream(window(testStream), matcher);
 
 	}
 

@@ -19,25 +19,22 @@ package org.flinkspector.datastream.input.time;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Helper for defining a time span between to StreamRecords
+ * Sets the timestamp of a record to a value which fits into a certain window.
  */
-public class After extends TimeSpan {
-	private long timeSpan;
+public class InWindow implements Moment {
 
-	public static After period(long time, TimeUnit timeUnit){
-		return new After(time,timeUnit);
+	private final long timeSpan;
+
+	public static InWindow to(long time, TimeUnit timeUnit){
+		return new InWindow(time,timeUnit);
 	}
 
-	private After(long time,TimeUnit timeUnit) {
+	private InWindow(long time,TimeUnit timeUnit) {
 		this.timeSpan = timeUnit.toMillis(time);
 	}
 
-	/**
-	 * Getter for defined time span
-	 * @return time span in milliseconds
-	 */
 	@Override
-	public long getTimeSpan() {
-		return timeSpan;
+	public long getTimestamp(long currentTimestamp) {
+		return timeSpan - 1;
 	}
 }

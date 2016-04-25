@@ -42,18 +42,20 @@ object InputUtil {
    * @tparam T type of the values
    * @return list of watermarks
    */
-  def calculateWatermarks[T](records: java.lang.Iterable[StreamRecord[T]]): JList[JLong] = {
+  def calculateWatermarks[T](records: java.lang.Iterable[StreamRecord[T]],
+                             lastValueMax: Boolean = false): JList[JLong] = {
     val timestamps = records.map(_.getTimestamp)
     if (timestamps.size != records.size) {
       throw new IOException("The list of watermarks has not the same length as the output")
     }
-    produceWatermarks(timestamps.toList)
+    produceWatermarks(timestamps.toList, lastValueMax)
   }
 
   /**
    * Implicit conversion from a[[List]]] of [[Long]]
    * to a  [[JList]] of [[JLong]]
-   * @param lst
+    *
+    * @param lst
    * @return
    */
   implicit def toLongList(lst: List[Long]): JList[JLong] =
@@ -72,8 +74,13 @@ object InputUtil {
    * @param timestamps list of [[Long]]
    * @return list of watermarks
    */
-  def produceWatermarks(timestamps: List[Long]): List[Long] = {
-    val max = timestamps.max
+  def produceWatermarks(timestamps: List[Long],
+                        lastValueMax: Boolean = false): List[Long] = {
+    val max = if (lastValueMax) {
+      Long.MaxValue
+    }else{
+      timestamps.max
+    }
     val array = new ArrayBuffer[Long]()
     val seen = new ArrayBuffer[Long]()
 
