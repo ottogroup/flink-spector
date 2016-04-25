@@ -86,7 +86,7 @@ public abstract class Runner {
 	 * The current port used for transmitting the output from via 0MQ
 	 * to the {@link OutputSubscriber}s.
 	 */
-	private Integer currentPort;
+	private volatile Integer currentPort;
 
 	private final ZMQSubscribers subscribers = new ZMQSubscribers();
 
@@ -253,7 +253,7 @@ public abstract class Runner {
 	 * @param verifier verifier
 	 * @param trigger
 	 */
-	public <OUT> int registerListener(OutputVerifier<OUT> verifier,
+	public synchronized <OUT> int registerListener(OutputVerifier<OUT> verifier,
 	                                  VerifyFinishedTrigger<? super OUT> trigger) {
 		int port = getAvailablePort();
 
