@@ -48,7 +48,7 @@ public class TupleMatcher<T extends Tuple> extends TypeSafeDiagnosingMatcher<T> 
 		if (!matcher.matches(tupleMap.get(key))) {
 			mismatchDescription
 					.appendText("[" + key + "] ")
-					.appendDescriptionOf(matcher)
+					.appendDescriptionOf(pair.matcher)
 					.appendText(", ");
 			matcher.describeMismatch(tupleMap.get(key), mismatchDescription);
 			return false;
