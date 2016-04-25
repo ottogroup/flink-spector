@@ -113,7 +113,7 @@ class StreamTestEnvironmentSpec extends CoreSpec {
     val sink = env.createTestSink(happyVerifier)
     source.addSink(sink)
 
-      env.executeTest()
+    env.executeTest()
 
     //check if a forceful stop was invoked
     env.hasBeenStopped shouldBe true
