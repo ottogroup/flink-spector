@@ -16,7 +16,7 @@
 
 package org.flinkspector.core.quantify;
 
-import org.flinkspector.core.quantify.list.OutputWithSize;
+import org.flinkspector.core.quantify.records.OutputWithSize;
 import org.hamcrest.core.AllOf;
 import org.hamcrest.core.AnyOf;
 import org.hamcrest.core.IsNot;

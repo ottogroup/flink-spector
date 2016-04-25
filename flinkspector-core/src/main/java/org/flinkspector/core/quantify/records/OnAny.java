@@ -14,43 +14,45 @@
  * limitations under the License.
  */
 
-package org.flinkspector.core.quantify.list;
+package org.flinkspector.core.quantify.records;
 
 import org.hamcrest.Description;
+import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 
-
 /**
- * Provides a {@link Matcher} that is successful if each of
- * the items in the examined {@link Iterable} is a positive match.
+ * Provides a {@link Matcher}s that is successful if at least one
+ * item in the examined {@link Iterable} is a positive match.
  * @param <T>
  */
-public class OnEach<T> extends WhileList<T> {
+public class OnAny<T> extends UntilList<T> {
 
 	/**
 	 * Default Constructor
-	 * @param matcher to apply to {@link Iterable}.
+	 * @param matcher to apply to the {@link Iterable}
 	 */
-	public OnEach(Matcher<T> matcher) {
+	public OnAny(Matcher<T> matcher) {
 		super(matcher);
 	}
 
 	@Override
 	protected Description describeCondition(Description description) {
-		return description.appendText("<all>");
+		return description.appendText("at least ").appendValue(1);
 	}
 
 	@Override
-	public boolean validWhile(int numMatches, int numMismatches) {
-		return numMismatches <= 0;
+	protected boolean validWhen(int matches, int possibleMatches) {
+		return matches == 1;
 	}
 
 	@Override
 	public String prefix() {
-		return "each record";
+		return "any record";
 	}
 
-	public static <T> OnEach<T> each(Matcher<T> matcher) {
-		return new OnEach<>(matcher);
+	@Factory
+	public static <T> OnAny<T> any(Matcher<T> matcher) {
+		return new OnAny<>(matcher);
 	}
+
 }

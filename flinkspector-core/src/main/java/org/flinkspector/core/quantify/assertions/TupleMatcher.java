@@ -17,7 +17,6 @@
 package org.flinkspector.core.quantify.assertions;
 
 import org.apache.flink.api.java.tuple.Tuple;
-import org.flinkspector.core.KeyMatcherPair;
 import org.flinkspector.core.quantify.TupleMap;
 import org.flinkspector.core.quantify.TupleMask;
 import org.hamcrest.Description;
@@ -31,24 +30,24 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
  */
 public class TupleMatcher<T extends Tuple> extends TypeSafeDiagnosingMatcher<T> {
 
-	private final KeyMatcherPair pair;
+	private final String key;
+	private final Matcher matcher;
 	private final TupleMask<T> mask;
 
-	public TupleMatcher(KeyMatcherPair pair, TupleMask<T> mask) {
+	public TupleMatcher(String key, Matcher matcher, TupleMask<T> mask) {
 		this.mask = mask;
-		this.pair = pair;
+		this.key = key;
+		this.matcher = matcher;
 	}
 
 	@Override
 	protected boolean matchesSafely(T item, Description mismatchDescription) {
 		TupleMap tupleMap = mask.apply(item);
-		Matcher matcher = pair.matcher;
-		String key = pair.key;
 
 		if (!matcher.matches(tupleMap.get(key))) {
 			mismatchDescription
 					.appendText("[" + key + "] ")
-					.appendDescriptionOf(pair.matcher)
+					.appendDescriptionOf(matcher)
 					.appendText(", ");
 			matcher.describeMismatch(tupleMap.get(key), mismatchDescription);
 			return false;
@@ -58,7 +57,7 @@ public class TupleMatcher<T extends Tuple> extends TypeSafeDiagnosingMatcher<T> 
 
 	@Override
 	public void describeTo(Description description) {
-		description.appendText("[" + pair.key + "] ");
-		description.appendDescriptionOf(pair.matcher);
+		description.appendText("[" + key + "] ");
+		description.appendDescriptionOf(matcher);
 	}
 }

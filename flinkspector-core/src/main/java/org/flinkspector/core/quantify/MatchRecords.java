@@ -17,7 +17,6 @@
 package org.flinkspector.core.quantify;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.flinkspector.core.KeyMatcherPair;
 import org.flinkspector.core.quantify.assertions.MatcherCombiner;
 import org.hamcrest.Matcher;
 
@@ -38,7 +37,7 @@ import java.util.List;
 public class MatchRecords<T> {
 
 	/**
-	 * List of {@link KeyMatcherPair} representing the assertions.
+	 * List of {@link Matcher} representing the assertions.
 	 */
 	private List<Matcher<? super T>> matchers = new ArrayList<>();
 
