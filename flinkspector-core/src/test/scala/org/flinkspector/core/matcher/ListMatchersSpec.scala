@@ -29,7 +29,7 @@ class ListMatchersSpec extends CoreSpec {
   it should "fail if org.apache.flink.core.input" +
     " contains a element that is not expected" in {
     ListMatchers
-        .containsOnly[Integer](List(1, 3, 2, 4))
+      .containsOnly[Integer](List(1, 3, 2, 4))
       .matches(List(1, 2, 3, 4, 5)) shouldBe false
 
   }
@@ -42,25 +42,25 @@ class ListMatchersSpec extends CoreSpec {
 
   it should "fail when handed duplicates" in {
     ListMatchers
-       .sameFrequency[Integer](List(3))
+      .sameFrequency[Integer](List(3))
       .matches(List(1, 2, 3, 4, 3)) shouldBe false
   }
 
   it should "succeed when the same duplicates" in {
     ListMatchers
-       .sameFrequency[Integer](List(3,3))
+      .sameFrequency[Integer](List(3, 3))
       .matches(List(1, 2, 3, 4, 3, 4)) shouldBe true
   }
 
   it should "fail when handed more of the same elements" in {
     ListMatchers
-       .sameFrequency[Integer](List(3, 3, 4, 4))
+      .sameFrequency[Integer](List(3, 3, 4, 4))
       .matches(List(1, 2, 3, 4, 3, 3)) shouldBe false
   }
 
   it should "fail when handed less of the same elements" in {
     ListMatchers
-       .sameFrequency[Integer](List(3, 3, 4, 4))
+      .sameFrequency[Integer](List(3, 3, 4, 4))
       .matches(List(1, 2, 3, 4, 4)) shouldBe false
   }
 
@@ -72,7 +72,7 @@ class ListMatchersSpec extends CoreSpec {
 
   it should "fail when handed elements out of order" in {
     ListMatchers
-        .containsInOrder[Integer](List(1, 2, 3))
+      .containsInOrder[Integer](List(1, 2, 3))
       .matches(List(3, 2, 1)) shouldBe false
   }
 
@@ -84,8 +84,62 @@ class ListMatchersSpec extends CoreSpec {
 
   it should "fail when an elements is missing" in {
     ListMatchers
-        .containsAll[Integer](List(2, 3, 5))
+      .containsAll[Integer](List(2, 3, 5))
       .matches(List(1, 2, 3, 4)) shouldBe false
+  }
+
+  it should "fail when an elements is has a lower frequency" in {
+    ListMatchers
+      .containsAll[Integer](List(2, 2, 3, 4))
+      .matches(List(1, 2, 3, 4)) shouldBe false
+  }
+
+  it should "succeed when an elements is has same frequency" in {
+    ListMatchers
+      .containsAll[Integer](List(2, 2, 3, 4))
+      .matches(List(1, 2, 2, 3, 4)) shouldBe true
+  }
+
+  it should "succeed when an elements is has higher frequency" in {
+    ListMatchers
+      .containsAll[Integer](List(2, 2, 3, 4))
+      .matches(List(2, 1, 2, 2, 3, 4)) shouldBe true
+  }
+
+  it should "succeed with nested structure" in {
+    ListMatchers
+      .containsAll[Map[String,Integer]](List(Map("k" -> 2), Map("k" -> 3)))
+      .matches(List(Map("k" -> 2), Map("k" -> 3))) shouldBe true
+  }
+
+  it should "succeed with nested structure and duplicates" in {
+    ListMatchers
+      .containsAll[Map[String,Integer]](List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3)))
+      .matches(List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3))) shouldBe true
+  }
+
+  it should "fail with nested structure and duplicates" in {
+    ListMatchers
+      .containsAll[Map[String,Integer]](List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3)))
+      .matches(List(Map("k" -> 2), Map("k" -> 3))) shouldBe false
+  }
+
+  it should "succeed with nested lists" in {
+    ListMatchers
+      .containsAll[List[String]](List(List("k", "2"), List("k", "3")))
+      .matches(List(List("k", "2"), List("k", "3"))) shouldBe true
+  }
+
+  it should "succeed with nested lists and duplicates" in {
+    ListMatchers
+      .containsAll[List[String]](List(List("k", "2"), List("k", "3"), List("k", "3")))
+      .matches(List(List("k", "2"), List("k", "3"), List("k", "3"))) shouldBe true
+  }
+
+  it should "fail with nested lists and duplicates" in {
+    ListMatchers
+      .containsAll[List[String]](List(List("k", "2"), List("k", "3"), List("k", "3")))
+      .matches(List(List("k", "2"), List("k", "3"))) shouldBe false
   }
 
   "the in series matcher" should "succeed when the lists are the same" in {
