@@ -25,6 +25,7 @@ import org.flinkspector.datastream.input.time.InWindow;
 
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.either;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
@@ -83,9 +84,10 @@ public class WindowingTest extends StreamTestBase {
 				//name the values in your tuple with keys:
 				new MatchTuples<Tuple2<Integer, String>>("value", "name")
 						//add an assertion using a value and hamcrest matchers
-						.assertThat("value", is(6))
+						.assertThat("value", greaterThan(2))
 						.assertThat("name", either(is("fritz")).or(is("peter")))
 						//express how many matchers must return true for your test to pass:
+						.anyOfThem()
 						//define how many records need to fulfill the
 						.onEachRecord();
 

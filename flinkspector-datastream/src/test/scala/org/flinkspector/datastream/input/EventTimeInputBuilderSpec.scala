@@ -49,6 +49,14 @@ class EventTimeInputBuilderSpec extends CoreSpec {
       )
     }
 
+  "the builder" should "set flushWindows" in
+    new EventTimeInputBuilderCase {
+
+      builder.getFlushWindowsSetting shouldBe false
+      builder.flushOpenWindowsOnTermination()
+      builder.getFlushWindowsSetting shouldBe true
+    }
+
   "the builder" should "repeat a input list two times" in
     new EventTimeInputBuilderCase {
       builder.repeatAll(After.period(2, TimeUnit.SECONDS), 2)

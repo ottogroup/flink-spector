@@ -18,6 +18,9 @@ package org.flinkspector.datastream.input.time;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Sets the timestamp of a record to a value which fits into a certain window.
+ */
 public class InWindow implements Moment {
 
 	private final long timeSpan;

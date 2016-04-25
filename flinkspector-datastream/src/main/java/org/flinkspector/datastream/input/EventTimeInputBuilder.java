@@ -37,12 +37,14 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 	 */
 	private ArrayList<StreamRecord<T>> input = new ArrayList<>();
 
+	private Boolean flushWindows = false;
+
 	private EventTimeInputBuilder(StreamRecord<T> record) {
 		input.add(record);
 	}
 
 	/**
-	 *  Create an {@link EventTimeInputBuilder} with the first record as input.
+	 * Create an {@link EventTimeInputBuilder} with the first record as input.
 	 *
 	 * @param record value
 	 * @param <T>
@@ -56,7 +58,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 	}
 
 	/**
-	 *  Create an {@link EventTimeInputBuilder} with the first record as input.
+	 * Create an {@link EventTimeInputBuilder} with the first record as input.
 	 *
 	 * @param record value
 	 * @param <T>
@@ -70,7 +72,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 	}
 
 	/**
-	 *  Create an {@link EventTimeInputBuilder} with the first record as input.
+	 * Create an {@link EventTimeInputBuilder} with the first record as input.
 	 *
 	 * @param record value
 	 * @param <T>
@@ -203,6 +205,14 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 	}
 
 	/**
+	 * Causes the last timestamp to be MAX_VALUE.
+	 */
+	public EventTimeInputBuilder<T> flushOpenWindowsOnTermination() {
+		flushWindows = true;
+		return this;
+	}
+
+	/**
 	 * Print the input list.
 	 *
 	 * @return
@@ -213,6 +223,11 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 			builder.append("value: " + r.getValue() + " timestamp: " + r.getTimestamp() + "\n");
 		}
 		return builder.toString();
+	}
+
+	@Override
+	public Boolean getFlushWindowsSetting() {
+		return flushWindows;
 	}
 
 	@Override

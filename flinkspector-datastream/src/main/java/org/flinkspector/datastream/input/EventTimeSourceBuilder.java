@@ -63,6 +63,17 @@ public class EventTimeSourceBuilder<T> {
 	}
 
 	/**
+	 * Produces a {@link DataStreamSource} with the predefined input
+	 * and flushes open windows on termination.
+	 *
+	 * @return {@link DataStreamSource}
+	 */
+	public DataStreamSource<T> closeAndFlush() {
+		builder.flushOpenWindowsOnTermination();
+		return env.fromInput(builder);
+	}
+
+	/**
 	 * Add an element with timestamp to the input.
 	 *
 	 * @param elem
@@ -119,6 +130,7 @@ public class EventTimeSourceBuilder<T> {
 		builder.emit(elem, timeInterval, times);
 		return this;
 	}
+
 
 	/**
 	 * Repeat the current input list, after the defined span.

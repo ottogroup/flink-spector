@@ -17,6 +17,8 @@ package org.flinkspector
 
 import java.util.{List => JList}
 
+import collection.JavaConverters._
+
 import org.apache.flink.streaming.runtime.streamrecord
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord
 import org.flinkspector.core.input.Input
@@ -25,7 +27,7 @@ import org.scalatest.concurrent.Timeouts
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
 
-import scala.collection.JavaConversions._
+
 
 abstract class CoreSpec
   extends FlatSpec
@@ -36,11 +38,13 @@ abstract class CoreSpec
 
   class TestEventTimeInput[T](input: List[T]) extends EventTimeInput[T] {
     override def getInput: JList[StreamRecord[T]] =
-      input.map(new streamrecord.StreamRecord[T](_, 0))
+      input.map(new streamrecord.StreamRecord[T](_, 0)).asJava
+
+    override def getFlushWindowsSetting = false
   }
 
   class TestInput[T](input: List[T]) extends Input[T] {
-    override def getInput: JList[T] = input
+    override def getInput: JList[T] = input.asJava
   }
 
   def recordsToValues[T](lst: Iterable[StreamRecord[T]]): List[T] =

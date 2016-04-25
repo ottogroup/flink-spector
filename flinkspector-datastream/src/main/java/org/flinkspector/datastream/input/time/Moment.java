@@ -16,6 +16,9 @@
 
 package org.flinkspector.datastream.input.time;
 
+/**
+ * Specifies a moment for a record to generate a timestamp.
+ */
 public interface Moment {
 
 	/**
