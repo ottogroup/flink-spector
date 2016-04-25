@@ -14,57 +14,48 @@
  * limitations under the License.
  */
 
-package org.flinkspector.core.quantify.list;
+package org.flinkspector.core.quantify.records;
 
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 
-
 /**
- * Provides a {@link Matcher} that is successful if exactly n
+ * Provides a {@link Matcher} that is successful if at most n
  * items in the examined {@link Iterable} is a positive match.
- *
  * @param <T>
  */
-public class OnExactly<T> extends WhileList<T> {
+public class OnAtMost<T> extends WhileList<T> {
 
 	private final int n;
 
 	/**
 	 * Default constructor
-	 *
 	 * @param matcher to apply to the {@link Iterable}
-	 * @param n number of expected positive matches
+	 *                @param n number of expected matches
 	 */
-	public OnExactly(Matcher<T> matcher, int n) {
+	public OnAtMost(Matcher<T> matcher, int n) {
 		super(matcher);
 		this.n = n;
 	}
 
 	@Override
 	protected Description describeCondition(Description description) {
-		return description.appendText("exactly ").appendValue(n);
+		return description.appendText("at most ").appendValue(n);
 	}
 
 	@Override
 	public String prefix() {
-		return "exactly " + n + " records";
+		return "at most " + n +" records";
 	}
 
 	@Override
-	public boolean validWhile(int matches, int mismatches) {
-		return matches <= n;
-	}
-
-	@Override
-	public boolean validAfter(int numMatches) {
-		return numMatches == n;
+	public boolean validWhile(int numMatches, int numMismatches) {
+		return numMatches <= n;
 	}
 
 	@Factory
-	public static <T> OnExactly<T> exactly(Matcher<T> matcher, int n) {
-		return new OnExactly<T>(matcher,n);
+	public static <T> OnAtMost<T> atMost(Matcher<T> matcher, int n) {
+		return new OnAtMost<T>(matcher,n);
 	}
 }
-

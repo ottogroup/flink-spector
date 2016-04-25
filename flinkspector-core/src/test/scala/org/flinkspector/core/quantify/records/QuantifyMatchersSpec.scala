@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.flinkspector.core.quantify.list
+package org.flinkspector.core.quantify.records
 
 import org.flinkspector.core.CoreSpec
 import org.hamcrest.Matchers

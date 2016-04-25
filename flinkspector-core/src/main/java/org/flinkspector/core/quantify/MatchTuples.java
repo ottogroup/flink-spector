@@ -17,7 +17,6 @@
 package org.flinkspector.core.quantify;
 
 import org.apache.flink.api.java.tuple.Tuple;
-import org.flinkspector.core.KeyMatcherPair;
 import org.flinkspector.core.quantify.assertions.TupleMatcher;
 import org.hamcrest.Matcher;
 
@@ -84,10 +83,10 @@ public class MatchTuples<T extends Tuple> extends MatchRecords<T> {
 	 * Add a new assertion based on tuple to the list.
 	 *
 	 * @param key   of the field
-	 * @param match matcher to use on the field
+	 * @param matcher matcher to use on the field
 	 */
-	public MatchTuples<T> assertThat(String key, Matcher match) {
-		assertThat(new TupleMatcher<T>(KeyMatcherPair.of(key, match),mask));
+	public MatchTuples<T> assertThat(String key, Matcher matcher) {
+		assertThat(new TupleMatcher<T>(key, matcher,mask));
 		return this;
 	}
 

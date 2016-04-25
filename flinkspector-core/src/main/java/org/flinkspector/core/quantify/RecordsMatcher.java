@@ -16,7 +16,7 @@
 
 package org.flinkspector.core.quantify;
 
-import org.flinkspector.core.quantify.list.ListQuantifyMatchers;
+import org.flinkspector.core.quantify.records.ListQuantifyMatchers;
 import org.hamcrest.Matcher;
 
 /**

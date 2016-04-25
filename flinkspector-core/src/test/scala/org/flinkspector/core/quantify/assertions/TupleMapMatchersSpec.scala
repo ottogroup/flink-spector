@@ -16,7 +16,7 @@
 package org.flinkspector.core.quantify.assertions
 
 import org.apache.flink.api.java.tuple.{Tuple3 => Fluple3}
-import org.flinkspector.core.{CoreSpec, KeyMatcherPair}
+import org.flinkspector.core.CoreSpec
 import org.hamcrest.{Matcher, Matchers}
 import org.flinkspector.core.quantify.TupleMask
 
@@ -27,9 +27,9 @@ class TupleMapMatchersSpec extends CoreSpec {
   trait TupleMapMatchersCase {
     val mask = new TupleMask[Fluple3[Int, Int, Int]]("one", "two", "three")
     val matcherList = List(
-      new TupleMatcher[Fluple3[Int,Int,Int]](KeyMatcherPair.of("one", Matchers.is(1)),mask) : Matcher[_ >: Fluple3[Int,Int,Int]],
-      new TupleMatcher[Fluple3[Int,Int,Int]](KeyMatcherPair.of("two", Matchers.is(1)),mask): Matcher[_ >: Fluple3[Int,Int,Int]],
-      new TupleMatcher[Fluple3[Int,Int,Int]](KeyMatcherPair.of("three", Matchers.is(1)),mask): Matcher[_ >: Fluple3[Int,Int,Int]])
+      new TupleMatcher[Fluple3[Int,Int,Int]]("one", Matchers.is(1),mask) : Matcher[_ >: Fluple3[Int,Int,Int]],
+      new TupleMatcher[Fluple3[Int,Int,Int]]("two", Matchers.is(1),mask): Matcher[_ >: Fluple3[Int,Int,Int]],
+      new TupleMatcher[Fluple3[Int,Int,Int]]("three", Matchers.is(1),mask): Matcher[_ >: Fluple3[Int,Int,Int]])
   }
 
   "The any matcher" should "implement any" in new TupleMapMatchersCase {

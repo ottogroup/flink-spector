@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.flinkspector.core.quantify.list;
+package org.flinkspector.core.quantify.records;
 
 import com.google.common.collect.Iterables;
 import org.hamcrest.Description;

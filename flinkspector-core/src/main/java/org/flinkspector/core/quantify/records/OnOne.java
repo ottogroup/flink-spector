@@ -14,51 +14,49 @@
  * limitations under the License.
  */
 
-package org.flinkspector.core.quantify.list;
+package org.flinkspector.core.quantify.records;
 
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 
 /**
- * Provides a {@link Matcher}s that is successful if at least n
- * items in the examined {@link Iterable} is a positive match.
- *
+ * Provides a {@link Matcher} that is successful if exactly one
+ * item in the examined {@link Iterable} is a positive match.
  * @param <T>
  */
-public class OnAtLeast<T> extends UntilList<T> {
-
-	private final int n;
+public class OnOne<T> extends WhileList<T> {
 
 	/**
-	 * Default Constructor
-	 *
+	 * Default constructor
 	 * @param matcher to apply to the {@link Iterable}
-	 * @param n       number of expected positive matches
 	 */
-	public OnAtLeast(Matcher<T> matcher, int n) {
+	public OnOne(Matcher<T> matcher) {
 		super(matcher);
-		this.n = n;
 	}
 
 	@Override
 	protected Description describeCondition(Description description) {
-		return description.appendText("at least ").appendValue(n);
-	}
-
-	@Override
-	protected boolean validWhen(int numMatches, int possibleMatches) {
-		return numMatches == n;
+		return description.appendText("exactly ").appendValue(1);
 	}
 
 	@Override
 	public String prefix() {
-		return "at least" + n + " records";
+		return "one of";
+	}
+
+	@Override
+	public boolean validWhile(int matches, int mismatches) {
+		return matches <= 1;
+	}
+
+	@Override
+	public boolean validAfter(int numMatches) {
+		return numMatches == 1;
 	}
 
 	@Factory
-	public static <T> OnAtLeast<T> atLeast(Matcher<T> matcher, int n) {
-		return new OnAtLeast<>(matcher, n);
+	public static <T> OnOne<T> one(Matcher<T> matcher) {
+		return new OnOne<T>(matcher);
 	}
-
 }
