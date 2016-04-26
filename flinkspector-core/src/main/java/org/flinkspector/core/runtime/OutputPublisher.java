@@ -64,7 +64,7 @@ public class OutputPublisher {
                 taskNumber, msgCount.get());
         publisher.send(close);
         publisher.close();
-        context.close();
+        context.term();
     }
 
 }

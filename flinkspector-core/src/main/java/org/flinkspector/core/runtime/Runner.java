@@ -107,12 +107,12 @@ public abstract class Runner {
 
 	private class ZMQSubscribers {
 
-		private final ZContext context = new ZContext(2);
+		private final ZMQ.Context context = ZMQ.context(2);
 		private List<ZMQ.Socket> sockets = new ArrayList<>();
 
 
 		ZMQ.Socket getSubscriber(String address) {
-			ZMQ.Socket subscriber = context.createSocket(ZMQ.PULL);
+			ZMQ.Socket subscriber = context.socket(ZMQ.PULL);
 			subscriber.setLinger(1000);
 			subscriber.bind(address);
 			sockets.add(subscriber);
@@ -121,10 +121,10 @@ public abstract class Runner {
 
 		public void close() {
 			for (ZMQ.Socket s : sockets) {
-				context.destroySocket(s);
+				s.close();
 			}
 			try {
-				context.close();
+				context.term();
 			} catch (IllegalStateException e) {
 				//shit happens
 			}
@@ -145,8 +145,8 @@ public abstract class Runner {
 		if (stopped.get()) {
 			return;
 		}
-		subscribers.close();
 		stopped.set(true);
+		subscribers.close();
 		stopTimer.cancel();
 		stopTimer.purge();
 		try {
@@ -171,8 +171,10 @@ public abstract class Runner {
 		} catch (JobTimeoutException
 				| IllegalStateException e) {
 			//cluster has been shutdown forcefully, most likely by at timeout.
-			subscribers.close();
-			stopped.set(true);
+			if(!stopped.get()) {
+				stopped.set(true);
+				subscribers.close();
+			}
 		}
 
 		//====================

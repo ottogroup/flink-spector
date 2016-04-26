@@ -50,7 +50,7 @@ class RunnerSpec extends CoreSpec {
         publisher.send("CLOSE 0 3", 0)
 
         publisher.close()
-        context.close()
+        context.term()
       }
     }
 
@@ -87,7 +87,7 @@ class RunnerSpec extends CoreSpec {
         publisher.send("CLOSE 2 1", 0)
 
         publisher.close()
-        context.close()
+        context.term()
       }
     }
 
@@ -123,7 +123,7 @@ class RunnerSpec extends CoreSpec {
         publisher.send("CLOSE 2 1", 0)
 
         publisher.close()
-        context.close()
+        context.term()
       }
     }
 
