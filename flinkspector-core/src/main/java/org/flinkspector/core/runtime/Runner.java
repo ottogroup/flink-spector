@@ -91,8 +91,6 @@ public abstract class Runner {
 	private final ZMQSubscribers subscribers = new ZMQSubscribers();
 
 
-
-
 	public Runner(ForkableFlinkMiniCluster executor) {
 		this.cluster = executor;
 		executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
@@ -142,7 +140,7 @@ public abstract class Runner {
 
 	/**
 	 * Stop the execution of the test.
-	 * <p/>
+	 * <p>
 	 * Shutting the local cluster down will, will notify
 	 * the sockets when the sinks are closed.
 	 * Thus terminating the execution gracefully.
@@ -151,7 +149,7 @@ public abstract class Runner {
 		if (stopped.get()) {
 			return;
 		}
-			subscribers.close();
+		subscribers.close();
 		stopped.set(true);
 		stopTimer.cancel();
 		stopTimer.purge();
@@ -192,7 +190,7 @@ public abstract class Runner {
 					//unwrap exception
 					throw e.getCause().getCause();
 				}
-				if(!stopped.get()) {
+				if (!stopped.get()) {
 					throw e.getCause();
 				}
 			}
@@ -254,7 +252,7 @@ public abstract class Runner {
 	 * @param trigger
 	 */
 	public synchronized <OUT> int registerListener(OutputVerifier<OUT> verifier,
-	                                  VerifyFinishedTrigger<? super OUT> trigger) {
+												   VerifyFinishedTrigger<? super OUT> trigger) {
 		int port = getAvailablePort();
 
 		ZMQ.Socket subscriber = subscribers.getSubscriber("tcp://127.0.0.1:" + port);
@@ -268,7 +266,7 @@ public abstract class Runner {
 
 			@Override
 			public void onSuccess(ResultState state) {
-				if(state != ResultState.SUCCESS) {
+				if (state != ResultState.SUCCESS) {
 					if (runningListeners.decrementAndGet() == 0) {
 						stopExecution();
 					}

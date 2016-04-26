@@ -26,6 +26,7 @@ import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.flinkspector.core.util.SerializeUtil
 import org.mockito.Mockito._
 import org.zeromq.ZMQ
+import org.scalatest.time.SpanSugar._
 
 class RunnerSpec extends CoreSpec {
 
@@ -163,6 +164,74 @@ class RunnerSpec extends CoreSpec {
     verify(verifier).init()
     verify(verifier).receive("1")
     verify(verifier).receive("2")
+    verify(verifier).finish()
+  }
+
+
+  it should "stop with a timeout and sleep" in new RunnerCase {
+    val runner : Runner = new Runner(cluster) {
+      override protected def executeEnvironment(): Unit = {
+        //open a socket to push data
+        val context = ZMQ.context(1)
+        val publisher = context.socket(ZMQ.PUSH)
+        publisher.connect("tcp://localhost:" + 5555)
+
+        val ser = (x: String) =>
+          Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
+        publisher.send(ser("OPEN 0 2 "), 0)
+        publisher.send(ser("OPEN 1 2 "), 0)
+        sendString(publisher, "1")
+        publisher.send("CLOSE 0 1", 0)
+        sendString(publisher, "2")
+        sendString(publisher, "3")
+        Thread.sleep(2000)
+        sendString(publisher, "4")
+      }
+    }
+    runner.setTimeoutInterval(500)
+    runner.registerListener(verifier, trigger)
+    runner.executeTest()
+
+    runner.hasBeenStopped shouldBe true
+
+    verify(verifier).init()
+    verify(verifier).receive("1")
+    verify(verifier).receive("2")
+    verify(verifier).receive("3")
+    verify(verifier).finish()
+    verifyNoMoreInteractions(verifier)
+  }
+
+  it should "stop with a timeout" in new RunnerCase {
+    val runner : Runner = new Runner(cluster) {
+      override protected def executeEnvironment(): Unit = {
+        //open a socket to push data
+        val context = ZMQ.context(1)
+        val publisher = context.socket(ZMQ.PUSH)
+        publisher.connect("tcp://localhost:" + 5555)
+
+        val ser = (x: String) =>
+          Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
+        publisher.send(ser("OPEN 0 2 "), 0)
+        publisher.send(ser("OPEN 1 2 "), 0)
+        sendString(publisher, "1")
+        publisher.send("CLOSE 0 1", 0)
+        sendString(publisher, "2")
+        sendString(publisher, "3")
+      }
+    }
+    runner.setTimeoutInterval(500)
+    runner.registerListener(verifier, trigger)
+    failAfter(2000 millis) {
+      runner.executeTest()
+    }
+
+    runner.hasBeenStopped shouldBe true
+
+    verify(verifier).init()
+    verify(verifier).receive("1")
+    verify(verifier).receive("2")
+    verify(verifier).receive("3")
     verify(verifier).finish()
   }
 
