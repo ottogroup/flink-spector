@@ -25,7 +25,7 @@ import org.flinkspector.core.runtime.OutputSubscriber.ResultState
 import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.flinkspector.core.util.SerializeUtil
 import org.mockito.Mockito._
-import org.zeromq.ZMQ
+import org.zeromq.{ZContext, ZMQ}
 
 class OutputSubscriberSpec extends CoreSpec {
 
@@ -50,9 +50,7 @@ class OutputSubscriberSpec extends CoreSpec {
     verify(verifier).receive("2")
     verify(verifier).receive("3")
     verify(verifier).finish()
-    publisher.close()
-    context2.close()
-    context.close()
+    close()
   }
 
   it should "handle output from multiple sinks" in new OutputListenerCase {
@@ -77,10 +75,7 @@ class OutputSubscriberSpec extends CoreSpec {
     verify(verifier).receive("2")
     verify(verifier).receive("3")
     verify(verifier).finish()
-    publisher.close()
-    context.close()
-    context2.close()
-    subscriber.close()
+    close()
   }
 
   it should "throw an Exception if not all sinks were opened" in new OutputListenerCase {
@@ -103,10 +98,7 @@ class OutputSubscriberSpec extends CoreSpec {
     verify(verifier).receive("1")
     verify(verifier).receive("2")
     verify(verifier).receive("3")
-    publisher.close()
-    context.close()
-    context2.close()
-    subscriber.close()
+    close()
   }
 
   it should "terminate early if finished trigger fired" in new OutputListenerCase {
@@ -129,10 +121,7 @@ class OutputSubscriberSpec extends CoreSpec {
     verify(verifier).receive("1")
     verify(verifier).receive("2")
     verify(verifier).finish()
-    publisher.close()
-    context.close()
-    context2.close()
-    subscriber.close()
+    close()
   }
 
   def sendString(socket: ZMQ.Socket, msg: String): Unit = {
@@ -154,12 +143,20 @@ class OutputSubscriberSpec extends CoreSpec {
     }
 
     //open a socket to push data
-    val context = ZMQ.context(1)
-    val publisher = context.socket(ZMQ.PUSH)
+    val context = new ZContext()
+    val publisher = context.createSocket(ZMQ.PUSH)
     publisher.connect("tcp://localhost:" + 5557)
-    val context2 = ZMQ.context(1)
-    val subscriber: ZMQ.Socket = context2.socket(ZMQ.PULL)
+    val context2 = new ZContext()
+    val subscriber: ZMQ.Socket = context2.createSocket(ZMQ.PULL)
     subscriber.bind("tcp://*:" + 5557)
+
+    def close(): Unit = {
+      context.destroySocket(subscriber)
+      context.destroySocket(publisher)
+      context2.close()
+      context.close()
+    }
   }
+
 
 }

@@ -26,6 +26,7 @@ import org.apache.flink.test.util.ForkableFlinkMiniCluster;
 import org.apache.flink.test.util.TestBaseUtils;
 import org.flinkspector.core.runtime.OutputSubscriber.ResultState;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
+import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import scala.concurrent.duration.FiniteDuration;
 
@@ -106,29 +107,24 @@ public abstract class Runner {
 
 	private class ZMQSubscribers {
 
-		private final ZMQ.Context context;
+		private final ZContext context = new ZContext(2);
 		private List<ZMQ.Socket> sockets = new ArrayList<>();
 
-		ZMQSubscribers() {
-			context = ZMQ.context(2);
-		}
 
 		ZMQ.Socket getSubscriber(String address) {
-			ZMQ.Socket subscriber = context.socket(ZMQ.PULL);
+			ZMQ.Socket subscriber = context.createSocket(ZMQ.PULL);
 			subscriber.setLinger(1000);
-
 			subscriber.bind(address);
-
 			sockets.add(subscriber);
 			return subscriber;
 		}
 
 		public void close() {
 			for (ZMQ.Socket s : sockets) {
-				s.close();
+				context.destroySocket(s);
 			}
 			try {
-				context.term();
+				context.close();
 			} catch (IllegalStateException e) {
 				//shit happens
 			}
@@ -175,6 +171,7 @@ public abstract class Runner {
 		} catch (JobTimeoutException
 				| IllegalStateException e) {
 			//cluster has been shutdown forcefully, most likely by at timeout.
+			subscribers.close();
 			stopped.set(true);
 		}
 
@@ -255,7 +252,7 @@ public abstract class Runner {
 												   VerifyFinishedTrigger<? super OUT> trigger) {
 		int port = getAvailablePort();
 
-		ZMQ.Socket subscriber = subscribers.getSubscriber("tcp://127.0.0.1:" + port);
+		ZMQ.Socket subscriber = subscribers.getSubscriber("tcp://localhost:" + port);
 
 		ListenableFuture<OutputSubscriber.ResultState> future = executorService
 				.submit(new OutputSubscriber<OUT>(subscriber, verifier, trigger));
@@ -275,10 +272,7 @@ public abstract class Runner {
 
 			@Override
 			public void onFailure(Throwable throwable) {
-				//check if other sockets are still running
-				if (runningListeners.decrementAndGet() == 0) {
-					stopExecution();
-				}
+				stopExecution();
 			}
 		});
 

@@ -93,16 +93,14 @@ public class OutputSubscriber<OUT> implements Callable<OutputSubscriber.ResultSt
 			nextStep = processMessage(subscriber.recv());
 			while (nextStep == Action.CONTINUE) {
 				nextStep = processMessage(subscriber.recv());
-				//check if test is stopped
 			}
 		} catch (IOException e) {
-			subscriber.close();
 			throw new FlinkTestFailedException(e);
 		} catch (ZMQException e) {
 			//this means the socket was most likely closed forcefully by a timeout
 		}
 		// close the connection
-		subscriber.close();
+//		subscriber.close();
 		try {
 			verifier.finish();
 		} catch (Throwable e) {

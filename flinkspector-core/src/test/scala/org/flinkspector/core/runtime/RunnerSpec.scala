@@ -25,7 +25,7 @@ import org.flinkspector.core.CoreSpec
 import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.flinkspector.core.util.SerializeUtil
 import org.mockito.Mockito._
-import org.zeromq.ZMQ
+import org.zeromq.{ZContext, ZMQ}
 import org.scalatest.time.SpanSugar._
 
 class RunnerSpec extends CoreSpec {
@@ -43,14 +43,13 @@ class RunnerSpec extends CoreSpec {
         publisher.connect("tcp://localhost:" + 5555)
 
         val msg = Bytes.concat("OPEN 0 1 ;".getBytes, SerializeUtil.serialize(serializer))
-        publisher.send(msg, 0)
         sendString(publisher, "1")
         sendString(publisher, "2")
         sendString(publisher, "3")
         publisher.send("CLOSE 0 3", 0)
 
         publisher.close()
-        context.term()
+        context.close()
       }
     }
 
@@ -70,8 +69,8 @@ class RunnerSpec extends CoreSpec {
     val runner : Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val context = ZMQ.context(1)
-        val publisher = context.socket(ZMQ.PUSH)
+        val context = new ZContext()
+        val publisher = context.createSocket(ZMQ.PUSH)
         publisher.connect("tcp://localhost:" + 5555)
 
         val ser = (x: String) =>
@@ -86,8 +85,8 @@ class RunnerSpec extends CoreSpec {
         sendString(publisher, "3")
         publisher.send("CLOSE 2 1", 0)
 
-        publisher.close()
-        context.term()
+       context.destroySocket(publisher)
+        context.close()
       }
     }
 
@@ -107,8 +106,8 @@ class RunnerSpec extends CoreSpec {
     val runner : Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val context = ZMQ.context(1)
-        val publisher = context.socket(ZMQ.PUSH)
+        val context = new ZContext()
+        val publisher = context.createSocket(ZMQ.PUSH)
         publisher.connect("tcp://localhost:" + 5555)
 
         val ser = (x: String) =>
@@ -122,8 +121,8 @@ class RunnerSpec extends CoreSpec {
         sendString(publisher, "3")
         publisher.send("CLOSE 2 1", 0)
 
-        publisher.close()
-        context.term()
+       context.destroySocket(publisher)
+        context.close()
       }
     }
 
@@ -140,8 +139,8 @@ class RunnerSpec extends CoreSpec {
     val runner : Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val context = ZMQ.context(1)
-        val publisher = context.socket(ZMQ.PUSH)
+        val context = new ZContext()
+        val publisher = context.createSocket(ZMQ.PUSH)
         publisher.connect("tcp://localhost:" + 5555)
 
         val ser = (x: String) =>
@@ -172,8 +171,8 @@ class RunnerSpec extends CoreSpec {
     val runner : Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val context = ZMQ.context(1)
-        val publisher = context.socket(ZMQ.PUSH)
+        val context = new ZContext()
+        val publisher = context.createSocket(ZMQ.PUSH)
         publisher.connect("tcp://localhost:" + 5555)
 
         val ser = (x: String) =>
@@ -206,8 +205,8 @@ class RunnerSpec extends CoreSpec {
     val runner : Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val context = ZMQ.context(1)
-        val publisher = context.socket(ZMQ.PUSH)
+        val context = new ZContext()
+        val publisher = context.createSocket(ZMQ.PUSH)
         publisher.connect("tcp://localhost:" + 5555)
 
         val ser = (x: String) =>
@@ -242,6 +241,7 @@ class RunnerSpec extends CoreSpec {
   }
 
   trait RunnerCase {
+
     val verifier = mock[OutputVerifier[String]]
     val cluster = mock[ForkableFlinkMiniCluster]
 

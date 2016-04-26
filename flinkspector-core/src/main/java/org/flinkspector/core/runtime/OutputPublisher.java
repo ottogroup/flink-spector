@@ -2,6 +2,7 @@ package org.flinkspector.core.runtime;
 
 
 import com.google.common.primitives.Bytes;
+import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -19,9 +20,7 @@ public class OutputPublisher {
 
     public OutputPublisher(String host, int port) {
         publisher = context.socket(ZMQ.PUSH);
-        publisher.setSndHWM(10);
-	    publisher.setLinger(-1);
-        publisher.connect("tcp://127.0.0.1:" + port);
+		publisher.connect("tcp://127.0.0.1:" + port);
     }
 
 	/**
@@ -47,7 +46,7 @@ public class OutputPublisher {
 	 * @param bytes serialized record.
 	 */
     public synchronized void sendRecord(byte[] bytes) {
-        byte[] msg = Bytes.concat("REC".getBytes(), bytes);
+		byte[] msg = Bytes.concat("REC".getBytes(), bytes);
 	    msgCount.incrementAndGet();
         publisher.send(msg);
     }
@@ -65,7 +64,7 @@ public class OutputPublisher {
                 taskNumber, msgCount.get());
         publisher.send(close);
         publisher.close();
-        context.term();
+        context.close();
     }
 
 }
