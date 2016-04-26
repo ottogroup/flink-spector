@@ -21,7 +21,25 @@
 
     <groupId>org.flinkspector</groupId>
     <artifactId>flinkspector-parent</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
+
+
+    <name>Flinkspector</name>
+    <description>Lightweight integration tests for Apache Flink</description>
+    <url>https://github.com/ottogroup/flink-spector</url>
+
+    <scm>
+        <url>https://github.com/ottogroup/flink-spector</url>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <modules>
         <module>flinkspector-dataset</module>
         <module>flinkspector-datastream</module>
@@ -129,5 +147,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray-ottogroup-maven</id>
+            <url>https://api.bintray.com/maven/ottogroup/maven/schedoscope</url>
+        </repository>
+    </distributionManagement>
 
 </project>
