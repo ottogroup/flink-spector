@@ -1,7 +1,7 @@
 # Flinkspector
 
 This project provides a framework to define unit tests for Apache Flink data flows.
-The framework executes the data flows locally and verifies the output using predefined expectations. 
+The framework executes data flows locally and verifies the output using predefined expectations. 
 
 Features include:
 - Concise DSL to define test scenarios.
