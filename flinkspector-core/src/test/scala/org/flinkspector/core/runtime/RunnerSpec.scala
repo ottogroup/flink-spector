@@ -35,7 +35,7 @@ class RunnerSpec extends CoreSpec {
   val serializer = typeInfo.createSerializer(config)
 
   "The runner" should "handle output from one sink" in new RunnerCase {
-    val runner : Runner = new Runner(cluster) {
+    val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
         val context = ZMQ.context(1)
@@ -43,6 +43,7 @@ class RunnerSpec extends CoreSpec {
         publisher.connect("tcp://localhost:" + 5555)
 
         val msg = Bytes.concat("OPEN 0 1 ;".getBytes, SerializeUtil.serialize(serializer))
+        publisher.send(msg,0)
         sendString(publisher, "1")
         sendString(publisher, "2")
         sendString(publisher, "3")
@@ -53,7 +54,7 @@ class RunnerSpec extends CoreSpec {
       }
     }
 
-    runner.registerListener(verifier,trigger)
+    runner.registerListener(verifier, trigger)
     runner.executeTest()
 
     verify(verifier).init()
@@ -66,11 +67,11 @@ class RunnerSpec extends CoreSpec {
 
   it should "handle output from parallel sinks" in new RunnerCase {
 
-    val runner : Runner = new Runner(cluster) {
+    val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val context = new ZContext()
-        val publisher = context.createSocket(ZMQ.PUSH)
+        val context = ZMQ.context(1)
+        val publisher = context.socket(ZMQ.PUSH)
         publisher.connect("tcp://localhost:" + 5555)
 
         val ser = (x: String) =>
@@ -85,12 +86,12 @@ class RunnerSpec extends CoreSpec {
         sendString(publisher, "3")
         publisher.send("CLOSE 2 1", 0)
 
-       context.destroySocket(publisher)
+        publisher.close()
         context.close()
       }
     }
 
-    runner.registerListener(verifier,trigger)
+    runner.registerListener(verifier, trigger)
     runner.executeTest()
 
     verify(verifier).init()
@@ -103,11 +104,11 @@ class RunnerSpec extends CoreSpec {
 
 
   it should "terminate early if finished trigger fired" in new RunnerCase {
-    val runner : Runner = new Runner(cluster) {
+    val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val context = new ZContext()
-        val publisher = context.createSocket(ZMQ.PUSH)
+        val context = ZMQ.context(1)
+        val publisher = context.socket(ZMQ.PUSH)
         publisher.connect("tcp://localhost:" + 5555)
 
         val ser = (x: String) =>
@@ -121,12 +122,12 @@ class RunnerSpec extends CoreSpec {
         sendString(publisher, "3")
         publisher.send("CLOSE 2 1", 0)
 
-       context.destroySocket(publisher)
+        publisher.close()
         context.close()
       }
     }
 
-    runner.registerListener(verifier,countTrigger)
+    runner.registerListener(verifier, countTrigger)
     runner.executeTest()
 
     verify(verifier).init()
@@ -136,11 +137,11 @@ class RunnerSpec extends CoreSpec {
   }
 
   it should "throw a timeout if finished trigger fired" in new RunnerCase {
-    val runner : Runner = new Runner(cluster) {
+    val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val context = new ZContext()
-        val publisher = context.createSocket(ZMQ.PUSH)
+        val context = ZMQ.context(1)
+        val publisher = context.socket(ZMQ.PUSH)
         publisher.connect("tcp://localhost:" + 5555)
 
         val ser = (x: String) =>
@@ -155,7 +156,7 @@ class RunnerSpec extends CoreSpec {
       }
     }
     runner.setTimeoutInterval(500)
-    runner.registerListener(verifier,countTrigger)
+    runner.registerListener(verifier, countTrigger)
     runner.executeTest()
 
     runner.hasBeenStopped shouldBe true
@@ -168,11 +169,11 @@ class RunnerSpec extends CoreSpec {
 
 
   it should "stop with a timeout and sleep" in new RunnerCase {
-    val runner : Runner = new Runner(cluster) {
+    val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val context = new ZContext()
-        val publisher = context.createSocket(ZMQ.PUSH)
+        val context = ZMQ.context(1)
+        val publisher = context.socket(ZMQ.PUSH)
         publisher.connect("tcp://localhost:" + 5555)
 
         val ser = (x: String) =>
@@ -202,11 +203,11 @@ class RunnerSpec extends CoreSpec {
   }
 
   it should "stop with a timeout" in new RunnerCase {
-    val runner : Runner = new Runner(cluster) {
+    val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val context = new ZContext()
-        val publisher = context.createSocket(ZMQ.PUSH)
+        val context = ZMQ.context(1)
+        val publisher = context.socket(ZMQ.PUSH)
         publisher.connect("tcp://localhost:" + 5555)
 
         val ser = (x: String) =>
@@ -240,6 +241,7 @@ class RunnerSpec extends CoreSpec {
     socket.send(packet, 0)
   }
 
+
   trait RunnerCase {
 
     val verifier = mock[OutputVerifier[String]]
@@ -247,11 +249,13 @@ class RunnerSpec extends CoreSpec {
 
     val trigger = new VerifyFinishedTrigger[String] {
       override def onRecord(record: String): Boolean = false
+
       override def onRecordCount(count: Long): Boolean = false
     }
 
     val countTrigger = new VerifyFinishedTrigger[String] {
       override def onRecord(record: String): Boolean = false
+
       override def onRecordCount(count: Long): Boolean = count >= 2
     }
 

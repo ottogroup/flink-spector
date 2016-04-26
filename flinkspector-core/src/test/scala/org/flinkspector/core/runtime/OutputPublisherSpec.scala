@@ -52,8 +52,8 @@ class OutputPublisherSpec extends CoreSpec{
   }
 
   "The outputPublisher" should "send a open message" in new OutputPublisherCase {
-    val open = subscriber.recv()
     publisher.sendOpen(0,0,SerializeUtil.serialize(serializer))
+    val open = subscriber.recv()
     MessageType.getMessageType(open) shouldBe MessageType.OPEN
     close()
   }
