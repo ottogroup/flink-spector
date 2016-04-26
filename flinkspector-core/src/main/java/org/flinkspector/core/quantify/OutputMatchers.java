@@ -40,7 +40,7 @@ public class OutputMatchers {
 	 */
 	@SafeVarargs
 	public static <T> OutputMatcher<T> anyOf(OutputMatcher<T>... matchers) {
-		return OutputMatcherFactory.create(AnyOf.<Iterable<T>>anyOf(matchers));
+		return OutputMatcherFactory.create(AnyOf.anyOf(matchers));
 	}
 
 	/**

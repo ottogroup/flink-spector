@@ -25,8 +25,8 @@ import org.flinkspector.core.CoreSpec
 import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.flinkspector.core.util.SerializeUtil
 import org.mockito.Mockito._
-import org.zeromq.{ZContext, ZMQ}
 import org.scalatest.time.SpanSugar._
+import org.zeromq.ZMQ
 
 class RunnerSpec extends CoreSpec {
 
@@ -168,7 +168,7 @@ class RunnerSpec extends CoreSpec {
   }
 
 
-  it should "stop with a timeout and sleep" in new RunnerCase {
+  ignore should "stop with a timeout and sleep" in new RunnerCase {
     val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
