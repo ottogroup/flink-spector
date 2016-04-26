@@ -33,7 +33,7 @@ public class ParrallelFromStreamRecordsTest extends StreamTestBase {
 		EventTimeInput<Integer> input = EventTimeInputBuilder
 				.startWith(1)
 				.emit(1)
-				.emit(1, inWindow(2, minutes))
+				.emit(1, intoWindow(2, minutes))
 				.emit(2, after(30, seconds))
 				.flushOpenWindowsOnTermination();
 

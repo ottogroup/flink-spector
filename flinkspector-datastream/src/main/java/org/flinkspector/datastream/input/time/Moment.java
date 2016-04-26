@@ -19,7 +19,7 @@ package org.flinkspector.datastream.input.time;
 /**
  * Specifies a moment for a record to generate a timestamp.
  */
-public interface Moment {
+public abstract class Moment {
 
 	/**
 	 * Getter for defined time span
@@ -27,6 +27,9 @@ public interface Moment {
 	 *
 	 * @return time span in milliseconds
 	 */
-	long getTimestamp(long currentTimestamp);
+	public abstract long getTimestamp(long currentTimestamp);
 
+	public long getShift() {
+		return 0;
+	}
 }

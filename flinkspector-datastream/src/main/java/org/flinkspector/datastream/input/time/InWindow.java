@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Sets the timestamp of a record to a value which fits into a certain window.
  */
-public class InWindow implements Moment {
+public class InWindow extends Moment {
 
 	private final long timeSpan;
 
@@ -36,5 +36,10 @@ public class InWindow implements Moment {
 	@Override
 	public long getTimestamp(long currentTimestamp) {
 		return timeSpan - 1;
+	}
+
+	@Override
+	public long getShift() {
+		return 1;
 	}
 }
