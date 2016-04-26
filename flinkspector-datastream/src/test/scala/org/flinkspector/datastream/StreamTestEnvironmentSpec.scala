@@ -92,61 +92,6 @@ class StreamTestEnvironmentSpec extends CoreSpec {
     env.executeTest()
   }
 
-  ignore should "trigger a successful time-out" in {
-    val happyVerifier = new SimpleOutputVerifier[Integer] {
-      override def verify(output: JList[Integer]): Unit = {}
-    }
-
-    val env = DataStreamTestEnvironment.createTestEnvironment(1)
-    env.setTimeoutInterval(1000)
-    val list = List[Integer](1,2,3,4)
-    val source = env.fromElements(list: _*)
-      .map(new MapFunction[Integer, Integer] {
-        override def map(t: Integer): Integer = {
-          val start = System.currentTimeMillis()
-          while(System.currentTimeMillis() - start < 1000L){
-            Thread.sleep(100)
-          }
-          t + 1
-        }
-      })
-    val sink = env.createTestSink(happyVerifier)
-    source.addSink(sink)
-
-    env.executeTest()
-
-    //check if a forceful stop was invoked
-    env.hasBeenStopped shouldBe true
-
-  }
-
-  ignore should "trigger a failed time-out" in {
-    val sadVerifier = new SimpleOutputVerifier[Integer] {
-      override def verify(output: JList[Integer]): Unit = {
-        throw new FlinkTestFailedException(new AssertionError())
-      }
-    }
-
-    val env = DataStreamTestEnvironment.createTestEnvironment(1)
-    env.setTimeoutInterval(1000)
-    val list = List[Integer](1,2,3,4)
-    val source = env.fromElements(list: _*)
-      .map(new MapFunction[Integer, Integer] {
-        override def map(t: Integer): Integer = {
-          Thread.sleep(1000)
-          t + 1
-        }
-      })
-    val sink = env.createTestSink(sadVerifier)
-    source.addSink(sink)
-
-      an [FlinkTestFailedException] shouldBe thrownBy (env.executeTest())
-
-    //check if a forceful stop was invoked
-    env.hasBeenStopped shouldBe true
-
-  }
-
   it should "handle more than one sink" in {
     val env = DataStreamTestEnvironment.createTestEnvironment(1)
     val evenlist = List[Integer](2,4,6,8)

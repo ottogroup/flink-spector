@@ -88,64 +88,6 @@ class DataSetEnvironmentSpec extends CoreSpec {
     env.executeTest()
   }
 
-  ignore should "trigger a successful time-out" in {
-    val happyVerifier = new SimpleOutputVerifier[Integer] {
-      override def verify(output: util.List[Integer]): Unit = {}
-    }
-
-    val env = DataSetTestEnvironment.createTestEnvironment(1)
-    env.setTimeoutInterval(1000)
-    val list = List[Integer](1,2,3,4)
-    val dataSet = env.fromElements(list: _*)
-      .map(new MapFunction[Integer,Integer] {
-        override def map(value: Integer): Integer = {
-          val start = System.currentTimeMillis()
-          while(System.currentTimeMillis() - start < 1000L){
-            Thread.sleep(100)
-          }
-          value + 1
-        }
-      })
-    val outputFormat = env.createTestOutputFormat(happyVerifier)
-    dataSet.output(outputFormat)
-
-      env.executeTest()
-
-    //check if a forceful stop was invoked
-    env.hasBeenStopped shouldBe true
-
-  }
-
-  ignore should "trigger a failed time-out" in {
-    val sadVerifier = new SimpleOutputVerifier[Integer] {
-      override def verify(output: util.List[Integer]): Unit = {
-        throw new FlinkTestFailedException(new AssertionError())
-      }
-    }
-
-    val env = DataSetTestEnvironment.createTestEnvironment(1)
-    env.setTimeoutInterval(1000)
-    val list = List[Integer](1,2,3,4)
-    val dataSet = env.fromElements(list: _*)
-      .map(new MapFunction[Integer, Integer] {
-        override def map(t: Integer): Integer = {
-          val start = System.currentTimeMillis()
-          while(System.currentTimeMillis() - start < 1000L){}
-          t + 1
-        }
-      })
-    val outputFormat = env.createTestOutputFormat(sadVerifier)
-    dataSet.output(outputFormat)
-//    failAfter(Span(10,Seconds)) {
-
-      an [FlinkTestFailedException] shouldBe thrownBy (env.executeTest())
-
-
-//    }
-    //check if a forceful stop was invoked
-    env.hasBeenStopped shouldBe true
-
-  }
 
   it should "handle more than one outputFormat" in {
     val env = DataSetTestEnvironment.createTestEnvironment(1)
