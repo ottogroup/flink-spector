@@ -247,7 +247,7 @@ public class StreamTestBase {
 	 * @param unit of time.
 	 * @return {@link org.flinkspector.datastream.input.time.InWindow}
 	 */
-	public static InWindow inWindow(long time, TimeUnit unit) {
+	public static InWindow intoWindow(long time, TimeUnit unit) {
 		return InWindow.to(time, unit);
 	}
 
