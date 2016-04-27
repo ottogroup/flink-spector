@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.flinkspector</groupId>
-    <artifactId>flinkspector-parent_2.10</artifactId>
+    <artifactId>flinkspector-parent_2.11</artifactId>
     <version>0.3</version>
 
 
@@ -52,8 +52,8 @@
         <slf4j.version>1.7.7</slf4j.version>
         <guava.version>18.0</guava.version>
         <!-- Default scala versions, may be overwritten by build profiles -->
-        <scala.version>2.10.4</scala.version>
-        <scala.binary.version>2.10</scala.binary.version>
+        <scala.version>2.11.7</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -63,13 +63,13 @@
         <!-- flink -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-runtime_2.10</artifactId>
+            <artifactId>flink-runtime_2.11</artifactId>
             <version>${flink.version}</version>
             <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-test-utils_2.10</artifactId>
+            <artifactId>flink-test-utils_2.11</artifactId>
             <version>${flink.version}</version>
         </dependency>
         <!-- zeromq -->
@@ -119,7 +119,7 @@
                 <plugin>
                     <groupId>net.alchim31.maven</groupId>
                     <artifactId>scala-maven-plugin</artifactId>
-                    <version>3.1.5</version>
+                    <version>3.2.2</version>
                     <configuration>
                         <recompileMode>incremental</recompileMode>
                         <javacArgs>

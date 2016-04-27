@@ -20,12 +20,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.flinkspector</groupId>
-        <artifactId>flinkspector-parent_2.10</artifactId>
+        <artifactId>flinkspector-parent_2.11</artifactId>
         <version>0.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>flinkspector-datastream_2.10</artifactId>
+    <artifactId>flinkspector-datastream_2.11</artifactId>
     <name>flinkspector-datastream</name>
 
     <packaging>jar</packaging>
@@ -33,18 +33,18 @@
     <dependencies>
         <dependency>
             <groupId>org.flinkspector</groupId>
-            <artifactId>flinkspector-core_2.10</artifactId>
+            <artifactId>flinkspector-core_2.11</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-java_2.10</artifactId>
+            <artifactId>flink-streaming-java_2.11</artifactId>
             <version>${flink.version}</version>
             <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-java_2.10</artifactId>
+            <artifactId>flink-streaming-java_2.11</artifactId>
             <version>${flink.version}</version>
         </dependency>
     </dependencies>
