@@ -133,6 +133,21 @@
     
         <plugins>
             <plugin>
+                <!--
+                This plugin can package the main artifact's sources (src/main/java)
+                -->
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <!-- just define the Java version to be used for compiling and plugins -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -151,7 +166,7 @@
     <distributionManagement>
         <repository>
             <id>bintray-ottogroup-maven</id>
-            <url>https://api.bintray.com/maven/ottogroup/maven/schedoscope</url>
+            <url>https://api.bintray.com/maven/ottogroup/maven/flinkspector</url>
         </repository>
     </distributionManagement>
 
