@@ -47,7 +47,7 @@ class DataSetEnvironmentSpec extends CoreSpec {
     DataSetTestEnvironment.createTestEnvironment(1)
   }
 
-  it should "provide a DataStreamSource" in {
+  it should "provide a OutputFormat" in {
     val env = DataSetTestEnvironment.createTestEnvironment(1)
     val dataSet = env.fromElements(1, 2, 3, 4, 5)
     val outputFormat = env.createTestOutputFormat(new Verifier(List(1, 2, 3, 4, 5)))
@@ -55,7 +55,7 @@ class DataSetEnvironmentSpec extends CoreSpec {
     env.executeTest()
   }
 
-  it should "provide a DataStreamSource and throw an exception" in {
+  it should "provide a Outputformat and throw an exception" in {
     val env = DataSetTestEnvironment.createTestEnvironment(1)
     val dataSet = env.fromElements(1, 2, 3, 4, 5)
     val outputFormat = env.createTestOutputFormat(new Verifier(List(1, 3, 4, 5)))
@@ -79,7 +79,7 @@ class DataSetEnvironmentSpec extends CoreSpec {
     an [TestFailedException] shouldBe thrownBy (env.executeTest())
   }
 
-  it should "provide a DataStreamSource from [[Input]]" in {
+  it should "provide a OutputFormat from [[Input]]" in {
     val env = DataSetTestEnvironment.createTestEnvironment(1)
     val input = new InputBuilder[Int]().emitAll(List(1, 2, 3, 4, 5))
     val dataSet = env.createTestSet(input)
