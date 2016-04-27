@@ -19,13 +19,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>flinkspector-parent</artifactId>
         <groupId>org.flinkspector</groupId>
-        <version>0.3-SNAPSHOT</version>
+        <artifactId>flinkspector-parent_2.10</artifactId>
+        <version>0.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>flinkspector-core</artifactId>
+    <artifactId>flinkspector-core_2.10</artifactId>
     <name>flinkspector-core</name>
 
     <packaging>jar</packaging>

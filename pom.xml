@@ -20,8 +20,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.flinkspector</groupId>
-    <artifactId>flinkspector-parent</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <artifactId>flinkspector-parent_2.10</artifactId>
+    <version>0.3</version>
 
 
     <name>Flinkspector</name>
