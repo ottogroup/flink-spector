@@ -39,10 +39,10 @@ public void testWindowing() {
 	// Define the input DataStream:	
 	DataStream<Tuple2<Integer, String>> testStream =
 			createTimedTestStreamWith(Tuple2.of(1, "fritz"))
-					.emit(Tuple2.of(1, "hans"), after(15, seconds))	
-					.emit(Tuple2.of(1, "heidi"), before(5, seconds))	
-					.emit(Tuple2.of(3, "peter"), after(20, seconds), times(10))	
-					.repeatAll(after(10, seconds), times(1))
+					.emit(Tuple2.of(1, "hans"))
+					.emit(Tuple2.of(1, "heidi"), intoWindow(30, seconds)
+					.emit(Tuple2.of(3, "peter"), intoWindow(1, minutes)
+					.repeatAll(times(2))
 					.close();
 
 		
@@ -64,6 +64,27 @@ You can find more extensive examples here:
 
 ## Getting started
 
+### Get Latest Release:
+> Note: The current build works with Flink versions 1.0.0 and later.
+> If you're using Scala 2.11 change the ending of the artifactId.
+Include in your project's pom.xml:
+ ```xml
+<dependency>
+     <groupId>org.flinkspector</groupId>
+     <articaftId>flinkspector-dataset_2.10</artifactId>
+     <version>0.3</version>
+</dependency>
+```
+or for the Flink DataStream API:
+
+```xml
+<dependency>
+     <groupId>org.flinkspector</groupId>
+     <articaftId>flinkspector-datastream_2.10</artifactId>
+     <version>0.3</version>
+</dependency>
+```
+
 ### Manual Build:
 1. Clone this repo: `git clone https://github.com/ottogroup/flink-spector`.
 
@@ -76,7 +97,7 @@ You can find more extensive examples here:
 <dependency>
     <groupId>org.flinkspector</groupId>
     <articaftId>flinkspector-dataset</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
 </dependency>
 ```
 or for the Flink DataStream API:
@@ -85,7 +106,7 @@ or for the Flink DataStream API:
 <dependency>
     <groupId>org.flinkspector</groupId>
     <articaftId>flinkspector-datastream</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
 </dependency>
 ```
 
