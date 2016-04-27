@@ -103,12 +103,12 @@ class TestSinkSpec extends CoreSpec {
     SerializeUtil.deserialize(MessageType.REC.getPayload(bytes), ser)
   }
 
-  def processOpen(bytes: Array[Byte]): (String,TypeSerializer[Nothing]) = {
+  def processOpen(bytes: Array[Byte]): (String, TypeSerializer[Nothing]) = {
     val msg = new String(bytes, "UTF-8")
     val values: String = msg.split(" ;").head
     val out = MessageType.OPEN.getPayload(bytes)
     val typeSerializer = SerializeUtil.deserialize(out)
-    (values,typeSerializer)
+    (values, typeSerializer)
   }
 
 }

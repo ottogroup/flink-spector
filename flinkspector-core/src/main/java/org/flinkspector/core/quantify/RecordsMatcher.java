@@ -24,6 +24,7 @@ import org.hamcrest.Matcher;
  * matching an iterable of tuples.
  * Provides a set of methods to define the number of matches necessary to
  * fulfill the expectation.
+ *
  * @param <T>
  */
 public class RecordsMatcher<T> {

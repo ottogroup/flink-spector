@@ -72,7 +72,7 @@ public class MatcherCombiner {
 	 * @return
 	 */
 	public static <T> Matcher<T> exactly(Iterable<Matcher<? super T>> matchers,
-	                                     int n) {
+										 int n) {
 		return Exactly.exactly(matchers, n);
 	}
 
@@ -86,7 +86,7 @@ public class MatcherCombiner {
 	 * @return
 	 */
 	public static <T> Matcher<T> atLeast(Iterable<Matcher<? super T>> matchers,
-	                                     int n) {
+										 int n) {
 		return AtLeast.atLeast(matchers, n);
 	}
 
@@ -100,7 +100,7 @@ public class MatcherCombiner {
 	 * @return
 	 */
 	public static <T> Matcher<T> atMost(Iterable<Matcher<? super T>> matchers,
-	                                    int n) {
+										int n) {
 		return AtMost.atMost(matchers, n);
 	}
 

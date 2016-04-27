@@ -18,19 +18,20 @@ package org.flinkspector.dataset
 
 import org.apache.flink.api.java.DataSet
 import org.flinkspector.core.collection.ExpectedRecords
+
 import scala.collection.JavaConversions._
 
-class TestBaseSpec extends CoreSpec{
+class TestBaseSpec extends CoreSpec {
 
   it should "run a basic test" in {
     val base = new DataSetTestBase
     base.initialize()
 
-    val coll : java.util.Collection[Int] = List(1,2,3,4)
-    val dataSet : DataSet[Int] = base.createTestDataSet(coll)
+    val coll: java.util.Collection[Int] = List(1, 2, 3, 4)
+    val dataSet: DataSet[Int] = base.createTestDataSet(coll)
     val matcher = ExpectedRecords.create(coll)
 
-    base.assertDataSet(dataSet,matcher)
+    base.assertDataSet(dataSet, matcher)
     base.executeTest()
   }
 
@@ -38,12 +39,12 @@ class TestBaseSpec extends CoreSpec{
     val base = new DataSetTestBase
     base.initialize()
 
-    val coll : java.util.Collection[Int] = List(1,2,3,4)
-    val dataSet : DataSet[Int] = base.createTestDataSet(List(1,2,3))
+    val coll: java.util.Collection[Int] = List(1, 2, 3, 4)
+    val dataSet: DataSet[Int] = base.createTestDataSet(List(1, 2, 3))
     val matcher = ExpectedRecords.create(coll)
 
-    base.assertDataSet(dataSet,matcher)
-    an [AssertionError] shouldBe thrownBy(base.executeTest())
+    base.assertDataSet(dataSet, matcher)
+    an[AssertionError] shouldBe thrownBy(base.executeTest())
   }
 
 
@@ -51,13 +52,13 @@ class TestBaseSpec extends CoreSpec{
     val base = new DataSetTestBase
     base.initialize()
 
-    val coll : java.util.Collection[Int] = List(1,2,3,4)
-    val dataSet1 : DataSet[Int] = base.createTestDataSet(coll)
-    val dataSet2 : DataSet[Int] = base.createTestDataSet(coll)
+    val coll: java.util.Collection[Int] = List(1, 2, 3, 4)
+    val dataSet1: DataSet[Int] = base.createTestDataSet(coll)
+    val dataSet2: DataSet[Int] = base.createTestDataSet(coll)
     val matcher = ExpectedRecords.create(coll)
 
-    base.assertDataSet(dataSet1,matcher)
-    base.assertDataSet(dataSet2,matcher)
+    base.assertDataSet(dataSet1, matcher)
+    base.assertDataSet(dataSet2, matcher)
     base.executeTest()
   }
 
@@ -65,14 +66,14 @@ class TestBaseSpec extends CoreSpec{
     val base = new DataSetTestBase
     base.initialize()
 
-    val coll : java.util.Collection[Int] = List(1,2,3,4)
-    val dataSet1 : DataSet[Int] = base.createTestDataSet(coll)
-    val dataSet2 : DataSet[Int] = base.createTestDataSet(List(1,2,3))
+    val coll: java.util.Collection[Int] = List(1, 2, 3, 4)
+    val dataSet1: DataSet[Int] = base.createTestDataSet(coll)
+    val dataSet2: DataSet[Int] = base.createTestDataSet(List(1, 2, 3))
     val matcher = ExpectedRecords.create(coll)
 
-    base.assertDataSet(dataSet1,matcher)
-    base.assertDataSet(dataSet2,matcher)
-    an [AssertionError] shouldBe thrownBy (base.executeTest())
+    base.assertDataSet(dataSet1, matcher)
+    base.assertDataSet(dataSet2, matcher)
+    an[AssertionError] shouldBe thrownBy(base.executeTest())
   }
 
 

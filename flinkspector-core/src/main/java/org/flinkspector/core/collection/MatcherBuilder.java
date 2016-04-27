@@ -25,6 +25,7 @@ import java.util.List;
 
 /**
  * Wrapper for the scala {@link ListMatcherBuilder}
+ *
  * @param <T>
  */
 public class MatcherBuilder<T> extends OutputMatcher<T> {
@@ -59,7 +60,7 @@ public class MatcherBuilder<T> extends OutputMatcher<T> {
 	 * elements in the output
 	 */
 	public FromListMatcher inOrder(Order order) {
-		if(order == Order.STRICT) {
+		if (order == Order.STRICT) {
 			return new SeriesMatcher<T>(builder);
 		}
 		return new OrderMatcher<T>(builder);

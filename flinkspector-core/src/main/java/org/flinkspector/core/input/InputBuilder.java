@@ -44,7 +44,7 @@ public class InputBuilder<T> implements Input<T> {
 	 * @param record
 	 */
 	public InputBuilder<T> emit(T record) {
-		if(record == null) {
+		if (record == null) {
 			throw new IllegalArgumentException("Record has too be not null!");
 		}
 		input.add(record);
@@ -55,7 +55,7 @@ public class InputBuilder<T> implements Input<T> {
 	 * Adds a new element to the input multiple times
 	 *
 	 * @param record
-	 * @param times to repeat
+	 * @param times  to repeat
 	 */
 	public InputBuilder<T> emit(T record, int times) {
 		if (times < 1) {

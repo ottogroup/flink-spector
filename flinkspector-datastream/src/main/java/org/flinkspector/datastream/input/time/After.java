@@ -24,16 +24,17 @@ import java.util.concurrent.TimeUnit;
 public class After extends TimeSpan {
 	private long timeSpan;
 
-	public static After period(long time, TimeUnit timeUnit){
-		return new After(time,timeUnit);
+	public static After period(long time, TimeUnit timeUnit) {
+		return new After(time, timeUnit);
 	}
 
-	private After(long time,TimeUnit timeUnit) {
+	private After(long time, TimeUnit timeUnit) {
 		this.timeSpan = timeUnit.toMillis(time);
 	}
 
 	/**
 	 * Getter for defined time span
+	 *
 	 * @return time span in milliseconds
 	 */
 	@Override

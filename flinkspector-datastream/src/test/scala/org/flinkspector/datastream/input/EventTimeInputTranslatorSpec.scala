@@ -19,7 +19,7 @@ import org.flinkspector.CoreSpec
 
 import scala.collection.JavaConversions._
 
-class EventTimeInputTranslatorSpec extends CoreSpec{
+class EventTimeInputTranslatorSpec extends CoreSpec {
 
   class StringToInt(input: EventTimeInput[String])
     extends EventTimeInputTranslator[String, Integer](input) {
@@ -27,8 +27,8 @@ class EventTimeInputTranslatorSpec extends CoreSpec{
   }
 
   "The translator" should "transform string input into integer input" in {
-    val input = new TestEventTimeInput(List("1","2","3","4","5"))
-    recordsToValues(new StringToInt(input).getInput) should contain only(1,2,3,4,5)
+    val input = new TestEventTimeInput(List("1", "2", "3", "4", "5"))
+    recordsToValues(new StringToInt(input).getInput) should contain only(1, 2, 3, 4, 5)
   }
 
 }

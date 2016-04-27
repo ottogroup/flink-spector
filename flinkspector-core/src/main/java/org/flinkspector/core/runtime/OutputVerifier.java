@@ -20,6 +20,7 @@ package org.flinkspector.core.runtime;
 /**
  * Implement this interface to verify the input
  * from test endpoints.
+ *
  * @param <T>
  */
 public interface OutputVerifier<T> {

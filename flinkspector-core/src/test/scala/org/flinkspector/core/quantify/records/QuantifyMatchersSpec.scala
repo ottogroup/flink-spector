@@ -23,7 +23,7 @@ import scala.collection.JavaConverters._
 class QuantifyMatchersSpec extends CoreSpec {
 
   //TODO make this test better readable
-  val list = List(1,2,3,4,5,6,7,8)
+  val list = List(1, 2, 3, 4, 5, 6, 7, 8)
 
   "The OnAny matcher" should "implement any" in {
     OnAny.any(Matchers.is(2))
@@ -59,24 +59,24 @@ class QuantifyMatchersSpec extends CoreSpec {
   }
 
   "The OnAtLeast matcher" should "implement atLeast" in {
-    OnAtLeast.atLeast(Matchers.is(2),2)
+    OnAtLeast.atLeast(Matchers.is(2), 2)
       .matches(list.asJava) should be(false)
-    OnAtLeast.atLeast(Matchers.greaterThan(new Integer(6)),2)
+    OnAtLeast.atLeast(Matchers.greaterThan(new Integer(6)), 2)
       .matches(list.asJava) should be(true)
-    OnAtLeast.atLeast(Matchers.lessThan(new Integer(12)),2)
+    OnAtLeast.atLeast(Matchers.lessThan(new Integer(12)), 2)
       .matches(list.asJava) should be(true)
-    OnAtLeast.atLeast(Matchers.greaterThan(new Integer(12)),2)
+    OnAtLeast.atLeast(Matchers.greaterThan(new Integer(12)), 2)
       .matches(list.asJava) should be(false)
   }
 
   "The OnExactly matcher" should "implement atMost" in {
-    OnExactly.exactly(Matchers.is(2),2)
+    OnExactly.exactly(Matchers.is(2), 2)
       .matches(list.asJava) should be(false)
-    OnExactly.exactly(Matchers.greaterThan(new Integer(6)),2)
+    OnExactly.exactly(Matchers.greaterThan(new Integer(6)), 2)
       .matches(list.asJava) should be(true)
-    OnExactly.exactly(Matchers.lessThan(new Integer(12)),2)
+    OnExactly.exactly(Matchers.lessThan(new Integer(12)), 2)
       .matches(list.asJava) should be(false)
-    OnExactly.exactly(Matchers.greaterThan(new Integer(12)),2)
+    OnExactly.exactly(Matchers.greaterThan(new Integer(12)), 2)
       .matches(list.asJava) should be(false)
   }
 

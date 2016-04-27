@@ -21,6 +21,7 @@ import org.hamcrest.TypeSafeMatcher;
 /**
  * Used to cover up {@link TypeSafeMatcher}s for {@link Iterable}s to provide a more consize
  * matcher type to use for verifying test results.
+ *
  * @param <T>
  */
 public abstract class OutputMatcher<T> extends TypeSafeMatcher<Iterable<T>> {

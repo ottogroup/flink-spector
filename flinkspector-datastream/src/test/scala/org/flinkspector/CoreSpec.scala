@@ -17,8 +17,6 @@ package org.flinkspector
 
 import java.util.{List => JList}
 
-import collection.JavaConverters._
-
 import org.apache.flink.streaming.runtime.streamrecord
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord
 import org.flinkspector.core.input.Input
@@ -27,14 +25,15 @@ import org.scalatest.concurrent.Timeouts
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FlatSpec, Matchers, OptionValues}
 
+import scala.collection.JavaConverters._
 
 
 abstract class CoreSpec
   extends FlatSpec
-  with Matchers
-  with OptionValues
-  with MockitoSugar
-  with Timeouts {
+    with Matchers
+    with OptionValues
+    with MockitoSugar
+    with Timeouts {
 
   class TestEventTimeInput[T](input: List[T]) extends EventTimeInput[T] {
     override def getInput: JList[StreamRecord[T]] =

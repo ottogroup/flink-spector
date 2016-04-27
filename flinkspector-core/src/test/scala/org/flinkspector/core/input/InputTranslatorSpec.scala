@@ -17,7 +17,7 @@ package org.flinkspector.core.input
 
 import org.flinkspector.core.CoreSpec
 
-class InputTranslatorSpec extends CoreSpec{
+class InputTranslatorSpec extends CoreSpec {
 
   class StringToInt(input: Input[String])
     extends InputTranslator[String, Integer](input) {
@@ -25,7 +25,7 @@ class InputTranslatorSpec extends CoreSpec{
   }
 
   "The translator" should "transform string input into integer input" in {
-    val input = new TestInput(List("1","2","3","4","5"))
-    new StringToInt(input).getInput should contain only(1,2,3,4,5)
+    val input = new TestInput(List("1", "2", "3", "4", "5"))
+    new StringToInt(input).getInput should contain only(1, 2, 3, 4, 5)
   }
 }

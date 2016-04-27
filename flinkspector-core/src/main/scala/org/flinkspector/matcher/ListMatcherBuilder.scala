@@ -22,11 +22,12 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable.ArrayBuffer
 
 /**
- * This class is used to define expectations to verify test output.
- * The MatcherBuilder generates a list of [[ListMatcher]]'s which it will
- * use to check the output.
- * @tparam T
- */
+  * This class is used to define expectations to verify test output.
+  * The MatcherBuilder generates a list of [[ListMatcher]]'s which it will
+  * use to check the output.
+  *
+  * @tparam T
+  */
 class ListMatcherBuilder[T](val right: List[T]) extends TypeSafeDiagnosingMatcher[List[T]] {
 
   /** List of [[ListMatcher]]s to define expectations  */
@@ -48,8 +49,8 @@ class ListMatcherBuilder[T](val right: List[T]) extends TypeSafeDiagnosingMatche
   //  }
 
   /**
-   * Tests whether the output contains only the expected records.
-   */
+    * Tests whether the output contains only the expected records.
+    */
   def only() = {
     constraints += ListMatchers.containsOnly[T](right)
     onlySelected = true
@@ -57,34 +58,35 @@ class ListMatcherBuilder[T](val right: List[T]) extends TypeSafeDiagnosingMatche
   }
 
   /**
-   * Tests whether the output has the same number of occurrences for each element
-   * in the expected output
-   */
+    * Tests whether the output has the same number of occurrences for each element
+    * in the expected output
+    */
   def sameFrequency() = {
     constraints += ListMatchers.sameFrequency[T](right)
     this
   }
 
   /**
-   * Provides a matcher to verify the order of 
-   * elements in the output.
-   */
+    * Provides a matcher to verify the order of
+    * elements in the output.
+    */
   def inOrder(): OrderMatcher[T] = {
     new OrderMatcher[T](constraints, right)
   }
 
   /**
-   * Provides a matcher to verify the order of
-   * elements in the output.
-   */
+    * Provides a matcher to verify the order of
+    * elements in the output.
+    */
   def inSeries(): SeriesMatcher[T] = {
     new SeriesMatcher[T](constraints, right)
   }
 
   /**
-   * Getter for the list of contraints.
-   * @return array of [[ListMatcher]]
-   */
+    * Getter for the list of contraints.
+    *
+    * @return array of [[ListMatcher]]
+    */
   def getConstraints: ArrayBuffer[ListMatcher[T]] = {
     constraints
   }
@@ -94,10 +96,11 @@ class ListMatcherBuilder[T](val right: List[T]) extends TypeSafeDiagnosingMatche
   }
 
   /**
-   * Checks if the list matches expectation.
-   * @param left actual output.
-   * @throws TestFailedException if the predicate does not match.
-   */
+    * Checks if the list matches expectation.
+    *
+    * @param left actual output.
+    * @throws TestFailedException if the predicate does not match.
+    */
   override def matchesSafely(left: scala.List[T], mismatch: Description): Boolean = {
     if (constraints.isEmpty || !onlySelected) {
       constraints += ListMatchers.containsAll[T](right)
@@ -123,7 +126,7 @@ class ListMatcherBuilder[T](val right: List[T]) extends TypeSafeDiagnosingMatche
     description.appendValue(right)
     val orderMatcher = constraints
       .filterNot(_.toString != "order matcher")
-    if(orderMatcher.nonEmpty) {
+    if (orderMatcher.nonEmpty) {
       description.appendText(" and ")
       orderMatcher.foreach { m =>
         description.appendDescriptionOf(m)

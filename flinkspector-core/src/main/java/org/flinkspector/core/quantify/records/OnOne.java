@@ -23,12 +23,14 @@ import org.hamcrest.Matcher;
 /**
  * Provides a {@link Matcher} that is successful if exactly one
  * item in the examined {@link Iterable} is a positive match.
+ *
  * @param <T>
  */
 public class OnOne<T> extends WhileList<T> {
 
 	/**
 	 * Default constructor
+	 *
 	 * @param matcher to apply to the {@link Iterable}
 	 */
 	public OnOne(Matcher<T> matcher) {

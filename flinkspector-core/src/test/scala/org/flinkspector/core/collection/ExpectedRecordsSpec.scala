@@ -25,7 +25,7 @@ class ExpectedRecordsSpec extends CoreSpec {
   "expected records" should "check for all per default" in {
     val expectOutput = new ExpectedRecords[Int]
 
-    expectOutput.expectAll(List(1,2,3,4))
+    expectOutput.expectAll(List(1, 2, 3, 4))
 
     expectOutput.matchesSafely(List(1, 2, 3, 4)) shouldBe true
     expectOutput.matchesSafely(List(1, 2, 3)) shouldBe false
@@ -35,7 +35,7 @@ class ExpectedRecordsSpec extends CoreSpec {
   it should "take refinements" in {
     val expectOutput = new ExpectedRecords[Int]
 
-    expectOutput.expectAll(List(1,2,3,4))
+    expectOutput.expectAll(List(1, 2, 3, 4))
     expectOutput.refine().only()
 
     //specify

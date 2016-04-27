@@ -32,6 +32,7 @@ import java.util.List;
  * 		.assertThat(lessThan(11))
  * 		anyOfThem().onEachRecord();
  * </pre>
+ *
  * @param <T>
  */
 public class MatchRecords<T> {
@@ -64,6 +65,7 @@ public class MatchRecords<T> {
 
 	/**
 	 * Add a {@link Matcher} to the list of assertions to verify.
+	 *
 	 * @param matcher testing the output records
 	 */
 	public MatchRecords<T> assertThat(Matcher<? super T> matcher) {

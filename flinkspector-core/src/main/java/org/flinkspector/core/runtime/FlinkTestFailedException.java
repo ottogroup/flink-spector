@@ -24,7 +24,7 @@ package org.flinkspector.core.runtime;
 public class FlinkTestFailedException extends Exception {
 	public FlinkTestFailedException(Throwable throwable) {
 		super(throwable);
-		if(throwable == null) {
+		if (throwable == null) {
 			throw new IllegalArgumentException("The cause has to be defined. " +
 					"It will be unwrapped by the runtime later.");
 		}

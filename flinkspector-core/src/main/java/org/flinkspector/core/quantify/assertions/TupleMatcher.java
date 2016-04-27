@@ -26,6 +26,7 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 /**
  * Wraps a {@link Matcher} to verify a single value in a {@link Tuple}.
  * Uses a {@link TupleMask} on the tuple and key to identify the value.
+ *
  * @param <T>
  */
 public class TupleMatcher<T extends Tuple> extends TypeSafeDiagnosingMatcher<T> {

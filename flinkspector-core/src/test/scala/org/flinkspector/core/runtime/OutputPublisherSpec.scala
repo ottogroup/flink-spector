@@ -16,16 +16,14 @@
 
 package org.flinkspector.core.runtime
 
-import com.google.common.primitives.Bytes
 import org.apache.flink.api.common.ExecutionConfig
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.typeutils.TypeExtractor
 import org.flinkspector.core.CoreSpec
 import org.flinkspector.core.util.SerializeUtil
-import org.zeromq.ZContext
-import org.zeromq.ZMQ
+import org.zeromq.{ZContext, ZMQ}
 
-class OutputPublisherSpec extends CoreSpec{
+class OutputPublisherSpec extends CoreSpec {
 
   val config = new ExecutionConfig()
   val typeInfo: TypeInformation[String] = TypeExtractor.getForObject("test")
@@ -52,7 +50,7 @@ class OutputPublisherSpec extends CoreSpec{
   }
 
   "The outputPublisher" should "send a open message" in new OutputPublisherCase {
-    publisher.sendOpen(0,0,SerializeUtil.serialize(serializer))
+    publisher.sendOpen(0, 0, SerializeUtil.serialize(serializer))
     val open = subscriber.recv()
     MessageType.getMessageType(open) shouldBe MessageType.OPEN
     close()
@@ -67,7 +65,7 @@ class OutputPublisherSpec extends CoreSpec{
   }
 
   "The outputPublisher" should "send a close message" in new OutputPublisherCase {
-    publisher.sendOpen(0,0,SerializeUtil.serialize(serializer))
+    publisher.sendOpen(0, 0, SerializeUtil.serialize(serializer))
     subscriber.recv()
     publisher.sendClose(2)
     val record = subscriber.recv()

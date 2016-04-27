@@ -41,7 +41,7 @@ abstract public class WhileCombineMatcher<T> extends TypeSafeDiagnosingMatcher<T
 				mismatches.appendText("; ");
 			} else {
 				matches++;
-			// Check exit condition if not valid exit matcher.
+				// Check exit condition if not valid exit matcher.
 				if (!validWhile(matches)) {
 					describeMismatch(matches, true, mismatch, mismatches);
 					return false;
@@ -75,7 +75,7 @@ abstract public class WhileCombineMatcher<T> extends TypeSafeDiagnosingMatcher<T
 		description.appendText(prefix());
 		description.appendText("(");
 		for (Matcher m : this.matchers) {
-			if(!description.toString().endsWith("(")) {
+			if (!description.toString().endsWith("(")) {
 				description.appendText("; ");
 			}
 			description.appendDescriptionOf(m);
@@ -89,7 +89,7 @@ abstract public class WhileCombineMatcher<T> extends TypeSafeDiagnosingMatcher<T
 
 	public abstract String prefix();
 
-	public boolean validAfter(int matches){
+	public boolean validAfter(int matches) {
 		return true;
 	}
 

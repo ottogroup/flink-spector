@@ -18,28 +18,30 @@ package org.flinkspector.matcher
 import scala.collection.mutable.ArrayBuffer
 
 /**
- * Companion object
- */
+  * Companion object
+  */
 object SeriesMatcher {
 
   /**
-   * Helper function to startWith a [[SeriesMatcher]] from a [[ListMatcherBuilder]]
-   * @param builder to use for creation.
-   * @tparam T
-   * @return [[SeriesMatcher]]
-   */
+    * Helper function to startWith a [[SeriesMatcher]] from a [[ListMatcherBuilder]]
+    *
+    * @param builder to use for creation.
+    * @tparam T
+    * @return [[SeriesMatcher]]
+    */
   def createFromBuilder[T](builder: ListMatcherBuilder[T]): SeriesMatcher[T] = {
     new SeriesMatcher[T](builder.getConstraints, builder.right)
   }
 }
 
 /**
- * Extends [[PartialMatcher]] to startWith a matcher, which tests
- * whether a list is contained in the output.
- * @param constraints list of [[ListMatcher]] that define the current expectations.
- * @param right list of expected elements
- * @tparam T
- */
+  * Extends [[PartialMatcher]] to startWith a matcher, which tests
+  * whether a list is contained in the output.
+  *
+  * @param constraints list of [[ListMatcher]] that define the current expectations.
+  * @param right       list of expected elements
+  * @tparam T
+  */
 class SeriesMatcher[T](constraints: ArrayBuffer[ListMatcher[T]],
                        right: List[T])
   extends PartialMatcher[T](constraints, right) {

@@ -26,6 +26,7 @@ import java.util.Collection;
  * This builder is used to define input in a fluent way.
  * The functionality of {@link InputBuilder} is used to build a list
  * of input records. And converted to a {@link DataStreamSource}.
+ *
  * @param <T>
  */
 public class SourceBuilder<T> {
@@ -40,19 +41,21 @@ public class SourceBuilder<T> {
 	/**
 	 * Factory method used to dynamically type the {@link SourceBuilder}
 	 * using the type of the provided input object.
+	 *
 	 * @param record first record to emit
-	 * @param env to work on.
+	 * @param env    to work on.
 	 * @param <T>
 	 * @return created {@link SourceBuilder}
 	 */
 	public static <T> SourceBuilder<T> createBuilder(T record,
-	                                                      DataStreamTestEnvironment env) {
+													 DataStreamTestEnvironment env) {
 		SourceBuilder<T> sourceBuilder = new SourceBuilder<>(env);
 		return sourceBuilder.emit(record);
 	}
 
 	/**
 	 * Produces a {@link DataStreamSource} with the predefined input.
+	 *
 	 * @return {@link DataStreamSource}
 	 */
 	public DataStreamSource<T> close() {

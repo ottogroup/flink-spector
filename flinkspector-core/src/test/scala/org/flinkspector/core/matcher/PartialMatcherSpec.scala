@@ -25,8 +25,8 @@ import scala.collection.mutable.ArrayBuffer
 class PartialMatcherSpec extends CoreSpec {
 
   /**
-   * test case setup
-   */
+    * test case setup
+    */
   trait PartialMatcherCase {
     val listMatcher = mock[ListMatcher[Int]]
     when(listMatcher.matchesSafely(List())).thenReturn(true)

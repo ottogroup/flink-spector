@@ -20,6 +20,7 @@ import java.util.List;
 
 /**
  * Implement this interface when you want to provide input for tests.
+ *
  * @param <T>
  */
 public interface Input<T> {

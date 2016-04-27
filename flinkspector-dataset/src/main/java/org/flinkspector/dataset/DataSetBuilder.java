@@ -25,6 +25,7 @@ import java.util.Collection;
  * This builder is used to define input in a fluent way.
  * The functionality of {@link InputBuilder} is used to build a list
  * of input records. And converted to a {@link DataSet}.
+ *
  * @param <T>
  */
 public class DataSetBuilder<T> {
@@ -39,19 +40,21 @@ public class DataSetBuilder<T> {
 	/**
 	 * Factory method used to dynamically type the {@link DataSetBuilder}
 	 * using the type of the provided input object.
+	 *
 	 * @param record first record to emit
-	 * @param env to work on.
+	 * @param env    to work on.
 	 * @param <T>
 	 * @return created {@link DataSetBuilder}
 	 */
 	public static <T> DataSetBuilder<T> createBuilder(T record,
-	                                                      DataSetTestEnvironment env) {
+													  DataSetTestEnvironment env) {
 		DataSetBuilder<T> sourceBuilder = new DataSetBuilder<>(env);
 		return sourceBuilder.emit(record);
 	}
 
 	/**
 	 * Produces a {@link DataSet} with the predefined input.
+	 *
 	 * @return {@link DataSet}
 	 */
 	public DataSet<T> close() {

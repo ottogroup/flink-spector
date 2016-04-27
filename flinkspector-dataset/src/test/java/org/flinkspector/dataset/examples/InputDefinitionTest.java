@@ -54,7 +54,7 @@ public class InputDefinitionTest extends DataSetTestBase {
 		}
 	}
 
-	
+
 	public void myTest() {
 
 		Input<String> stringInput = InputBuilder
@@ -64,24 +64,22 @@ public class InputDefinitionTest extends DataSetTestBase {
 				.emit("{ \"name\":\"samanta\", \"age\":\"45\", \"ts\":12, \"id\":\"joto12345\"}");
 
 
+		DataSet<String> dataSet1 = createTestDataSet(asList("fritz", "peter", "hans"));
 
-
-		DataSet<String> dataSet1 = createTestDataSet(asList("fritz","peter","hans"));
-
-		Input<Tuple2<String,Integer>> input = InputBuilder
-				.startWith(Tuple2.of("one",1))
-				.emit(Tuple2.of("two",2))
-				.emit(Tuple2.of("three",3))
+		Input<Tuple2<String, Integer>> input = InputBuilder
+				.startWith(Tuple2.of("one", 1))
+				.emit(Tuple2.of("two", 2))
+				.emit(Tuple2.of("three", 3))
 				.repeatAll(times(2))
 				.emit(Tuple2.of("four", 3), times(3));
 
 		Input<String> translatedInput = new TupleToJsonString(input);
 
-		DataSet<Tuple2<String,Integer>> dataSet2 = createTestDataSet(input);
+		DataSet<Tuple2<String, Integer>> dataSet2 = createTestDataSet(input);
 
-		DataSet<Tuple2<String,Integer>> dataSet3 = createTestDataSetWith(Tuple2.of("one",1))
-				.emit(Tuple2.of("two",2))
-				.emit(Tuple2.of("three",3))
+		DataSet<Tuple2<String, Integer>> dataSet3 = createTestDataSetWith(Tuple2.of("one", 1))
+				.emit(Tuple2.of("two", 2))
+				.emit(Tuple2.of("three", 3))
 				.repeatAll(times(2))
 				.emit(Tuple2.of("four", 3), times(3))
 				.close();

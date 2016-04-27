@@ -62,7 +62,7 @@ public class Exactly<T> extends WhileCombineMatcher<T> {
 
 	@Factory
 	public static <T> Exactly<T> exactly(Iterable<Matcher<? super T>> matchers,
-													int n) {
+										 int n) {
 		return new Exactly<T>(matchers, n);
 	}
 }

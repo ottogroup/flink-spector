@@ -40,9 +40,10 @@ public class SerializeUtil {
 
 	/**
 	 * Serialize an object using a TypeSerializer.
-	 * @param object to serialize
+	 *
+	 * @param object     to serialize
 	 * @param serializer to use;
-	 * @param <IN> type of the object
+	 * @param <IN>       type of the object
 	 * @return serialized object
 	 * @throws IOException
 	 */
@@ -55,9 +56,10 @@ public class SerializeUtil {
 
 	/**
 	 * Deserializes an byte array using the provided TypeSerializer.
-	 * @param bytes byte array containing the serialized object
+	 *
+	 * @param bytes      byte array containing the serialized object
 	 * @param serializer to use
-	 * @param <OUT> type of the serialized object
+	 * @param <OUT>      type of the serialized object
 	 * @return deserialized object
 	 * @throws IOException
 	 */
@@ -69,8 +71,9 @@ public class SerializeUtil {
 
 	/**
 	 * Deserializes a serialized TypeSerializer
+	 *
 	 * @param bytes serialized TypeSerializer
-	 * @param <T> type of the serializer
+	 * @param <T>   type of the serializer
 	 * @return deserialized TypeSerializer
 	 * @throws IOException
 	 */
@@ -102,8 +105,9 @@ public class SerializeUtil {
 
 	/**
 	 * Serialize an TypeSerializer
+	 *
 	 * @param serializer to serialize
-	 * @param <T> type of the serializer
+	 * @param <T>        type of the serializer
 	 * @return serialized TypeSerializer
 	 * @throws IOException
 	 */

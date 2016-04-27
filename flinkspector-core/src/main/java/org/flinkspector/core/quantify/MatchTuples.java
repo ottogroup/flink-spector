@@ -24,12 +24,12 @@ import org.hamcrest.Matcher;
  * Enables the use of a {@link TupleMask} to map a {@link Tuple} to string keys.
  * And then use these keys in combination with hamcrest's {@link Matcher}s to define
  * expectations that query the output like a table.
- * <p/>
+ * <p>
  * The class holds a list of matcher and string key pairs.
  * The user can add a set of pairs and in the next step define,
  * how many of these matchers have to be valid for a defined set of
  * records.
- * <p/>
+ * <p>
  * <pre>
  * {@code
  * new MatchTuples<Tuple2<String,Integer>>("name","age")
@@ -73,25 +73,26 @@ public class MatchTuples<T extends Tuple> extends MatchRecords<T> {
 	 * from a set of string keys.
 	 *
 	 * @param first key
-	 * @param rest of keys
+	 * @param rest  of keys
 	 */
 	public MatchTuples(String first, String... rest) {
-		this(new TupleMask<T>(first,rest));
+		this(new TupleMask<T>(first, rest));
 	}
 
 	/**
 	 * Add a new assertion based on tuple to the list.
 	 *
-	 * @param key   of the field
+	 * @param key     of the field
 	 * @param matcher matcher to use on the field
 	 */
 	public MatchTuples<T> assertThat(String key, Matcher matcher) {
-		assertThat(new TupleMatcher<T>(key, matcher,mask));
+		assertThat(new TupleMatcher<T>(key, matcher, mask));
 		return this;
 	}
 
 	/**
 	 * Add a {@link Matcher} to the list of assertions to verify.
+	 *
 	 * @param matcher testing the output records
 	 */
 	public MatchTuples<T> assertThatRecord(Matcher<? super T> matcher) {

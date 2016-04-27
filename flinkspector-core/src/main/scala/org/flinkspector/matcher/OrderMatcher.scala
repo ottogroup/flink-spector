@@ -18,29 +18,31 @@ package org.flinkspector.matcher
 import scala.collection.mutable.ArrayBuffer
 
 /**
- * Companion object
- */
+  * Companion object
+  */
 object OrderMatcher {
   /**
-   * Helper method to startWith a [[OrderMatcher]] from a [[ListMatcherBuilder]]
-   * @param builder to use for creation.
-   * @tparam T matched type
-   * @return [[OrderMatcher]]
-   */
-  def createFromBuilder[T](builder: ListMatcherBuilder[T]) : OrderMatcher[T] = {
-    new OrderMatcher[T](builder.getConstraints,builder.right)
+    * Helper method to startWith a [[OrderMatcher]] from a [[ListMatcherBuilder]]
+    *
+    * @param builder to use for creation.
+    * @tparam T matched type
+    * @return [[OrderMatcher]]
+    */
+  def createFromBuilder[T](builder: ListMatcherBuilder[T]): OrderMatcher[T] = {
+    new OrderMatcher[T](builder.getConstraints, builder.right)
   }
 }
 
 /**
- * Extends [[PartialMatcher]] to test the order of records in an list.
- * @param constraints list of [[ListMatcher]] that define the current expectations
- * @param right list of expected elements
- * @tparam T
- */
+  * Extends [[PartialMatcher]] to test the order of records in an list.
+  *
+  * @param constraints list of [[ListMatcher]] that define the current expectations
+  * @param right       list of expected elements
+  * @tparam T
+  */
 class OrderMatcher[T](val constraints: ArrayBuffer[ListMatcher[T]],
-                      right : List[T])
-  extends PartialMatcher[T](constraints,right) {
+                      right: List[T])
+  extends PartialMatcher[T](constraints, right) {
 
   override def getConcreteMatcher(right: List[T]): ListMatcher[T] = {
     ListMatchers.containsInOrder(right)

@@ -23,10 +23,8 @@ import org.flinkspector.core.quantify.OutputMatcher;
 import org.flinkspector.datastream.DataStreamTestBase;
 import org.flinkspector.datastream.input.time.InWindow;
 
-import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.either;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
 //import to use the dsl of hamcrest:
@@ -34,7 +32,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * This example shows how to startWith test input with time characteristics.
  * And the usage of {@link MatchTuples} to build an {@link OutputMatcher}.
- * <p/>
+ * <p>
  * To ensure test cases run in a few seconds the framework sets the time characteristic of the data flow, to
  * EventTime. The test source emitting the input, calculates and emits watermarks based on the timestamped input.
  */
@@ -71,7 +69,7 @@ public class WindowingTest extends DataStreamTestBase {
 						//it's possible to generate unsorted input
 						.emit(Tuple2.of(2, "fritz"))
 						//emit the tuple multiple times, with the time span between:
-						.emit(Tuple2.of(1, "peter"), InWindow.to(20,seconds),times(2))
+						.emit(Tuple2.of(1, "peter"), InWindow.to(20, seconds), times(2))
 						.close();
 
 		/*

@@ -26,7 +26,6 @@ import org.apache.flink.test.util.ForkableFlinkMiniCluster;
 import org.apache.flink.test.util.TestBaseUtils;
 import org.flinkspector.core.runtime.OutputSubscriber.ResultState;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
-import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import scala.concurrent.duration.FiniteDuration;
 
@@ -171,7 +170,7 @@ public abstract class Runner {
 		} catch (JobTimeoutException
 				| IllegalStateException e) {
 			//cluster has been shutdown forcefully, most likely by at timeout.
-			if(!stopped.get()) {
+			if (!stopped.get()) {
 				stopped.set(true);
 				subscribers.close();
 			}

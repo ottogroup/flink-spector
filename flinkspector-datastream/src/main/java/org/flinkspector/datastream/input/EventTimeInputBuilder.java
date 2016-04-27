@@ -22,7 +22,6 @@ import org.flinkspector.datastream.input.time.Instant;
 import org.flinkspector.datastream.input.time.Moment;
 import org.flinkspector.datastream.input.time.TimeSpan;
 
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -218,7 +217,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 		return this;
 	}
 
-	private long calculateShiftDifference(Pair<StreamRecord<T>,Long> entry) {
+	private long calculateShiftDifference(Pair<StreamRecord<T>, Long> entry) {
 		return entry.getLeft().getTimestamp() + entry.getRight();
 	}
 
@@ -227,7 +226,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 	 * The time span between records in your already defined list will
 	 * be kept.
 	 *
-	 * @param times    number of times the input ist will be repeated.
+	 * @param times number of times the input ist will be repeated.
 	 */
 	public EventTimeInputBuilder<T> repeatAll(int times) {
 		repeatAll(new Instant(), times);
@@ -306,16 +305,16 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 		while (it.hasNext()) {
 			record = it.next();
 			delta = record.getLeft().getTimestamp() - previous;
-			if(previousShift > 0 && record.getRight() > 0) {
+			if (previousShift > 0 && record.getRight() > 0) {
 				delta -= record.getRight();
 			}
 			if (last + delta < 0) {
 				throw new UnsupportedOperationException("Negative timestamp: " + last + delta);
 			}
-			if(it.hasNext()) {
+			if (it.hasNext()) {
 				append.add(Pair.of(copyRecord(record.getLeft(),
 						last + delta), 0L));
-			}else{
+			} else {
 				append.add(Pair.of(copyRecord(record.getLeft(),
 						last + delta), record.getRight()));
 			}

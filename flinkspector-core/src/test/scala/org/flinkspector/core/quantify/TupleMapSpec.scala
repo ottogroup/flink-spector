@@ -37,7 +37,7 @@ class TupleMapSpec extends CoreSpec {
     )
 
     tmap.get[String]("key") shouldBe "test"
-    an [IllegalArgumentException] shouldBe thrownBy (tmap.get[Integer]("value"))
+    an[IllegalArgumentException] shouldBe thrownBy(tmap.get[Integer]("value"))
   }
 
   it should "map a tuple with placeholder" in {
@@ -47,7 +47,7 @@ class TupleMapSpec extends CoreSpec {
 
     tmap.get[Integer]("value") shouldBe 2
 
-    an [IllegalArgumentException] shouldBe thrownBy (tmap.get[String](null))
+    an[IllegalArgumentException] shouldBe thrownBy(tmap.get[String](null))
   }
 
   it should "accept multiple placeholders" in {
@@ -65,7 +65,7 @@ class TupleMapSpec extends CoreSpec {
   }
 
   it should "not accept too many keys" in {
-    an [IllegalArgumentException] shouldBe thrownBy {
+    an[IllegalArgumentException] shouldBe thrownBy {
       new TupleMap[Fluple3[String, Int, Int]](
         Fluple3.of("test", 1, 2), Array("key", "value", null, "v2")
       )

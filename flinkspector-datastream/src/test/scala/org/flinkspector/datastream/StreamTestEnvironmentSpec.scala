@@ -18,15 +18,13 @@ package org.flinkspector.datastream
 
 import java.util.{ArrayList => JArrayList, List => JList}
 
-import org.apache.flink.api.common.functions.MapFunction
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord
 import org.flinkspector.CoreSpec
 import org.flinkspector.core.input.InputBuilder
-import org.flinkspector.core.runtime.{FlinkTestFailedException, SimpleOutputVerifier}
+import org.flinkspector.core.runtime.SimpleOutputVerifier
 import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.flinkspector.datastream.input.EventTimeInputBuilder
 import org.scalatest.exceptions.TestFailedException
-import org.scalatest.time.{Seconds, Span}
 
 import scala.collection.JavaConversions._
 
@@ -68,7 +66,7 @@ class StreamTestEnvironmentSpec extends CoreSpec {
     val source = env.fromElements(1, 2, 3, 4, 5)
     val sink = env.createTestSink(new Verifier(List(1, 2, 3)), new CountTrigger(2))
     source.addSink(sink)
-    an [TestFailedException] shouldBe thrownBy (env.executeTest())
+    an[TestFailedException] shouldBe thrownBy(env.executeTest())
   }
 
   it should "provide a DataStreamSource from [[Input]]" in {
@@ -82,7 +80,7 @@ class StreamTestEnvironmentSpec extends CoreSpec {
 
   it should "provide a time-stamped DataStreamSource" in {
     val env = DataStreamTestEnvironment.createTestEnvironment(1)
-    val input = EventTimeInputBuilder.startWith[Int](new StreamRecord[Int](1,1))
+    val input = EventTimeInputBuilder.startWith[Int](new StreamRecord[Int](1, 1))
       .emit(new StreamRecord[Int](2, 2))
       .emit(new StreamRecord[Int](3, 3))
       .emit(new StreamRecord[Int](4, 4))
@@ -94,8 +92,8 @@ class StreamTestEnvironmentSpec extends CoreSpec {
 
   it should "handle more than one sink" in {
     val env = DataStreamTestEnvironment.createTestEnvironment(1)
-    val evenlist = List[Integer](2,4,6,8)
-    val oddlist = List[Integer](1,3,5,7)
+    val evenlist = List[Integer](2, 4, 6, 8)
+    val oddlist = List[Integer](1, 3, 5, 7)
     val evenStream = env.fromElements(evenlist: _*)
     val oddStream = env.fromElements(oddlist: _*)
 
@@ -113,14 +111,14 @@ class StreamTestEnvironmentSpec extends CoreSpec {
     val source = env.fromElements(1, 2, 3, 4, 5)
     val sink = env.createTestSink(new Verifier(List(1, 2, 3, 4)))
     source.addSink(sink)
-    an [TestFailedException] shouldBe thrownBy(env.executeTest())
+    an[TestFailedException] shouldBe thrownBy(env.executeTest())
 
   }
 
   it should "handle one failure with multiple sinks" in {
     val env = DataStreamTestEnvironment.createTestEnvironment(1)
-    val evenlist = List[Integer](2,4,6,8)
-    val oddlist = List[Integer](1,3,5,7)
+    val evenlist = List[Integer](2, 4, 6, 8)
+    val oddlist = List[Integer](1, 3, 5, 7)
     val evenStream = env.fromElements(evenlist: _*)
     val oddStream = env.fromElements(oddlist: _*)
 
@@ -135,8 +133,8 @@ class StreamTestEnvironmentSpec extends CoreSpec {
 
   it should "handle more than one failures with multiple sinks" in {
     val env = DataStreamTestEnvironment.createTestEnvironment(1)
-    val evenlist = List[Integer](2,4,6,8)
-    val oddlist = List[Integer](1,3,5,7)
+    val evenlist = List[Integer](2, 4, 6, 8)
+    val oddlist = List[Integer](1, 3, 5, 7)
     val evenStream = env.fromElements(evenlist: _*)
     val oddStream = env.fromElements(oddlist: _*)
 
@@ -145,14 +143,14 @@ class StreamTestEnvironmentSpec extends CoreSpec {
     evenStream.addSink(evenSink)
     oddStream.addSink(oddSink)
     //TODO shutdown at failure
-    an [TestFailedException] shouldBe thrownBy(env.executeTest())
+    an[TestFailedException] shouldBe thrownBy(env.executeTest())
   }
 
   it should "not stop if only one trigger fires with multiple sinks" in {
     val env = DataStreamTestEnvironment.createTestEnvironment(1)
     env.setTimeoutInterval(10000)
-    val evenlist = List[Integer](2,4,6,8)
-    val oddlist = List[Integer](1,3,5,7)
+    val evenlist = List[Integer](2, 4, 6, 8)
+    val oddlist = List[Integer](1, 3, 5, 7)
     val evenStream = env.fromElements(evenlist: _*)
     val oddStream = env.fromElements(oddlist: _*)
 
@@ -162,13 +160,13 @@ class StreamTestEnvironmentSpec extends CoreSpec {
     oddStream.addSink(oddSink)
     env.executeTest()
 
-//    testEnv.hasBeenStopped shouldBe false
+    //    testEnv.hasBeenStopped shouldBe false
   }
 
   it should "stop if all triggers fire" in {
     val env = DataStreamTestEnvironment.createTestEnvironment(1)
-    val evenlist = List[Integer](2,4,6,8)
-    val oddlist = List[Integer](1,3,5,7)
+    val evenlist = List[Integer](2, 4, 6, 8)
+    val oddlist = List[Integer](1, 3, 5, 7)
     val evenStream = env.fromElements(evenlist: _*)
     val oddStream = env.fromElements(oddlist: _*)
 

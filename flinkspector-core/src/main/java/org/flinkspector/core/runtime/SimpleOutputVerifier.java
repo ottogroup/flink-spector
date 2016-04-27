@@ -23,6 +23,7 @@ import java.util.List;
  * Extend this abstract class a simple {@link OutputVerifier}
  * the verify method will be called after the final
  * record has arrived in the sink
+ *
  * @param <T>
  */
 public abstract class SimpleOutputVerifier<T> implements OutputVerifier<T> {
@@ -32,6 +33,7 @@ public abstract class SimpleOutputVerifier<T> implements OutputVerifier<T> {
 	/**
 	 * This method is called once all output has arrived in the endpoint.
 	 * to verify the output.
+	 *
 	 * @param output from the test run
 	 */
 	public abstract void verify(List<T> output) throws FlinkTestFailedException;

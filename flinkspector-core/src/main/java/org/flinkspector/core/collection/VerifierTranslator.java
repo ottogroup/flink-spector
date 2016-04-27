@@ -18,7 +18,7 @@ package org.flinkspector.core.collection;
 
 import org.flinkspector.core.runtime.OutputVerifier;
 
-public abstract class VerifierTranslator<IN,OUT> implements OutputVerifier<IN> {
+public abstract class VerifierTranslator<IN, OUT> implements OutputVerifier<IN> {
 
 	OutputVerifier<OUT> verifier;
 

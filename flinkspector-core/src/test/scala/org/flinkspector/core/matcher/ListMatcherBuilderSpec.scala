@@ -119,17 +119,17 @@ class ListMatcherBuilderSpec extends CoreSpec {
     val builder = new ListMatcherBuilder[Int](List(1, 2, 3, 4))
     builder.sameFrequency()
 
-    builder.matches(List(1,2,3,4,5)) shouldBe true
-    builder.matches(List(1,2,3,4,4)) shouldBe false
+    builder.matches(List(1, 2, 3, 4, 5)) shouldBe true
+    builder.matches(List(1, 2, 3, 4, 4)) shouldBe false
   }
 
   it should "check for duplicates in combination" in {
     val builder = new ListMatcherBuilder[Int](List(1, 2, 3, 4))
     builder.sameFrequency().only()
 
-    builder.matches(List(1,2,3,4)) shouldBe true
-    builder.matches(List(1,2,3,4,5)) shouldBe false
-    builder.matches(List(1,2,3,4,4)) shouldBe false
+    builder.matches(List(1, 2, 3, 4)) shouldBe true
+    builder.matches(List(1, 2, 3, 4, 5)) shouldBe false
+    builder.matches(List(1, 2, 3, 4, 4)) shouldBe false
   }
 
 }

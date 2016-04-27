@@ -21,6 +21,7 @@ import org.hamcrest.Matcher;
 
 /**
  * Factory for {@link OutputMatcher}
+ *
  * @param <T>
  */
 public class OutputMatcherFactory<T> {
@@ -28,6 +29,7 @@ public class OutputMatcherFactory<T> {
 	/**
 	 * Wraps a {@link Matcher} working with {@link Iterable} to provide an
 	 * {@link OutputMatcher}
+	 *
 	 * @param matcher to wrap
 	 * @param <T>
 	 * @return {@link OutputMatcher}
@@ -43,7 +45,7 @@ public class OutputMatcherFactory<T> {
 			@Override
 			public void describeMismatchSafely(Iterable<T> output,
 											   Description mismatchDescription) {
-				matcher.describeMismatch(output,mismatchDescription);
+				matcher.describeMismatch(output, mismatchDescription);
 			}
 
 			@Override

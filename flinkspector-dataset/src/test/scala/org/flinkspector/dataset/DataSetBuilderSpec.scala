@@ -22,6 +22,7 @@ import org.flinkspector.core.runtime.SimpleOutputVerifier
 
 
 class DataSetBuilderSpec extends CoreSpec {
+
   class Verifier[T](list: List[T]) extends SimpleOutputVerifier[T] {
     override def verify(output: util.List[T]): Unit =
       output should contain theSameElementsAs list
@@ -37,8 +38,8 @@ class DataSetBuilderSpec extends CoreSpec {
       .emit(4)
       .close()
 
-    source.output{
-      env.createTestOutputFormat(new Verifier[Int](List(1,2,3,4)))
+    source.output {
+      env.createTestOutputFormat(new Verifier[Int](List(1, 2, 3, 4)))
     }
 
     env.executeTest()

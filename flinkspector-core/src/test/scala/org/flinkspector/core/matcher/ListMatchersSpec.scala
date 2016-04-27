@@ -54,19 +54,19 @@ class ListMatchersSpec extends CoreSpec {
 
   it should "succeed with nested structure" in {
     ListMatchers
-      .containsOnly[Map[String,Integer]](List(Map("k" -> 2), Map("k" -> 3)))
+      .containsOnly[Map[String, Integer]](List(Map("k" -> 2), Map("k" -> 3)))
       .matches(List(Map("k" -> 2), Map("k" -> 3))) shouldBe true
   }
 
   it should "succeed with nested structure and duplicates" in {
     ListMatchers
-      .containsOnly[Map[String,Integer]](List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3)))
+      .containsOnly[Map[String, Integer]](List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3)))
       .matches(List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3))) shouldBe true
   }
 
   it should "fail with nested structure and duplicates" in {
     ListMatchers
-      .containsOnly[Map[String,Integer]](List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3)))
+      .containsOnly[Map[String, Integer]](List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3)))
       .matches(List(Map("k" -> 2), Map("k" -> 3))) shouldBe false
   }
 
@@ -162,19 +162,19 @@ class ListMatchersSpec extends CoreSpec {
 
   it should "succeed with nested structure" in {
     ListMatchers
-      .containsAll[Map[String,Integer]](List(Map("k" -> 2), Map("k" -> 3)))
+      .containsAll[Map[String, Integer]](List(Map("k" -> 2), Map("k" -> 3)))
       .matches(List(Map("k" -> 2), Map("k" -> 3))) shouldBe true
   }
 
   it should "succeed with nested structure and duplicates" in {
     ListMatchers
-      .containsAll[Map[String,Integer]](List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3)))
+      .containsAll[Map[String, Integer]](List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3)))
       .matches(List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3))) shouldBe true
   }
 
   it should "fail with nested structure and duplicates" in {
     ListMatchers
-      .containsAll[Map[String,Integer]](List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3)))
+      .containsAll[Map[String, Integer]](List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3)))
       .matches(List(Map("k" -> 2), Map("k" -> 3))) shouldBe false
   }
 

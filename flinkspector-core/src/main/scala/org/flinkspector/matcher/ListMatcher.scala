@@ -18,11 +18,12 @@ package org.flinkspector.matcher
 import org.hamcrest.{Description, TypeSafeMatcher}
 
 /**
- * Blueprint for a matcher that checks if a list of objects fulfills
- * a certain requirement.
- * @tparam T
- */
-abstract class ListMatcher[T] (val right: List[T]) extends TypeSafeMatcher[List[T]] {
+  * Blueprint for a matcher that checks if a list of objects fulfills
+  * a certain requirement.
+  *
+  * @tparam T
+  */
+abstract class ListMatcher[T](val right: List[T]) extends TypeSafeMatcher[List[T]] {
 
   override def matchesSafely(list: List[T]): Boolean
 

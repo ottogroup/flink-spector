@@ -25,6 +25,7 @@ import org.hamcrest.core.IsEqual;
 /**
  * Provides a matcher for output that matches when the <code>size</code> of the output
  * satisfies the specified matcher.
+ *
  * @param <T>
  */
 public class OutputWithSize<T> extends TypeSafeDiagnosingMatcher<Iterable<T>> {
@@ -39,8 +40,8 @@ public class OutputWithSize<T> extends TypeSafeDiagnosingMatcher<Iterable<T>> {
 	protected boolean matchesSafely(Iterable<T> item, Description mismatchDescription) {
 		int size = Iterables.size(item);
 		boolean matches = sizeMatcher.matches(size);
-		if(!matches) {
-			sizeMatcher.describeMismatch(size,mismatchDescription);
+		if (!matches) {
+			sizeMatcher.describeMismatch(size, mismatchDescription);
 		}
 		return matches;
 	}
@@ -56,6 +57,6 @@ public class OutputWithSize<T> extends TypeSafeDiagnosingMatcher<Iterable<T>> {
 	}
 
 	public static <T> OutputWithSize<T> outputWithSize(int size) {
-		return  OutputWithSize.<T>outputWithSize(IsEqual.equalTo(size));
+		return OutputWithSize.<T>outputWithSize(IsEqual.equalTo(size));
 	}
 }

@@ -54,7 +54,7 @@ class MessageTypeSpec extends CoreSpec {
     val typeInfo: TypeInformation[String] = TypeExtractor.getForObject("test")
     val serializer = typeInfo.createSerializer(config)
 
-    val ser = OPEN.getPayload(Bytes.concat("OPEN 2 12 ;".getBytes,SerializeUtil.serialize(serializer)))
+    val ser = OPEN.getPayload(Bytes.concat("OPEN 2 12 ;".getBytes, SerializeUtil.serialize(serializer)))
 
     SerializeUtil.deserialize(ser) shouldBe serializer
   }

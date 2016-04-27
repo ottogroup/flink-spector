@@ -28,9 +28,9 @@ class HamcrestVerifierSpec extends CoreSpec {
     val matcher = IsCollectionContaining.hasItem("test")
     val verifier = new HamcrestVerifier(matcher)
 
-    verifier.verify(List("test","hans"))
+    verifier.verify(List("test", "hans"))
 
-    an [AssertionError] shouldBe thrownBy {
+    an[AssertionError] shouldBe thrownBy {
       verifier.verify(List("susi", "hans"))
     }
   }

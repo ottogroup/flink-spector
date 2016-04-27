@@ -23,12 +23,14 @@ import org.hamcrest.Matcher;
 /**
  * Provides a {@link Matcher} that is successful if each of
  * the items in the examined {@link Iterable} is a positive match.
+ *
  * @param <T>
  */
 public class OnEach<T> extends WhileList<T> {
 
 	/**
 	 * Default Constructor
+	 *
 	 * @param matcher to apply to {@link Iterable}.
 	 */
 	public OnEach(Matcher<T> matcher) {

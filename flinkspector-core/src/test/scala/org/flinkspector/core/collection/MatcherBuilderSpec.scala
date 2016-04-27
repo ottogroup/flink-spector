@@ -16,7 +16,7 @@
 
 package org.flinkspector.core.collection
 
-import org.flinkspector.core.{Order, CoreSpec}
+import org.flinkspector.core.{CoreSpec, Order}
 
 import scala.collection.JavaConversions._
 
@@ -112,7 +112,7 @@ class MatcherBuilderSpec extends CoreSpec {
   it should "check for two order statements" in {
     val combinedOrder = new MatcherBuilder[Int](List(1, 2, 3, 4))
     combinedOrder.inOrder(Order.STRICT).from(1).to(2)
-    combinedOrder.inOrder(Order.NONSTRICT).indices(0,3)
+    combinedOrder.inOrder(Order.NONSTRICT).indices(0, 3)
 
     combinedOrder.matchesSafely(List(1, 2, 3, 4)) shouldBe true
     combinedOrder.matchesSafely(List(1, 3, 2, 4)) shouldBe false
@@ -132,17 +132,17 @@ class MatcherBuilderSpec extends CoreSpec {
     val builder = new MatcherBuilder[Int](List(1, 2, 3, 4))
     builder.sameFrequency()
 
-    builder.matchesSafely(List(1,2,3,4,5)) shouldBe true
-    builder.matchesSafely(List(1,2,3,4,4)) shouldBe false
+    builder.matchesSafely(List(1, 2, 3, 4, 5)) shouldBe true
+    builder.matchesSafely(List(1, 2, 3, 4, 4)) shouldBe false
   }
 
   it should "check for duplicates in combination" in {
     val builder = new MatcherBuilder[Int](List(1, 2, 3, 4))
     builder.sameFrequency().only()
 
-    builder.matchesSafely(List(1,2,3,4)) shouldBe true
-    builder.matchesSafely(List(1,2,3,4,5)) shouldBe false
-    builder.matchesSafely(List(1,2,3,4,4)) shouldBe false
+    builder.matchesSafely(List(1, 2, 3, 4)) shouldBe true
+    builder.matchesSafely(List(1, 2, 3, 4, 5)) shouldBe false
+    builder.matchesSafely(List(1, 2, 3, 4, 4)) shouldBe false
   }
 
 

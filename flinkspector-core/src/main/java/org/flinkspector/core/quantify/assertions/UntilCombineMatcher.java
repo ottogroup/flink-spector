@@ -39,13 +39,13 @@ public abstract class UntilCombineMatcher<T> extends TypeSafeDiagnosingMatcher<T
 
 		for (Matcher<? super T> matcher : matchers) {
 			if (!matcher.matches(object)) {
-				if(!mismatch.toString().endsWith("but: ")) {
+				if (!mismatch.toString().endsWith("but: ")) {
 					mismatch.appendText("\n          ");
 				}
 				matcher.describeMismatch(object, mismatch);
 			} else {
 				matches++;
-				if (validWhen(matches,possibleMatches)) {
+				if (validWhen(matches, possibleMatches)) {
 					return true;
 				}
 			}
@@ -59,7 +59,7 @@ public abstract class UntilCombineMatcher<T> extends TypeSafeDiagnosingMatcher<T
 		description.appendText(prefix());
 		description.appendText(" ( ");
 		for (Matcher m : this.matchers) {
-			if(!description.toString().endsWith("( ")) {
+			if (!description.toString().endsWith("( ")) {
 				description.appendText("; ");
 			}
 			description.appendDescriptionOf(m);

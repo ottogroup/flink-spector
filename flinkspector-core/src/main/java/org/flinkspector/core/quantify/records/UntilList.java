@@ -40,7 +40,7 @@ public abstract class UntilList<T> extends TypeSafeDiagnosingMatcher<Iterable<T>
 		for (T item : objects) {
 
 			if (!matcher.matches(item)) {
-				if(numMismatches < 10) {
+				if (numMismatches < 10) {
 					matcher.describeMismatch(item, mismatches);
 					mismatches.appendText(" on record #" + (i + 1));
 				}
@@ -59,8 +59,8 @@ public abstract class UntilList<T> extends TypeSafeDiagnosingMatcher<Iterable<T>
 	}
 
 	private void describeMismatch(int matches,
-								Description mismatch,
-								Description mismatches) {
+								  Description mismatch,
+								  Description mismatches) {
 		mismatch.appendText("expected matches to be ");
 		describeCondition(mismatch);
 		mismatch.appendText(", was ")

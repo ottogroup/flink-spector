@@ -43,7 +43,7 @@ class RunnerSpec extends CoreSpec {
         publisher.connect("tcp://localhost:" + 5555)
 
         val msg = Bytes.concat("OPEN 0 1 ;".getBytes, SerializeUtil.serialize(serializer))
-        publisher.send(msg,0)
+        publisher.send(msg, 0)
         sendString(publisher, "1")
         sendString(publisher, "2")
         sendString(publisher, "3")

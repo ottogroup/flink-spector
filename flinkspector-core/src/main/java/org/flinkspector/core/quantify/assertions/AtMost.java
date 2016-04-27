@@ -56,7 +56,7 @@ public class AtMost<T> extends WhileCombineMatcher<T> {
 
 	@Factory
 	public static <T> AtMost<T> atMost(Iterable<Matcher<? super T>> matchers,
-													int n) {
+									   int n) {
 		return new AtMost<T>(matchers, n);
 	}
 }

@@ -23,7 +23,7 @@ import org.flinkspector.CoreSpec
 
 import scala.collection.JavaConversions._
 
-class InputUtilSpec extends CoreSpec{
+class InputUtilSpec extends CoreSpec {
   "insertWatermarks" should "produce a list of watermarks" in {
     val list: List[Long] = List(3, 1, 11, 2, 5, 4, 10, 8, 7, 9)
     InputUtil.produceWatermarks(list) shouldBe List(-1, 1, -1, 3, -1, 5, -1, -1, 8, 11)
@@ -31,7 +31,7 @@ class InputUtilSpec extends CoreSpec{
 
   "insertWatermarks" should "produce a list of watermarks with max value" in {
     val list: List[Long] = List(3, 1, 11, 2, 5, 4, 10, 8, 7, 9)
-    InputUtil.produceWatermarks(list,true) shouldBe List(-1, 1, -1, 3, -1, 5, -1, -1, 8, Long.MaxValue)
+    InputUtil.produceWatermarks(list, true) shouldBe List(-1, 1, -1, 3, -1, 5, -1, -1, 8, Long.MaxValue)
   }
 
   it should "produce a list of sorted watermarks" in {

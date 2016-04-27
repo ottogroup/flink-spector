@@ -17,8 +17,8 @@ package org.flinkspector.core.quantify.assertions
 
 import org.apache.flink.api.java.tuple.{Tuple3 => Fluple3}
 import org.flinkspector.core.CoreSpec
-import org.hamcrest.{Matcher, Matchers}
 import org.flinkspector.core.quantify.TupleMask
+import org.hamcrest.{Matcher, Matchers}
 
 import scala.collection.JavaConverters._
 
@@ -27,13 +27,13 @@ class TupleMapMatchersSpec extends CoreSpec {
   trait TupleMapMatchersCase {
     val mask = new TupleMask[Fluple3[Int, Int, Int]]("one", "two", "three")
     val matcherList = List(
-      new TupleMatcher[Fluple3[Int,Int,Int]]("one", Matchers.is(1),mask) : Matcher[_ >: Fluple3[Int,Int,Int]],
-      new TupleMatcher[Fluple3[Int,Int,Int]]("two", Matchers.is(1),mask): Matcher[_ >: Fluple3[Int,Int,Int]],
-      new TupleMatcher[Fluple3[Int,Int,Int]]("three", Matchers.is(1),mask): Matcher[_ >: Fluple3[Int,Int,Int]])
+      new TupleMatcher[Fluple3[Int, Int, Int]]("one", Matchers.is(1), mask): Matcher[_ >: Fluple3[Int, Int, Int]],
+      new TupleMatcher[Fluple3[Int, Int, Int]]("two", Matchers.is(1), mask): Matcher[_ >: Fluple3[Int, Int, Int]],
+      new TupleMatcher[Fluple3[Int, Int, Int]]("three", Matchers.is(1), mask): Matcher[_ >: Fluple3[Int, Int, Int]])
   }
 
   "The any matcher" should "implement any" in new TupleMapMatchersCase {
-    val matcher = Any.any[Fluple3[Int,Int,Int]](matcherList.asJava)
+    val matcher = Any.any[Fluple3[Int, Int, Int]](matcherList.asJava)
 
     matcher.matches(Fluple3.of(1, 1, 1)) shouldBe true
     matcher.matches(Fluple3.of(1, 1, 0)) shouldBe true
@@ -42,7 +42,7 @@ class TupleMapMatchersSpec extends CoreSpec {
   }
 
   "The each matcher" should "implement each" in new TupleMapMatchersCase {
-    val matcher = Each.each[Fluple3[Int,Int,Int]](matcherList.asJava)
+    val matcher = Each.each[Fluple3[Int, Int, Int]](matcherList.asJava)
 
     matcher.matches(Fluple3.of(1, 1, 1)) shouldBe true
     matcher.matches(Fluple3.of(1, 1, 0)) shouldBe false
@@ -52,7 +52,7 @@ class TupleMapMatchersSpec extends CoreSpec {
   }
 
   "The one matcher" should "implement one" in new TupleMapMatchersCase {
-    val matcher = One.one[Fluple3[Int,Int,Int]](matcherList.asJava)
+    val matcher = One.one[Fluple3[Int, Int, Int]](matcherList.asJava)
 
     matcher.matches(Fluple3.of(1, 1, 1)) shouldBe false
     matcher.matches(Fluple3.of(1, 1, 0)) shouldBe false
@@ -61,7 +61,7 @@ class TupleMapMatchersSpec extends CoreSpec {
   }
 
   "The exactly matcher" should "implement exactly" in new TupleMapMatchersCase {
-    val matcher = Exactly.exactly[Fluple3[Int,Int,Int]](matcherList.asJava, 2)
+    val matcher = Exactly.exactly[Fluple3[Int, Int, Int]](matcherList.asJava, 2)
 
     matcher.matches(Fluple3.of(1, 1, 1)) shouldBe false
     matcher.matches(Fluple3.of(1, 1, 0)) shouldBe true
@@ -71,7 +71,7 @@ class TupleMapMatchersSpec extends CoreSpec {
   }
 
   "The atMost matcher" should "implement atMost" in new TupleMapMatchersCase {
-    val matcher = AtMost.atMost[Fluple3[Int,Int,Int]](matcherList.asJava, 2)
+    val matcher = AtMost.atMost[Fluple3[Int, Int, Int]](matcherList.asJava, 2)
 
     matcher.matches(Fluple3.of(1, 1, 1)) shouldBe false
     matcher.matches(Fluple3.of(1, 1, 0)) shouldBe true
@@ -79,9 +79,9 @@ class TupleMapMatchersSpec extends CoreSpec {
     matcher.matches(Fluple3.of(0, 0, 0)) shouldBe true
 
   }
-  
+
   "The atLeast matcher" should "implement atLeast" in new TupleMapMatchersCase {
-    val matcher = AtLeast.atLeast[Fluple3[Int,Int,Int]](matcherList.asJava, 2)
+    val matcher = AtLeast.atLeast[Fluple3[Int, Int, Int]](matcherList.asJava, 2)
 
     matcher.matches(Fluple3.of(1, 1, 1)) shouldBe true
     matcher.matches(Fluple3.of(1, 1, 0)) shouldBe true

@@ -24,6 +24,7 @@ import java.util.Arrays;
 
 /**
  * Defines a mask of string keys applied to a {@link Tuple}.
+ *
  * @param <T>
  */
 public class TupleMask<T extends Tuple> {
@@ -41,17 +42,17 @@ public class TupleMask<T extends Tuple> {
 	 * @return {@link TupleMap} with applied keys.
 	 */
 	public TupleMap<T> apply(T tuple) {
-		return new TupleMap<T>(tuple,keys);
+		return new TupleMap<T>(tuple, keys);
 	}
 
 	/**
 	 * Factory method.
 	 *
 	 * @param cols list of Strings.
-	 * @param <T> {@link TupleMask} type.
+	 * @param <T>  {@link TupleMask} type.
 	 * @return new instance of this class.
 	 */
-	public static <T extends Tuple> TupleMask<T> create(String... cols){
+	public static <T extends Tuple> TupleMask<T> create(String... cols) {
 		return new TupleMask<>(cols[0], Arrays.copyOfRange(cols, 1, cols.length - 1));
 	}
 

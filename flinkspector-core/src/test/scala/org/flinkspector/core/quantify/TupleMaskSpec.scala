@@ -29,8 +29,8 @@ class TupleMaskSpec extends CoreSpec {
   }
 
   it should "map keys with null as placeholder" in {
-    val mask = new TupleMask[Fluple3[Int,Int,Int]](null,null,"value")
-    val tmap = mask.apply(Fluple3.of(1,2,3))
+    val mask = new TupleMask[Fluple3[Int, Int, Int]](null, null, "value")
+    val tmap = mask.apply(Fluple3.of(1, 2, 3))
     tmap.get[Int]("value") shouldBe 3
   }
 }

@@ -23,6 +23,7 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 /**
  * Matches an {@link Iterable} while a certain condition is met.
+ *
  * @param <T>
  */
 public abstract class WhileList<T> extends TypeSafeDiagnosingMatcher<Iterable<T>> {
@@ -41,7 +42,7 @@ public abstract class WhileList<T> extends TypeSafeDiagnosingMatcher<Iterable<T>
 		int i = 0;
 		for (T item : objects) {
 			if (!matcher.matches(item)) {
-				if(numMismatches < 10) {
+				if (numMismatches < 10) {
 					matcher.describeMismatch(item, mismatches);
 					mismatches.appendText(" on record #" + (i + 1));
 				}
@@ -91,6 +92,7 @@ public abstract class WhileList<T> extends TypeSafeDiagnosingMatcher<Iterable<T>
 
 	/**
 	 * Describe the condition of the concrete matcher.
+	 *
 	 * @param description {@link Description} to append to.
 	 * @return changed {@link Description}.
 	 */
@@ -98,13 +100,15 @@ public abstract class WhileList<T> extends TypeSafeDiagnosingMatcher<Iterable<T>
 
 	/**
 	 * Prefix for the matcher description.
+	 *
 	 * @return concrete prefix.
 	 */
 	protected abstract String prefix();
 
 	/**
 	 * Condition for while loop
-	 * @param numMatches number of positive matches.
+	 *
+	 * @param numMatches    number of positive matches.
 	 * @param numMismatches number negative matches.
 	 * @return true while condition is valid.
 	 */
@@ -112,6 +116,7 @@ public abstract class WhileList<T> extends TypeSafeDiagnosingMatcher<Iterable<T>
 
 	/**
 	 * Condition to check after the loop is finished.
+	 *
 	 * @param numMatches number of positive matches
 	 * @return true if condition is met at the finish.
 	 */

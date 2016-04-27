@@ -92,7 +92,7 @@ class OutputSubscriberSpec extends CoreSpec {
     sendString(publisher, "3")
     publisher.send("CLOSE 2 1", 0)
 
-    an [FlinkTestFailedException] shouldBe thrownBy (listener.call())
+    an[FlinkTestFailedException] shouldBe thrownBy(listener.call())
 
     verify(verifier).init()
     verify(verifier).receive("1")
@@ -134,11 +134,13 @@ class OutputSubscriberSpec extends CoreSpec {
     val verifier = mock[OutputVerifier[String]]
     val trigger = new VerifyFinishedTrigger[String] {
       override def onRecord(record: String): Boolean = false
+
       override def onRecordCount(count: Long): Boolean = false
     }
 
     val countTrigger = new VerifyFinishedTrigger[String] {
       override def onRecord(record: String): Boolean = false
+
       override def onRecordCount(count: Long): Boolean = count >= 2
     }
 

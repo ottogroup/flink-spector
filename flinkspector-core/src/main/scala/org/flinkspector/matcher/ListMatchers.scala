@@ -69,8 +69,8 @@ object ListMatchers extends Matchers {
     new ListMatcher[T](right) {
       override def matchesSafely(left: List[T]): Boolean = {
 
-        if(aggregating.containsAllOf(left, right)) {
-          ensureFrequency(_ < _)(left,right)
+        if (aggregating.containsAllOf(left, right)) {
+          ensureFrequency(_ < _)(left, right)
         } else {
           false
         }
@@ -147,7 +147,7 @@ object ListMatchers extends Matchers {
   def sameFrequency[T](right: List[T]): ListMatcher[T] = {
     new ListMatcher[T](right) {
       override def matchesSafely(left: List[T]): Boolean =
-        ensureFrequency(_ != _)(left,right)
+        ensureFrequency(_ != _)(left, right)
 
       override def toString: String = {
         "frequency matcher"
@@ -179,8 +179,9 @@ object ListMatchers extends Matchers {
 
   /**
     * Helper function to compare the frequency of elements in lists.
-    * @param c function which compares the frequency of the elements.
-    * @param left first list.
+    *
+    * @param c     function which compares the frequency of the elements.
+    * @param left  first list.
     * @param right second list.
     * @tparam T generic type of the lists.
     * @return true if comparator is true for each element else false.

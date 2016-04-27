@@ -21,15 +21,16 @@ import org.scalatest.exceptions.TestFailedException
 import scala.collection.mutable.ArrayBuffer
 
 /**
- * This class is used to ensure the syntax from(Int).to(Int) for creating
- * defining a slice of the expected list of output.
- * @param constraints list of current expectations
- * @param from Integer value marking the start of the slice.
- * @param right expected output.
- * @tparam T
- */
+  * This class is used to ensure the syntax from(Int).to(Int) for creating
+  * defining a slice of the expected list of output.
+  *
+  * @param constraints list of current expectations
+  * @param from        Integer value marking the start of the slice.
+  * @param right       expected output.
+  * @tparam T
+  */
 abstract class FromPartialMatcher[T](constraints: ArrayBuffer[ListMatcher[T]],
-                           from: Int, right: List[T])
+                                     from: Int, right: List[T])
   extends ListMatcher[T](right) {
 
   /*
@@ -40,36 +41,38 @@ abstract class FromPartialMatcher[T](constraints: ArrayBuffer[ListMatcher[T]],
 
 
   def to(position: Int): Unit = {
-    require(position >= 0,"to parameter can not be less than 0")
+    require(position >= 0, "to parameter can not be less than 0")
     require(position < back.length + from, "to parameter index out of bounds")
     require(position > from, "to must be greater than from for order matcher")
 
     //remove the current matcher from the back of the list
-    constraints.remove(constraints.size-1)
+    constraints.remove(constraints.size - 1)
     //add a matcher for the slice restricted by the 'n' value
     val front = back.splitAt(position - from + 1)._1
     constraints += getMatcher(front)
   }
 
   /**
-   * Implement this method to define which [[ListMatcher]] shall
-   * be used to check the output.
-   * @param right list of expected output
-   * @return
-   */
+    * Implement this method to define which [[ListMatcher]] shall
+    * be used to check the output.
+    *
+    * @param right list of expected output
+    * @return
+    */
   def getMatcher(right: List[T]): ListMatcher[T]
 
   /**
-   * Checks if the list matches expectation
-   * @throws TestFailedException if the predicate does not match
-   */
+    * Checks if the list matches expectation
+    *
+    * @throws TestFailedException if the predicate does not match
+    */
   override def matchesSafely(left: List[T]): Boolean = {
-    constraints.map{
+    constraints.map {
       _.matchesSafely(left)
     }.reduce(_ && _)
   }
 
-  override def describeTo(description: Description) : Unit = {
+  override def describeTo(description: Description): Unit = {
 
   }
 

@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord
 import org.flinkspector.CoreSpec
-import org.flinkspector.datastream.input.time.{InWindow, After}
+import org.flinkspector.datastream.input.time.{After, InWindow}
 
 import scala.collection.JavaConversions._
 

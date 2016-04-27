@@ -23,8 +23,8 @@ public abstract class Moment {
 
 	/**
 	 * Getter for defined time span
-	 * @param currentTimestamp the timestamp of the current record
 	 *
+	 * @param currentTimestamp the timestamp of the current record
 	 * @return time span in milliseconds
 	 */
 	public abstract long getTimestamp(long currentTimestamp);

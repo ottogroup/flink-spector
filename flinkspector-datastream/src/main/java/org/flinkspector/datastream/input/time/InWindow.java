@@ -25,11 +25,11 @@ public class InWindow extends Moment {
 
 	private final long timeSpan;
 
-	public static InWindow to(long time, TimeUnit timeUnit){
-		return new InWindow(time,timeUnit);
+	public static InWindow to(long time, TimeUnit timeUnit) {
+		return new InWindow(time, timeUnit);
 	}
 
-	private InWindow(long time,TimeUnit timeUnit) {
+	private InWindow(long time, TimeUnit timeUnit) {
 		this.timeSpan = timeUnit.toMillis(time);
 	}
 

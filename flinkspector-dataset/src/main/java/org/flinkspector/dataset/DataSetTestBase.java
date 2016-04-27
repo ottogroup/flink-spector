@@ -19,11 +19,10 @@ package org.flinkspector.dataset;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.LocalEnvironment;
 import org.flinkspector.core.Order;
-import org.flinkspector.core.collection.MatcherBuilder;
 import org.flinkspector.core.input.Input;
-import org.flinkspector.core.runtime.OutputVerifier;
 import org.flinkspector.core.quantify.HamcrestVerifier;
 import org.flinkspector.core.quantify.OutputMatcherFactory;
+import org.flinkspector.core.runtime.OutputVerifier;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.hamcrest.Matcher;
 import org.junit.After;
@@ -119,7 +118,7 @@ public class DataSetTestBase {
 	 * @return the created data set from the given.
 	 */
 	public <IN> TestOutputFormat<IN> createTestOutputFormat(org.hamcrest.Matcher<Iterable<IN>> matcher,
-	                                                        VerifyFinishedTrigger trigger) {
+															VerifyFinishedTrigger trigger) {
 		OutputVerifier<IN> verifier = new HamcrestVerifier<>(matcher);
 		return createTestOutputFormat(verifier, trigger);
 	}
@@ -132,7 +131,7 @@ public class DataSetTestBase {
 	 * @return the created data set from the given.
 	 */
 	public <IN> TestOutputFormat<IN> createTestOutputFormat(OutputVerifier<IN> verifier,
-	                                                        VerifyFinishedTrigger trigger) {
+															VerifyFinishedTrigger trigger) {
 		return testEnv.createTestOutputFormat(verifier, trigger);
 	}
 
@@ -169,8 +168,8 @@ public class DataSetTestBase {
 	 * @param <T>     type of the dataSet.
 	 */
 	public <T> void assertDataSet(DataSet<T> dataSet,
-	                              Matcher<Iterable<T>> matcher,
-	                              VerifyFinishedTrigger trigger) {
+								  Matcher<Iterable<T>> matcher,
+								  VerifyFinishedTrigger trigger) {
 		dataSet.output(createTestOutputFormat(matcher, trigger));
 	}
 

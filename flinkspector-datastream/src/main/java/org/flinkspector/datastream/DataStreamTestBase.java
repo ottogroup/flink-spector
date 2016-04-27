@@ -22,7 +22,6 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.LocalStreamEnvironment;
 import org.flinkspector.core.Order;
 import org.flinkspector.core.collection.ExpectedRecords;
-import org.flinkspector.core.collection.MatcherBuilder;
 import org.flinkspector.core.input.Input;
 import org.flinkspector.core.input.InputBuilder;
 import org.flinkspector.core.quantify.HamcrestVerifier;
@@ -169,7 +168,7 @@ public class DataStreamTestBase {
 	 * @return the created sink.
 	 */
 	public <IN> TestSink<IN> createTestSink(OutputVerifier<IN> verifier,
-	                                        VerifyFinishedTrigger trigger) {
+											VerifyFinishedTrigger trigger) {
 		return testEnv.createTestSink(verifier, trigger);
 	}
 
@@ -192,7 +191,7 @@ public class DataStreamTestBase {
 	 * @return the created sink.
 	 */
 	public <IN> TestSink<IN> createTestSink(org.hamcrest.Matcher<Iterable<IN>> matcher,
-	                                        VerifyFinishedTrigger trigger) {
+											VerifyFinishedTrigger trigger) {
 		OutputVerifier<IN> verifier = new HamcrestVerifier<>(matcher);
 		return createTestSink(verifier, trigger);
 	}
@@ -218,8 +217,8 @@ public class DataStreamTestBase {
 	 * @param <T>     type of the stream.
 	 */
 	public <T> void assertStream(DataStream<T> stream,
-	                             Matcher<Iterable<T>> matcher,
-	                             VerifyFinishedTrigger trigger) {
+								 Matcher<Iterable<T>> matcher,
+								 VerifyFinishedTrigger trigger) {
 		stream.addSink(createTestSink(matcher, trigger));
 	}
 

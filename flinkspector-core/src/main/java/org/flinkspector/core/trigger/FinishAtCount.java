@@ -45,6 +45,7 @@ public class FinishAtCount implements VerifyFinishedTrigger {
 
 	/**
 	 * Factory method.
+	 *
 	 * @param maxCount of records to trigger on.
 	 * @return new instance of {@link FinishAtCount}.
 	 */

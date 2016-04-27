@@ -44,7 +44,7 @@ public class SeriesMatcher<T> implements FromListMatcher {
 	}
 
 	public void indices(int first, int second, int... rest) {
-		int[] front = new int[]{first,second};
+		int[] front = new int[]{first, second};
 		List<Integer> list = Arrays.asList(ArrayUtils.toObject(ArrayUtils.addAll(front, rest)));
 		matcher.indices(list);
 	}

@@ -51,7 +51,7 @@ public class BatchTest extends DataSetTestBase {
 		 * by calling .complete().
 		 */
 		DataSet<Tuple2<Integer, String>> testDataSet =
-				createTestDataSetWith(Tuple2.of(1,"test"))
+				createTestDataSetWith(Tuple2.of(1, "test"))
 						.emit(Tuple2.of(2, "why"))
 						.emit(Tuple2.of(3, "not"))
 						.emit(Tuple2.of(4, "batch?"))

@@ -16,17 +16,14 @@
 
 package org.flinkspector.dataset
 
-import java.util
 import java.util.{ArrayList => JArrayList, List => JList}
 
-import org.apache.flink.api.common.functions.MapFunction
 import org.flinkspector.core.input.InputBuilder
-import org.flinkspector.core.runtime.{FlinkTestFailedException, SimpleOutputVerifier}
+import org.flinkspector.core.runtime.SimpleOutputVerifier
 import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.scalatest.exceptions.TestFailedException
 
 import scala.collection.JavaConversions._
-import org.scalatest.time.SpanSugar._
 
 class DataSetEnvironmentSpec extends CoreSpec {
 
@@ -60,7 +57,7 @@ class DataSetEnvironmentSpec extends CoreSpec {
     val dataSet = env.fromElements(1, 2, 3, 4, 5)
     val outputFormat = env.createTestOutputFormat(new Verifier(List(1, 3, 4, 5)))
     dataSet.output(outputFormat)
-    an [TestFailedException] shouldBe thrownBy (env.executeTest())
+    an[TestFailedException] shouldBe thrownBy(env.executeTest())
   }
 
   it should "stop with trigger and signal a success" in {
@@ -76,7 +73,7 @@ class DataSetEnvironmentSpec extends CoreSpec {
     val dataSet = env.fromElements(1, 2, 3, 4, 5)
     val outputFormat = env.createTestOutputFormat(new Verifier(List(1, 2, 3)), new CountTrigger(2))
     dataSet.output(outputFormat)
-    an [TestFailedException] shouldBe thrownBy (env.executeTest())
+    an[TestFailedException] shouldBe thrownBy(env.executeTest())
   }
 
   it should "provide a OutputFormat from [[Input]]" in {
@@ -91,8 +88,8 @@ class DataSetEnvironmentSpec extends CoreSpec {
 
   it should "handle more than one outputFormat" in {
     val env = DataSetTestEnvironment.createTestEnvironment(1)
-    val evenlist = List[Integer](2,4,6,8)
-    val oddlist = List[Integer](1,3,5,7)
+    val evenlist = List[Integer](2, 4, 6, 8)
+    val oddlist = List[Integer](1, 3, 5, 7)
     val evenDataSet = env.fromElements(evenlist: _*)
     val oddDataSet = env.fromElements(oddlist: _*)
 
@@ -109,14 +106,14 @@ class DataSetEnvironmentSpec extends CoreSpec {
     val dataSet = env.fromElements(1, 2, 3, 4, 5)
     val outputFormat = env.createTestOutputFormat(new Verifier(List(1, 2, 3, 4)))
     dataSet.output(outputFormat)
-    an [TestFailedException] shouldBe thrownBy(env.executeTest())
+    an[TestFailedException] shouldBe thrownBy(env.executeTest())
 
   }
 
   it should "handle one failure with multiple outputFormats" in {
     val env = DataSetTestEnvironment.createTestEnvironment(1)
-    val evenlist = List[Integer](2,4,6,8)
-    val oddlist = List[Integer](1,3,5,7)
+    val evenlist = List[Integer](2, 4, 6, 8)
+    val oddlist = List[Integer](1, 3, 5, 7)
     val evenDataSet = env.fromElements(evenlist: _*)
     val oddDataSet = env.fromElements(oddlist: _*)
 
@@ -131,8 +128,8 @@ class DataSetEnvironmentSpec extends CoreSpec {
 
   it should "handle more than one failures with multiple outputFormats" in {
     val env = DataSetTestEnvironment.createTestEnvironment(1)
-    val evenlist = List[Integer](2,4,6,8)
-    val oddlist = List[Integer](1,3,5,7)
+    val evenlist = List[Integer](2, 4, 6, 8)
+    val oddlist = List[Integer](1, 3, 5, 7)
     val evenDataSet = env.fromElements(evenlist: _*)
     val oddDataSet = env.fromElements(oddlist: _*)
 
@@ -141,14 +138,14 @@ class DataSetEnvironmentSpec extends CoreSpec {
     evenDataSet.output(evenOutputFormat)
     oddDataSet.output(oddOutputFormat)
     //TODO shutdown at failure
-    an [TestFailedException] shouldBe thrownBy(env.executeTest())
+    an[TestFailedException] shouldBe thrownBy(env.executeTest())
   }
 
   it should "not stop if only one trigger fires with multiple outputFormats" in {
     val env = DataSetTestEnvironment.createTestEnvironment(1)
     env.setTimeoutInterval(10000)
-    val evenlist = List[Integer](2,4,6,8)
-    val oddlist = List[Integer](1,3,5,7)
+    val evenlist = List[Integer](2, 4, 6, 8)
+    val oddlist = List[Integer](1, 3, 5, 7)
     val evenDataSet = env.fromElements(evenlist: _*)
     val oddDataSet = env.fromElements(oddlist: _*)
 
@@ -161,8 +158,8 @@ class DataSetEnvironmentSpec extends CoreSpec {
 
   it should "stop if all triggers fire" in {
     val env = DataSetTestEnvironment.createTestEnvironment(1)
-    val evenlist = List[Integer](2,4,6,8)
-    val oddlist = List[Integer](1,3,5,7)
+    val evenlist = List[Integer](2, 4, 6, 8)
+    val oddlist = List[Integer](1, 3, 5, 7)
     val evenDataSet = env.fromElements(evenlist: _*)
     val oddDataSet = env.fromElements(oddlist: _*)
 

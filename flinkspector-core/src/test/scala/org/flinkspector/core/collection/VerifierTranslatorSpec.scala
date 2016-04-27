@@ -20,7 +20,7 @@ import org.flinkspector.core.runtime.OutputVerifier
 import org.mockito.Mockito._
 
 class StringToInt(verifier: OutputVerifier[Int])
-  extends VerifierTranslator[String,Int](verifier) {
+  extends VerifierTranslator[String, Int](verifier) {
   override def translate(record: String): Int = Integer.parseInt(record)
 }
 

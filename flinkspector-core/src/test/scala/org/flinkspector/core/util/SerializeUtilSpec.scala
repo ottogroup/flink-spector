@@ -32,15 +32,15 @@ class SerializeUtilSpec extends CoreSpec {
 
   trait SerializeUtilCase {
     val config = new ExecutionConfig()
-    val typeInfo : TypeInformation[String] = TypeExtractor.getForObject("test")
+    val typeInfo: TypeInformation[String] = TypeExtractor.getForObject("test")
     val serializer = typeInfo.createSerializer(config)
   }
 
-  "The util" should "serialize and deserialize a String" in new SerializeUtilCase{
+  "The util" should "serialize and deserialize a String" in new SerializeUtilCase {
     val string = "test-string"
-    val bytes = SerializeUtil.serialize(string,serializer)
+    val bytes = SerializeUtil.serialize(string, serializer)
 
-    SerializeUtil.deserialize(bytes,serializer) should equal(string)
+    SerializeUtil.deserialize(bytes, serializer) should equal(string)
   }
 
   "The util" should "serialize and deserialize a [[TypeSerializer]]" in new SerializeUtilCase {
@@ -49,14 +49,13 @@ class SerializeUtilSpec extends CoreSpec {
   }
 
   "The util" should "serialize and deserialize a [[Pair]]" in {
-    val tuple = ("right","left")
+    val tuple = ("right", "left")
     val serializer = TypeExtractor
       .getForObject(tuple)
       .createSerializer(new ExecutionConfig)
-    val bytes = SerializeUtil.serialize(tuple,serializer)
-    SerializeUtil.deserialize(bytes,serializer) should equal(tuple)
+    val bytes = SerializeUtil.serialize(tuple, serializer)
+    SerializeUtil.deserialize(bytes, serializer) should equal(tuple)
   }
-
 
 
 }

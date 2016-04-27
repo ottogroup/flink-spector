@@ -20,6 +20,7 @@ public abstract class TimeSpan extends Moment {
 
 	/**
 	 * Getter for defined time span
+	 *
 	 * @return time span in milliseconds
 	 */
 	public abstract long getTimeSpan();

@@ -23,6 +23,7 @@ import org.hamcrest.Matcher;
  * on receiving a record.
  * <p>
  * If the provided {@link Matcher} returns true the test will be finished early.
+ *
  * @param <OUT>
  */
 public class FinishAtMatch<OUT> implements VerifyFinishedTrigger<OUT> {
@@ -34,6 +35,7 @@ public class FinishAtMatch<OUT> implements VerifyFinishedTrigger<OUT> {
 
 	/**
 	 * Default constructor
+	 *
 	 * @param matcher used for triggering.
 	 */
 	public FinishAtMatch(Matcher<OUT> matcher) {

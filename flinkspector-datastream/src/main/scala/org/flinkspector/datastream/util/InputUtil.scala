@@ -28,20 +28,20 @@ import scala.util.Try
 
 object InputUtil {
   /**
-   * Calculates the watermarks for a list of
-   * [[org.apache.flink.streaming.runtime.streamrecord.StreamRecord]]s.
-   * <p>
-   * Produces a list of longs with the same length as the input list,
-   * defining for each record if a watermark with what value can be emitted.
-   * If a long is negative no watermark can be emitted at this point.
-   *
-   * e.g.: A input with timestamps: (3, 1, 11, 2, 5, 4, 10, 8, 7, 9)
-   * will return List(-1,1,-1,3,-1,5,-1,-1,8,11)
-   *
-   * @param records list of [[StreamRecord]]s
-   * @tparam T type of the values
-   * @return list of watermarks
-   */
+    * Calculates the watermarks for a list of
+    * [[org.apache.flink.streaming.runtime.streamrecord.StreamRecord]]s.
+    * <p>
+    * Produces a list of longs with the same length as the input list,
+    * defining for each record if a watermark with what value can be emitted.
+    * If a long is negative no watermark can be emitted at this point.
+    *
+    * e.g.: A input with timestamps: (3, 1, 11, 2, 5, 4, 10, 8, 7, 9)
+    * will return List(-1,1,-1,3,-1,5,-1,-1,8,11)
+    *
+    * @param records list of [[StreamRecord]]s
+    * @tparam T type of the values
+    * @return list of watermarks
+    */
   def calculateWatermarks[T](records: java.lang.Iterable[StreamRecord[T]],
                              lastValueMax: Boolean = false): JList[JLong] = {
     val timestamps = records.map(_.getTimestamp)
@@ -52,33 +52,33 @@ object InputUtil {
   }
 
   /**
-   * Implicit conversion from a[[List]]] of [[Long]]
-   * to a  [[JList]] of [[JLong]]
+    * Implicit conversion from a[[List]]] of [[Long]]
+    * to a  [[JList]] of [[JLong]]
     *
     * @param lst
-   * @return
-   */
+    * @return
+    */
   implicit def toLongList(lst: List[Long]): JList[JLong] =
     seqAsJavaList(lst.map(i => i: java.lang.Long))
 
   /**
-   * Calculates the watermarks for a list of [[Long]].
-   * <p>
-   * Produces a list of longs with the same length as the input list,
-   * defining for each record if a watermark with what value can be emitted.
-   * If a long is negative no watermark can be emitted at this point.
-   *
-   * e.g.: A input with timestamps: (3, 1, 11, 2, 5, 4, 10, 8, 7, 9)
-   * will return List(-1,1,-1,3,-1,5,-1,-1,8,11)
-   *
-   * @param timestamps list of [[Long]]
-   * @return list of watermarks
-   */
+    * Calculates the watermarks for a list of [[Long]].
+    * <p>
+    * Produces a list of longs with the same length as the input list,
+    * defining for each record if a watermark with what value can be emitted.
+    * If a long is negative no watermark can be emitted at this point.
+    *
+    * e.g.: A input with timestamps: (3, 1, 11, 2, 5, 4, 10, 8, 7, 9)
+    * will return List(-1,1,-1,3,-1,5,-1,-1,8,11)
+    *
+    * @param timestamps list of [[Long]]
+    * @return list of watermarks
+    */
   def produceWatermarks(timestamps: List[Long],
                         lastValueMax: Boolean = false): List[Long] = {
     val max = if (lastValueMax) {
       Long.MaxValue
-    }else{
+    } else {
       timestamps.max
     }
     val array = new ArrayBuffer[Long]()
@@ -115,17 +115,17 @@ object InputUtil {
   }
 
   /**
-   * Splits a [[JList]] into partitions and returns one partition.
-   * <p>
-   * List(1,2,3,4) with two partitions will be turned into
-   * List(1,3) and List(2,4).
-   *
-   * @param input list to split.
-   * @param index index of the returned partition.
-   * @param numPartitions number of partitions.
-   * @tparam T type of the list.
-   * @return part of the list.
-   */
+    * Splits a [[JList]] into partitions and returns one partition.
+    * <p>
+    * List(1,2,3,4) with two partitions will be turned into
+    * List(1,3) and List(2,4).
+    *
+    * @param input         list to split.
+    * @param index         index of the returned partition.
+    * @param numPartitions number of partitions.
+    * @tparam T type of the list.
+    * @return part of the list.
+    */
   def splitList[T](input: JList[T], index: Int, numPartitions: Int): JList[T] = {
     val split = ArrayBuffer.empty[T]
     var i: Int = index

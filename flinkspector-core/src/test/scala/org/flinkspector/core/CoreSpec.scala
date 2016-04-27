@@ -26,10 +26,10 @@ import scala.collection.JavaConversions._
 
 abstract class CoreSpec
   extends FlatSpec
-  with Matchers
-  with OptionValues
-  with MockitoSugar
-  with Timeouts {
+    with Matchers
+    with OptionValues
+    with MockitoSugar
+    with Timeouts {
 
   class TestInput[T](input: List[T]) extends Input[T] {
     override def getInput: JList[T] = input

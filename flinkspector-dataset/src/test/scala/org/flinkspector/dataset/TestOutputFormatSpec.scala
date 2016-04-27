@@ -29,7 +29,7 @@ import scala.collection.mutable.ArrayBuffer
 class TestOutputFormatSpec extends CoreSpec {
   "The sink" should "send output" in new TestOutputFormatCase(1) {
 
-    outputFormat(0).open(0,1)
+    outputFormat(0).open(0, 1)
     outputFormat(0).writeRecord("hello")
     outputFormat(0).writeRecord("world")
     outputFormat(0).close()
@@ -47,8 +47,8 @@ class TestOutputFormatSpec extends CoreSpec {
 
   it should "send output in parallel" in new TestOutputFormatCase(2) {
 
-    outputFormat(0).open(0,2)
-    outputFormat(1).open(1,2)
+    outputFormat(0).open(0, 2)
+    outputFormat(1).open(1, 2)
 
     outputFormat(0).writeRecord("hello")
     val open1 = processOpen(subscriber.recv())
@@ -101,11 +101,11 @@ class TestOutputFormatSpec extends CoreSpec {
     SerializeUtil.deserialize(MessageType.REC.getPayload(bytes), ser)
   }
 
-  def processOpen(bytes: Array[Byte]): (String,TypeSerializer[Nothing]) = {
+  def processOpen(bytes: Array[Byte]): (String, TypeSerializer[Nothing]) = {
     val msg = new String(bytes, "UTF-8")
     val values: String = msg.split(" ;").head
     val out = MessageType.OPEN.getPayload(bytes)
     val typeSerializer = SerializeUtil.deserialize(out)
-    (values,typeSerializer)
+    (values, typeSerializer)
   }
 }

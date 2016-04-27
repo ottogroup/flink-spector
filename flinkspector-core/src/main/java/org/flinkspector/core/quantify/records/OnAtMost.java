@@ -23,6 +23,7 @@ import org.hamcrest.Matcher;
 /**
  * Provides a {@link Matcher} that is successful if at most n
  * items in the examined {@link Iterable} is a positive match.
+ *
  * @param <T>
  */
 public class OnAtMost<T> extends WhileList<T> {
@@ -31,8 +32,9 @@ public class OnAtMost<T> extends WhileList<T> {
 
 	/**
 	 * Default constructor
+	 *
 	 * @param matcher to apply to the {@link Iterable}
-	 *                @param n number of expected matches
+	 * @param n       number of expected matches
 	 */
 	public OnAtMost(Matcher<T> matcher, int n) {
 		super(matcher);
@@ -46,7 +48,7 @@ public class OnAtMost<T> extends WhileList<T> {
 
 	@Override
 	public String prefix() {
-		return "at most " + n +" records";
+		return "at most " + n + " records";
 	}
 
 	@Override
@@ -56,6 +58,6 @@ public class OnAtMost<T> extends WhileList<T> {
 
 	@Factory
 	public static <T> OnAtMost<T> atMost(Matcher<T> matcher, int n) {
-		return new OnAtMost<T>(matcher,n);
+		return new OnAtMost<T>(matcher, n);
 	}
 }

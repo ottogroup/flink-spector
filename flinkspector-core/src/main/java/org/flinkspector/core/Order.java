@@ -17,5 +17,5 @@
 package org.flinkspector.core;
 
 public enum Order {
-	STRICT,NONSTRICT
+	STRICT, NONSTRICT
 }

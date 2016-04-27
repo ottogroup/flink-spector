@@ -30,7 +30,7 @@ import java.util.List;
  * @param <IN>
  * @param <OUT>
  */
-public abstract class InputTranslator<IN,OUT> implements Input<OUT> {
+public abstract class InputTranslator<IN, OUT> implements Input<OUT> {
 
 	private Input<IN> input;
 
@@ -43,7 +43,7 @@ public abstract class InputTranslator<IN,OUT> implements Input<OUT> {
 	@Override
 	public List<OUT> getInput() {
 		List<OUT> out = new ArrayList<OUT>();
-		for (IN elem: input.getInput()) {
+		for (IN elem : input.getInput()) {
 			out.add(translate(elem));
 		}
 		return out;

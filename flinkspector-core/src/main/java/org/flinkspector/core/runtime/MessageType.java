@@ -31,9 +31,13 @@ public enum MessageType {
 	CLOSE("CLOSE"),
 	REC("REC");
 
-	/** byte representation of the message identifier */
+	/**
+	 * byte representation of the message identifier
+	 */
 	public byte[] bytes;
-	/** number of bytes of the message encoding */
+	/**
+	 * number of bytes of the message encoding
+	 */
 	public final int length;
 
 	MessageType(String prefix) {
@@ -67,7 +71,7 @@ public enum MessageType {
 	 * @return byte array containing the payload.
 	 */
 	public byte[] getPayload(byte[] message) throws UnsupportedEncodingException {
-		if(this == OPEN) {
+		if (this == OPEN) {
 			return getOpenPayload(message);
 		}
 		return ArrayUtils.subarray(message, length, message.length);
@@ -75,12 +79,13 @@ public enum MessageType {
 
 	/**
 	 * Extracts the serializer from an open message.
+	 *
 	 * @param message byte array representing the message.
 	 * @return serialized serializer.
 	 * @throws UnsupportedEncodingException
 	 */
 	private byte[] getOpenPayload(byte[] message) throws UnsupportedEncodingException {
-		int length = new String(message,"UTF-8").indexOf(";") + 1;
+		int length = new String(message, "UTF-8").indexOf(";") + 1;
 		return ArrayUtils.subarray(message, length, message.length);
 	}
 

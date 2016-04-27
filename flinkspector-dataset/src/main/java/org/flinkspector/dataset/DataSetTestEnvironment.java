@@ -26,7 +26,7 @@ import org.flinkspector.core.runtime.Runner;
 import org.flinkspector.core.trigger.DefaultTestTrigger;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 
-public class DataSetTestEnvironment extends TestEnvironment{
+public class DataSetTestEnvironment extends TestEnvironment {
 
 
 	private final Runner runner;
@@ -91,7 +91,7 @@ public class DataSetTestEnvironment extends TestEnvironment{
 	 * @return the created sink.
 	 */
 	public <IN> TestOutputFormat<IN> createTestOutputFormat(OutputVerifier<IN> verifier,
-	                                                        VerifyFinishedTrigger trigger) {
+															VerifyFinishedTrigger trigger) {
 		int port = runner.registerListener(verifier, trigger);
 		TestOutputFormat<IN> format = new TestOutputFormat<IN>(port);
 		return format;

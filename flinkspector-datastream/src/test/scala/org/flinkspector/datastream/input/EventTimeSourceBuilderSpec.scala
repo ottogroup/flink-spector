@@ -34,14 +34,14 @@ class EventTimeSourceBuilderSpec extends CoreSpec {
   "The source builder" should "startWith a working source" in {
     val env = DataStreamTestEnvironment.createTestEnvironment(1)
 
-    val source = new EventTimeSourceBuilder[Int](env,1)
-      .emit(2, After.period(1,TimeUnit.SECONDS))
-      .emit(3, After.period(1,TimeUnit.SECONDS))
-      .emit(4, After.period(1,TimeUnit.SECONDS))
+    val source = new EventTimeSourceBuilder[Int](env, 1)
+      .emit(2, After.period(1, TimeUnit.SECONDS))
+      .emit(3, After.period(1, TimeUnit.SECONDS))
+      .emit(4, After.period(1, TimeUnit.SECONDS))
       .close()
 
-    source.addSink{
-      env.createTestSink(new Verifier[Int](List(1,2,3,4)))
+    source.addSink {
+      env.createTestSink(new Verifier[Int](List(1, 2, 3, 4)))
     }
 
     env.executeTest()

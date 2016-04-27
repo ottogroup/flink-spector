@@ -26,13 +26,18 @@ import java.util.List;
 /**
  * This class is used to define expectations
  * for the output of a endpoint.
+ *
  * @param <T>
  */
 public class ExpectedRecords<T> extends OutputMatcher<T> {
 
-	/** list of expected records */
+	/**
+	 * list of expected records
+	 */
 	private List<T> expectedRecords;
-	/** matcher to test the output */
+	/**
+	 * matcher to test the output
+	 */
 	private MatcherBuilder<T> matcher;
 
 	public ExpectedRecords() {
@@ -52,6 +57,7 @@ public class ExpectedRecords<T> extends OutputMatcher<T> {
 	/**
 	 * Provides the {@link MatcherBuilder} to define
 	 * expectations for the test
+	 *
 	 * @return builder for refining expectations
 	 */
 	public MatcherBuilder<T> refine() {
@@ -63,6 +69,7 @@ public class ExpectedRecords<T> extends OutputMatcher<T> {
 
 	/**
 	 * Adds an record to the list of expected output
+	 *
 	 * @param record to add
 	 */
 	public ExpectedRecords<T> expect(T record) {
@@ -72,6 +79,7 @@ public class ExpectedRecords<T> extends OutputMatcher<T> {
 
 	/**
 	 * Adds a {@link Collection} of records to the expected output
+	 *
 	 * @param records to add
 	 */
 	public ExpectedRecords<T> expectAll(Collection<T> records) {
@@ -81,10 +89,11 @@ public class ExpectedRecords<T> extends OutputMatcher<T> {
 
 	/**
 	 * Adds an record to the collection of expected output
+	 *
 	 * @param record to add
 	 */
 	public ExpectedRecords<T> expect(T record, int times) {
-		if(record == null) {
+		if (record == null) {
 			throw new IllegalArgumentException("Record has too be not null!");
 		}
 		expectedRecords.add(record);
