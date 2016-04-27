@@ -44,7 +44,6 @@ public class BatchTest extends DataSetTestBase {
 
 	@Test
 	public void testMap() throws Throwable {
-
 		/*
 		 * Define the input DataSet:
 		 * Get a DataSetBuilder with .createTestStreamWith(record).

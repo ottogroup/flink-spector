@@ -39,7 +39,7 @@ public class DataSetTestBase {
 	/**
 	 * Test Environment
 	 */
-	private DataSetTestEnvironment testEnv;
+	DataSetTestEnvironment testEnv;
 
 	/**
 	 * Sets the parallelism for operations executed through this environment.

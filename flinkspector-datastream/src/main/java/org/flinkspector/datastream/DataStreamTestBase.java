@@ -51,7 +51,7 @@ public class DataStreamTestBase {
 	/**
 	 * Test Environment
 	 */
-	private DataStreamTestEnvironment testEnv;
+	DataStreamTestEnvironment testEnv;
 
 	/**
 	 * Creates a new {@link DataStreamTestEnvironment}
