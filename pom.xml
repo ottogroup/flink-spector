@@ -21,7 +21,7 @@
 
     <groupId>org.flinkspector</groupId>
     <artifactId>flinkspector-parent_2.11</artifactId>
-    <version>0.3</version>
+    <version>0.4-SNAPSHOT</version>
 
 
     <name>Flinkspector</name>

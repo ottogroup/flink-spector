@@ -108,7 +108,7 @@ If you want to use assertions you should also include hamcrest:
 <dependency>
     <groupId>org.flinkspector</groupId>
     <articaftId>flinkspector-dataset</artifactId>
-    <version>0.3</version>
+    <version>0.4-SNAPSHOT</version>
 </dependency>
 ```
 or for the Flink DataStream API:
@@ -117,7 +117,7 @@ or for the Flink DataStream API:
 <dependency>
     <groupId>org.flinkspector</groupId>
     <articaftId>flinkspector-datastream</artifactId>
-    <version>0.3</version>
+    <version>0.4-SNAPSHOT</version>
 </dependency>
 ```
 
