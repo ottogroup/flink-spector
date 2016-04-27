@@ -221,6 +221,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 		// must not have null elements and mixed elements
 		FromElementsFunction.checkCollection(data, typeInfo.getTypeClass());
 
+
 		SourceFunction<OUT> function;
 		try {
 			function = new ParallelFromStreamRecordsFunction<OUT>(typeInfo.createSerializer(getConfig()),

@@ -24,7 +24,7 @@ import scala.collection.JavaConversions._
 class StreamTestBaseSpec extends CoreSpec {
 
   it should "run a basic test" in {
-    val base = new StreamTestBase
+    val base = new DataStreamTestBase
     base.initialize()
 
     val coll : java.util.Collection[Int] = List(1,2,3,4)
@@ -36,7 +36,7 @@ class StreamTestBaseSpec extends CoreSpec {
   }
 
   it should "fail a basic test" in {
-    val base = new StreamTestBase
+    val base = new DataStreamTestBase
     base.initialize()
 
     val coll : java.util.Collection[Int] = List(1,2,3,4)
@@ -49,7 +49,7 @@ class StreamTestBaseSpec extends CoreSpec {
 
 
   it should "run a basic test with two sinks" in {
-    val base = new StreamTestBase
+    val base = new DataStreamTestBase
     base.initialize()
 
     val coll : java.util.Collection[Int] = List(1,2,3,4)
@@ -63,7 +63,7 @@ class StreamTestBaseSpec extends CoreSpec {
   }
 
   it should "fail a basic test with two sinks" in {
-    val base = new StreamTestBase
+    val base = new DataStreamTestBase
     base.initialize()
 
     val coll : java.util.Collection[Int] = List(1,2,3,4)

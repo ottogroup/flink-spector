@@ -19,14 +19,14 @@ package org.flinkspector.datastream.functions;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.flinkspector.core.collection.ExpectedRecords;
-import org.flinkspector.datastream.StreamTestBase;
+import org.flinkspector.datastream.DataStreamTestBase;
 import org.flinkspector.datastream.input.EventTimeInput;
 import org.flinkspector.datastream.input.EventTimeInputBuilder;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
-public class ParrallelFromStreamRecordsTest extends StreamTestBase {
+public class ParallelFromStreamRecordsTest extends DataStreamTestBase {
 
 	@Test
 	public void testFlushWindows() {

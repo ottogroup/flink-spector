@@ -108,4 +108,35 @@ class ParallelFromStreamRecordsFunctionSpec extends CoreSpec {
     verify(ctx).emitWatermark(new Watermark(4000))
   }
 
+  it should "emit continously rising watermarks with MaxValue" in {
+    val input = EventTimeInputBuilder.startWith("1")
+      .emit("2", After.period(1, TimeUnit.SECONDS))
+      .emit("3", After.period(1, TimeUnit.SECONDS))
+      .emit("4", After.period(1, TimeUnit.SECONDS))
+      .emit("5", After.period(1, TimeUnit.SECONDS))
+      .emit("6", After.period(1, TimeUnit.SECONDS))
+      .flushOpenWindowsOnTermination()
+
+    val source = new ParallelFromStreamRecordsFunction[String](serializer, input.getInput, true)
+    val streamContext = mock[StreamingRuntimeContext]
+    when(streamContext.getNumberOfParallelSubtasks).thenReturn(1)
+    when(streamContext.getIndexOfThisSubtask).thenReturn(0)
+    source.setRuntimeContext(streamContext)
+    val ctx = mock[SourceFunction.SourceContext[String]]
+    when(ctx.getCheckpointLock).thenReturn(config, null)
+    source.run(ctx)
+    verify(ctx).collectWithTimestamp("1", 0)
+    verify(ctx).collectWithTimestamp("2", 1000)
+    verify(ctx).collectWithTimestamp("3", 2000)
+    verify(ctx).collectWithTimestamp("4", 3000)
+    verify(ctx).collectWithTimestamp("5", 4000)
+    verify(ctx).collectWithTimestamp("6", 5000)
+
+    verify(ctx).emitWatermark(new Watermark(1000))
+    verify(ctx).emitWatermark(new Watermark(2000))
+    verify(ctx).emitWatermark(new Watermark(3000))
+    verify(ctx).emitWatermark(new Watermark(4000))
+    verify(ctx).emitWatermark(new Watermark(Long.MaxValue))
+  }
+
 }

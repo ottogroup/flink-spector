@@ -83,7 +83,7 @@ public class ParallelFromStreamRecordsFunction<T> extends RichParallelSourceFunc
 	/**
 	 * flushOpenWindowsOnTermination
 	 */
-	Boolean flushOpenWindows = false;
+	private Boolean flushOpenWindows = false;
 
 	public ParallelFromStreamRecordsFunction(TypeSerializer<StreamRecord<T>> serializer,
 											 Iterable<StreamRecord<T>> input) throws IOException {

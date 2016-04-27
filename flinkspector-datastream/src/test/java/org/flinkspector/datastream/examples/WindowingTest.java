@@ -20,7 +20,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.flinkspector.core.quantify.MatchTuples;
 import org.flinkspector.core.quantify.OutputMatcher;
-import org.flinkspector.datastream.StreamTestBase;
+import org.flinkspector.datastream.DataStreamTestBase;
 import org.flinkspector.datastream.input.time.InWindow;
 
 import static org.hamcrest.Matchers.anyOf;
@@ -38,7 +38,7 @@ import static org.hamcrest.Matchers.is;
  * To ensure test cases run in a few seconds the framework sets the time characteristic of the data flow, to
  * EventTime. The test source emitting the input, calculates and emits watermarks based on the timestamped input.
  */
-public class WindowingTest extends StreamTestBase {
+public class WindowingTest extends DataStreamTestBase {
 
 	/**
 	 * Transformation to test.

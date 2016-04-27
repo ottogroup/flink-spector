@@ -20,14 +20,14 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.flinkspector.core.collection.ExpectedRecords;
-import org.flinkspector.datastream.StreamTestBase;
+import org.flinkspector.datastream.DataStreamTestBase;
 
 
 /**
  * This example shows how to define input without time characteristics.
  * With the usage of {@link ExpectedRecords}.
  */
-public class MapperTest extends StreamTestBase {
+public class MapperTest extends DataStreamTestBase {
 
 	/**
 	 * DataStream transformation to test.
