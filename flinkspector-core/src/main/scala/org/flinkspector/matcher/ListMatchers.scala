@@ -39,8 +39,14 @@ object ListMatchers extends Matchers {
   def containsOnly[T](right: List[T])(implicit aggregating: Aggregating[List[T]])
   : ListMatcher[T] = {
     new ListMatcher[T](right) {
-      override def matchesSafely(left: List[T]): Boolean =
-        aggregating.containsOnly(left, right)
+      override def matchesSafely(left: List[T]): Boolean = {
+
+        if (aggregating.containsOnly(left, right.distinct)) {
+          ensureFrequency(_ < _)(left, right)
+        } else {
+          false
+        }
+      }
 
       override def toString: String = "only matcher"
 
@@ -64,22 +70,7 @@ object ListMatchers extends Matchers {
       override def matchesSafely(left: List[T]): Boolean = {
 
         if(aggregating.containsAllOf(left, right)) {
-          val countDuplicates = (l: List[T]) => l
-            .groupBy(identity)
-            .mapValues(_.size)
-
-          val leftDuplicates = countDuplicates(left)
-          val rightDuplicates = countDuplicates(right)
-
-          rightDuplicates.foreach {
-            case (elem, count) =>
-              if (leftDuplicates.contains(elem)) {
-                if (leftDuplicates(elem) < count) {
-                  return false
-                }
-              }
-          }
-          true
+          ensureFrequency(_ < _)(left,right)
         } else {
           false
         }
@@ -155,25 +146,8 @@ object ListMatchers extends Matchers {
     */
   def sameFrequency[T](right: List[T]): ListMatcher[T] = {
     new ListMatcher[T](right) {
-      override def matchesSafely(left: List[T]): Boolean = {
-
-        val countDuplicates = (l: List[T]) => l
-          .groupBy(identity)
-          .mapValues(_.size)
-
-        val leftDuplicates = countDuplicates(left)
-        val rightDuplicates = countDuplicates(right)
-
-        rightDuplicates.foreach {
-          case (elem, count) =>
-            if (leftDuplicates.contains(elem)) {
-              if (leftDuplicates(elem) != count) {
-                return false
-              }
-            }
-        }
-        true
-      }
+      override def matchesSafely(left: List[T]): Boolean =
+        ensureFrequency(_ != _)(left,right)
 
       override def toString: String = {
         "frequency matcher"
@@ -203,4 +177,30 @@ object ListMatchers extends Matchers {
     (list.head, list.tail.head, list.tail.tail)
   }
 
+  /**
+    * Helper function to compare the frequency of elements in lists.
+    * @param c function which compares the frequency of the elements.
+    * @param left first list.
+    * @param right second list.
+    * @tparam T generic type of the lists.
+    * @return true if comparator is true for each element else false.
+    */
+  private def ensureFrequency[T](c: (Int, Int) => Boolean)(left: List[T], right: List[T]): Boolean = {
+    val countDuplicates = (l: List[T]) => l
+      .groupBy(identity)
+      .mapValues(_.size)
+
+    val leftDuplicates = countDuplicates(left)
+    val rightDuplicates = countDuplicates(right)
+
+    rightDuplicates.foreach {
+      case (elem, count) =>
+        if (leftDuplicates.contains(elem)) {
+          if (c(leftDuplicates(elem), count)) {
+            return false
+          }
+        }
+    }
+    true
+  }
 }

@@ -34,6 +34,60 @@ class ListMatchersSpec extends CoreSpec {
 
   }
 
+  it should "fail when an elements is has a lower frequency" in {
+    ListMatchers
+      .containsOnly[Integer](List(2, 2, 3, 4))
+      .matches(List(2, 3, 4)) shouldBe false
+  }
+
+  it should "succeed when an elements is has same frequency" in {
+    ListMatchers
+      .containsOnly[Integer](List(2, 2, 3, 4))
+      .matches(List(2, 2, 3, 4)) shouldBe true
+  }
+
+  it should "succeed when an elements is has higher frequency" in {
+    ListMatchers
+      .containsOnly[Integer](List(2, 2, 3, 4))
+      .matches(List(2, 2, 2, 3, 4)) shouldBe true
+  }
+
+  it should "succeed with nested structure" in {
+    ListMatchers
+      .containsOnly[Map[String,Integer]](List(Map("k" -> 2), Map("k" -> 3)))
+      .matches(List(Map("k" -> 2), Map("k" -> 3))) shouldBe true
+  }
+
+  it should "succeed with nested structure and duplicates" in {
+    ListMatchers
+      .containsOnly[Map[String,Integer]](List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3)))
+      .matches(List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3))) shouldBe true
+  }
+
+  it should "fail with nested structure and duplicates" in {
+    ListMatchers
+      .containsOnly[Map[String,Integer]](List(Map("k" -> 2), Map("k" -> 3), Map("k" -> 3)))
+      .matches(List(Map("k" -> 2), Map("k" -> 3))) shouldBe false
+  }
+
+  it should "succeed with nested lists" in {
+    ListMatchers
+      .containsOnly[List[String]](List(List("k", "2"), List("k", "3")))
+      .matches(List(List("k", "2"), List("k", "3"))) shouldBe true
+  }
+
+  it should "succeed with nested lists and duplicates" in {
+    ListMatchers
+      .containsOnly[List[String]](List(List("k", "2"), List("k", "3"), List("k", "3")))
+      .matches(List(List("k", "2"), List("k", "3"), List("k", "3"))) shouldBe true
+  }
+
+  it should "fail with nested lists and duplicates" in {
+    ListMatchers
+      .containsOnly[List[String]](List(List("k", "2"), List("k", "3"), List("k", "3")))
+      .matches(List(List("k", "2"), List("k", "3"))) shouldBe false
+  }
+
   "the sameFrequency matcher" should "succeed when handed a list without duplicates" in {
     ListMatchers
       .sameFrequency[Integer](List(1, 2, 3, 4))
