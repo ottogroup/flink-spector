@@ -67,21 +67,32 @@ You can find more extensive examples here:
 ### Get Latest Release:
 > Note: The current build works with Flink versions 1.0.0 and later.
 > If you're using Scala 2.11 change the ending of the artifactId.
+
 Include in your project's pom.xml:
  ```xml
 <dependency>
-     <groupId>org.flinkspector</groupId>
-     <articaftId>flinkspector-dataset_2.10</artifactId>
-     <version>0.3</version>
+    <groupId>org.flinkspector</groupId>
+    <articaftId>flinkspector-dataset_2.10</artifactId>
+    <version>0.3</version>
 </dependency>
 ```
 or for the Flink DataStream API:
 
 ```xml
 <dependency>
-     <groupId>org.flinkspector</groupId>
-     <articaftId>flinkspector-datastream_2.10</artifactId>
-     <version>0.3</version>
+    <groupId>org.flinkspector</groupId>
+    <articaftId>flinkspector-datastream_2.10</artifactId>
+    <version>0.3</version>
+</dependency>
+```
+If you want to use assertions you should also include hamcrest:
+```xml
+<dependency>
+    <groupId>org.hamcrest</groupId>
+    <artifactId>hamcrest-all</artifactId>
+    <version>1.3</version>
+    <type>jar</type>
+    <scope>test</scope>
 </dependency>
 ```
 
