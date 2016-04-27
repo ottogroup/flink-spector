@@ -67,7 +67,7 @@ You can find more extensive examples here:
 ### Manual Build:
 1. Clone this repo: `git clone https://github.com/ottogroup/flink-spector`.
 
-> Note: The current build works with Flink version 1.0.0.
+> Note: The current build works with Flink versions 1.0.0 and later.
 > If you're using an older version, clone the matching branch.
 
 2. Build with maven: `maven install`.
@@ -76,7 +76,7 @@ You can find more extensive examples here:
 <dependency>
     <groupId>org.flinkspector</groupId>
     <articaftId>flinkspector-dataset</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
 </dependency>
 ```
 or for the Flink DataStream API:
@@ -85,7 +85,7 @@ or for the Flink DataStream API:
 <dependency>
     <groupId>org.flinkspector</groupId>
     <articaftId>flinkspector-datastream</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
 </dependency>
 ```
 
