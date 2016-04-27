@@ -16,7 +16,7 @@
 
 package org.flinkspector.core.collection
 
-import org.flinkspector.core.CoreSpec
+import org.flinkspector.core.{Order, CoreSpec}
 
 import scala.collection.JavaConversions._
 
@@ -58,7 +58,7 @@ class MatcherBuilderSpec extends CoreSpec {
 
   it should "check for order" in {
     val builder = new MatcherBuilder[Int](List(1, 2, 3, 4))
-    builder.inOrder(MatcherBuilder.Order.NONSTRICT).all()
+    builder.inOrder(Order.NONSTRICT).all()
 
     builder.matchesSafely(List(1, 2, 3, 4)) shouldBe true
     builder.matchesSafely(List(1, 2, 4, 3)) shouldBe false
@@ -66,13 +66,13 @@ class MatcherBuilderSpec extends CoreSpec {
 
   it should "check for partial order" in {
     val fromToBuilder = new MatcherBuilder[Int](List(1, 2, 3, 4))
-    fromToBuilder.inOrder(MatcherBuilder.Order.NONSTRICT).from(1).to(2)
+    fromToBuilder.inOrder(Order.NONSTRICT).from(1).to(2)
 
     fromToBuilder.matchesSafely(List(1, 2, 3, 4)) shouldBe true
     fromToBuilder.matchesSafely(List(1, 3, 2, 4)) shouldBe false
 
     val indicesBuilder = new MatcherBuilder[Int](List(1, 2, 3, 4))
-    indicesBuilder.inOrder(MatcherBuilder.Order.NONSTRICT).indices(0, 3)
+    indicesBuilder.inOrder(Order.NONSTRICT).indices(0, 3)
 
     indicesBuilder.matchesSafely(List(1, 2, 3, 4)) shouldBe true
     indicesBuilder.matchesSafely(List(4, 3, 2, 1)) shouldBe false
@@ -80,7 +80,7 @@ class MatcherBuilderSpec extends CoreSpec {
 
   it should "check for order in combination" in {
     val builder = new MatcherBuilder[Int](List(1, 2, 3, 4))
-    builder.only().inOrder(MatcherBuilder.Order.NONSTRICT).all()
+    builder.only().inOrder(Order.NONSTRICT).all()
 
     builder.matchesSafely(List(1, 2, 3, 4)) shouldBe true
     builder.matchesSafely(List(1, 2, 3, 4, 5)) shouldBe false
@@ -89,7 +89,7 @@ class MatcherBuilderSpec extends CoreSpec {
 
   it should "check for series" in {
     val builder = new MatcherBuilder[Int](List(1, 2, 3, 4))
-    builder.inOrder(MatcherBuilder.Order.STRICT).all()
+    builder.inOrder(Order.STRICT).all()
 
     builder.matchesSafely(List(1, 2, 3, 4)) shouldBe true
     builder.matchesSafely(List(1, 2, 4, 3)) shouldBe false
@@ -97,13 +97,13 @@ class MatcherBuilderSpec extends CoreSpec {
 
   it should "check for partial series" in {
     val fromToBuilder = new MatcherBuilder[Int](List(1, 2, 3, 4))
-    fromToBuilder.inOrder(MatcherBuilder.Order.STRICT).from(1).to(2)
+    fromToBuilder.inOrder(Order.STRICT).from(1).to(2)
 
     fromToBuilder.matchesSafely(List(1, 2, 3, 4)) shouldBe true
     fromToBuilder.matchesSafely(List(1, 3, 2, 4)) shouldBe false
 
     val indicesBuilder = new MatcherBuilder[Int](List(1, 2, 3, 4))
-    indicesBuilder.inOrder(MatcherBuilder.Order.STRICT).indices(0, 3)
+    indicesBuilder.inOrder(Order.STRICT).indices(0, 3)
 
     indicesBuilder.matchesSafely(List(1, 4, 2, 3)) shouldBe true
     indicesBuilder.matchesSafely(List(4, 2, 3, 1)) shouldBe false
@@ -111,8 +111,8 @@ class MatcherBuilderSpec extends CoreSpec {
 
   it should "check for two order statements" in {
     val combinedOrder = new MatcherBuilder[Int](List(1, 2, 3, 4))
-    combinedOrder.inOrder(MatcherBuilder.Order.STRICT).from(1).to(2)
-    combinedOrder.inOrder(MatcherBuilder.Order.NONSTRICT).indices(0,3)
+    combinedOrder.inOrder(Order.STRICT).from(1).to(2)
+    combinedOrder.inOrder(Order.NONSTRICT).indices(0,3)
 
     combinedOrder.matchesSafely(List(1, 2, 3, 4)) shouldBe true
     combinedOrder.matchesSafely(List(1, 3, 2, 4)) shouldBe false
@@ -122,7 +122,7 @@ class MatcherBuilderSpec extends CoreSpec {
 
   it should "check for series in combination" in {
     val builder = new MatcherBuilder[Int](List(1, 2, 3, 4))
-    builder.only().inOrder(MatcherBuilder.Order.STRICT).all()
+    builder.only().inOrder(Order.STRICT).all()
 
     builder.matchesSafely(List(1, 2, 3, 4)) shouldBe true
     builder.matchesSafely(List(1, 2, 3, 4, 5)) shouldBe false

@@ -16,6 +16,7 @@
 
 package org.flinkspector.core.collection;
 
+import org.flinkspector.core.Order;
 import org.flinkspector.core.quantify.OutputMatcher;
 import org.flinkspector.matcher.ListMatcherBuilder;
 import org.hamcrest.Description;
@@ -74,7 +75,4 @@ public class MatcherBuilder<T> extends OutputMatcher<T> {
 		return builder.validate(item);
 	}
 
-	public enum Order {
-		STRICT,NONSTRICT
-	}
 }
