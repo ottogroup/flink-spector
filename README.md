@@ -64,11 +64,19 @@ You can find more extensive examples here:
 
 ## Getting started
 
-### Get Latest Release:
+### Get the Latest Release:
 > Note: The current build works with Flink versions 1.0.0 and later.
 > If you're using Scala 2.11 change the ending of the artifactId.
 
 Include in your project's pom.xml:
+ ```xml
+<repositories>
+    <repository>
+        <id>otto-bintray</id>
+        <url>https://dl.bintray.com/ottogroup/maven</url>
+    </repository>
+</repositories>
+```
  ```xml
 <dependency>
     <groupId>org.flinkspector</groupId>
