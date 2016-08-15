@@ -20,8 +20,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.flinkspector</groupId>
-    <artifactId>flinkspector-parent_2.10</artifactId>
-    <version>0.4</version>
+    <artifactId>flinkspector-parent_2.11</artifactId>
+    <version>0.5-SNAPSHOT</version>
 
 
     <name>Flinkspector</name>
@@ -47,13 +47,13 @@
     </modules>
 
     <properties>
-        <flink.version>1.1.0</flink.version>
+        <flink.version>1.1.1</flink.version>
         <log4j.configuration>log4j-test.properties</log4j.configuration>
         <slf4j.version>1.7.7</slf4j.version>
         <guava.version>18.0</guava.version>
         <!-- Default scala versions, may be overwritten by build profiles -->
-        <scala.version>2.10.4</scala.version>
-        <scala.binary.version>2.10</scala.binary.version>
+        <scala.version>2.11.7</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -63,13 +63,13 @@
         <!-- flink -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-runtime_2.10</artifactId>
+            <artifactId>flink-runtime_2.11</artifactId>
             <version>${flink.version}</version>
             <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-test-utils_2.10</artifactId>
+            <artifactId>flink-test-utils_2.11</artifactId>
             <version>${flink.version}</version>
         </dependency>
         <!-- zeromq -->
