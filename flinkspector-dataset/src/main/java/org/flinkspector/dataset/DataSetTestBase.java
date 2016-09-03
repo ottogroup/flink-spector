@@ -41,34 +41,6 @@ public class DataSetTestBase {
 	DataSetTestEnvironment testEnv;
 
 	/**
-	 * Sets the parallelism for operations executed through this environment.
-	 * Setting a parallelism of x here will cause all operators (such as join, map, reduce) to run with
-	 * x parallel instances.
-	 * <p>
-	 * This method overrides the default parallelism for this environment.
-	 * The {@link LocalEnvironment} uses by default a value equal to the number of hardware
-	 * contexts (CPU cores / threads). When executing the program via the command line client
-	 * from a JAR file, the default parallelism is the one configured for that setup.
-	 *
-	 * @param parallelism The parallelism
-	 */
-	public void setParrallelism(Integer parallelism) {
-		testEnv.setParallelism(parallelism);
-	}
-
-	/**
-	 * Gets the parallelism with which operation are executed by default.
-	 * Operations can individually override this value to use a specific
-	 * parallelism.
-	 *
-	 * @return The parallelism used by operations, unless they override that
-	 * value.
-	 */
-	public Integer getParrallelism() {
-		return testEnv.getParallelism();
-	}
-
-	/**
 	 * Creates a new {@link DataSetTestEnvironment}
 	 */
 	@Before
