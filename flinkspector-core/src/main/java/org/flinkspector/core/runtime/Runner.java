@@ -42,7 +42,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class Runner {
 
-
     /**
      * {@link ForkableFlinkMiniCluster} used for running the test.
      */
@@ -300,7 +299,7 @@ public abstract class Runner {
     /**
      * Registers a verifier for a 0MQ port.
      *
-     * @param <OUT>E
+     * @param <OUT>
      * @param verifier verifier
      * @param trigger
      */

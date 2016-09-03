@@ -190,8 +190,6 @@ class RunnerSpec extends CoreSpec {
     runner.registerListener(verifier, trigger)
     runner.executeTest()
 
-    runner.hasBeenStopped shouldBe true
-
     verify(verifier).init()
     verify(verifier).receive("1")
     verify(verifier).receive("2")
