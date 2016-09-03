@@ -168,7 +168,7 @@ public abstract class Runner {
         try {
             future.get(6, TimeUnit.SECONDS);
         } catch (ExecutionException e) {
-            System.out.println("caught exception: " + e.getCause());
+            throw new RuntimeException("Error while shutting down the cluster: ", e);
         } catch (TimeoutException e) {
             future.cancel(true);
         }
@@ -195,7 +195,6 @@ public abstract class Runner {
         //run is not finished and has to be stopped forcefully
         if (!finished.get()) {
             cleanUp();
-            System.out.println("Killing it");
             try {
                 shutdownLocalCluster();
             } catch (InterruptedException e) {
@@ -206,7 +205,6 @@ public abstract class Runner {
 
     private synchronized void cleanUp() {
         if (!finished.get()) {
-            System.out.println("Runner.cleanUp");
             subscribers.close();
             stopTimer.cancel();
             stopTimer.purge();
