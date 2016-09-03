@@ -33,258 +33,305 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Runner {
 
-	/**
-	 * {@link ForkableFlinkMiniCluster} used for running the test.
-	 */
-	private final ForkableFlinkMiniCluster cluster;
+    /**
+     * {@link ForkableFlinkMiniCluster} used for running the test.
+     */
+    private final ForkableFlinkMiniCluster cluster;
 
-	/**
-	 * {@link ListeningExecutorService} used for running the {@link OutputSubscriber},
-	 * in the background.
-	 */
-	private final ListeningExecutorService executorService;
+    /**
+     * {@link ListeningExecutorService} used for running the {@link OutputSubscriber},
+     * in the background.
+     */
+    private final ListeningExecutorService executorService;
 
-	/**
-	 * list of {@link ListenableFuture}s wrapping the {@link OutputSubscriber}s.
-	 */
-	private final List<ListenableFuture<ResultState>> listenerFutures = new ArrayList<>();
+    /**
+     * list of {@link ListenableFuture}s wrapping the {@link OutputSubscriber}s.
+     */
+    private final List<ListenableFuture<ResultState>> listenerFutures = new ArrayList<>();
 
-	/**
-	 * Number of running sockets
-	 */
-	private final AtomicInteger runningListeners;
+    /**
+     * Number of running sockets
+     */
+    private final AtomicInteger runningListeners;
 
-	/**
-	 * Flag indicating whether the env has been shutdown forcefully.
-	 */
-	private final AtomicBoolean stopped = new AtomicBoolean(false);
+    /**
+     * Flag indicating whether the previous test has been finished .
+     */
+    private final AtomicBoolean finished = new AtomicBoolean(false);
 
-	/**
-	 * Time in milliseconds before the test gets stopped with a timeout.
-	 */
-	private long timeout = 4000;
+    /**
+     * Flag indicating whether the env has been shutdown forcefully.
+     */
+    private final AtomicBoolean failed = new AtomicBoolean(false);
 
-	/**
-	 * {@link TimerTask} to stop the test execution.
-	 */
-	private TimerTask stopExecution;
+    /**
+     * Time in milliseconds before the test gets failed with a timeout.
+     */
+    private long timeout = 4000;
 
-	/**
-	 * {@link Timer} to stop the execution
-	 */
-	Timer stopTimer = new Timer();
+    /**
+     * {@link TimerTask} to stop the test execution.
+     */
+    private TimerTask stopExecution;
 
-	/**
-	 * The current port used for transmitting the output from via 0MQ
-	 * to the {@link OutputSubscriber}s.
-	 */
-	private Integer currentPort;
-
-	private final ZMQSubscribers subscribers = new ZMQSubscribers();
+    /**
+     * {@link Timer} to stop the execution
+     */
+    Timer stopTimer = new Timer();
 
 
+    /**
+     * The current port used for transmitting the output from via 0MQ
+     * to the {@link OutputSubscriber}s.
+     */
+    private Integer currentPort;
+
+    private final ZMQSubscribers subscribers = new ZMQSubscribers();
 
 
-	public Runner(ForkableFlinkMiniCluster executor) {
-		this.cluster = executor;
-		executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
-		currentPort = 5555;
-		runningListeners = new AtomicInteger(0);
-		stopExecution = new TimerTask() {
-			public void run() {
-				stopExecution();
-			}
-		};
+    public Runner(ForkableFlinkMiniCluster executor) {
+        this.cluster = executor;
+        executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
+        currentPort = 5555;
+        runningListeners = new AtomicInteger(0);
+        stopExecution = new TimerTask() {
+            public void run() {
+                stopExecution();
+            }
+        };
 
-	}
 
-	private class ZMQSubscribers {
+    }
 
-		private final ZMQ.Context context;
-		private List<ZMQ.Socket> sockets = new ArrayList<>();
+    private class ZMQSubscribers {
 
-		ZMQSubscribers() {
-			context = ZMQ.context(2);
-		}
+        private final ZMQ.Context context;
+        private List<ZMQ.Socket> sockets = new ArrayList<>();
 
-		ZMQ.Socket getSubscriber(String address) {
-			ZMQ.Socket subscriber = context.socket(ZMQ.PULL);
-			subscriber.setLinger(1000);
+        ZMQSubscribers() {
+            context = ZMQ.context(2);
+        }
 
-			subscriber.bind(address);
+        ZMQ.Socket getSubscriber(String address) {
+            ZMQ.Socket subscriber = context.socket(ZMQ.PULL);
+            subscriber.setLinger(1000);
 
-			sockets.add(subscriber);
-			return subscriber;
-		}
+            subscriber.bind(address);
 
-		public void close() {
-			for (ZMQ.Socket s : sockets) {
-				s.close();
-			}
-			try {
-				context.term();
-			} catch (IllegalStateException e) {
-				//shit happens
-			}
-		}
+            sockets.add(subscriber);
+            return subscriber;
+        }
 
-	}
+        public void close() {
+            for (ZMQ.Socket s : sockets) {
+                s.close();
+            }
+            try {
+                context.term();
+            } catch (IllegalStateException e) {
+                //shit happens
+            }
+        }
 
-	protected abstract void executeEnvironment() throws Throwable;
+    }
 
-	/**
-	 * Stop the execution of the test.
-	 * <p/>
-	 * Shutting the local cluster down will, will notify
-	 * the sockets when the sinks are closed.
-	 * Thus terminating the execution gracefully.
-	 */
-	public synchronized void stopExecution() {
-		if (stopped.get()) {
-			return;
-		}
-			subscribers.close();
-		stopped.set(true);
-		stopTimer.cancel();
-		stopTimer.purge();
-		try {
-			TestBaseUtils.stopCluster(cluster, new FiniteDuration(1000, TimeUnit.SECONDS));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    protected abstract void executeEnvironment() throws JobTimeoutException, Throwable;
 
-	/**
-	 * Starts the test execution.
-	 * Collects the results from sockets after
-	 * the cluster has terminated.
-	 *
-	 * @throws Throwable any Exception that has occurred
-	 *                   during validation the test.
-	 */
-	public void executeTest() throws Throwable {
-		stopTimer.schedule(stopExecution, timeout);
-		try {
-			executeEnvironment();
-		} catch (JobTimeoutException
-				| IllegalStateException e) {
-			//cluster has been shutdown forcefully, most likely by at timeout.
-			stopped.set(true);
-		}
+    private void shutdownLocalCluster() throws InterruptedException {
 
-		//====================
-		// collect failures
-		//====================
-		for (ListenableFuture future : listenerFutures) {
-			try {
-				future.get();
-			} catch (ExecutionException e) {
-				//check if it is a FlinkTestFailedException
-				if (e.getCause() instanceof FlinkTestFailedException) {
-					//unwrap exception
-					throw e.getCause().getCause();
-				}
-				if(!stopped.get()) {
-					throw e.getCause();
-				}
-			}
-		}
-		Thread.sleep(50);
-		if (!stopped.get()) {
-			subscribers.close();
-		}
-		stopTimer.cancel();
-		stopTimer.purge();
-	}
+        ExecutorService executor = Executors.newFixedThreadPool(4);
 
-	/**
-	 * This method can be used to check if the environment has been
-	 * stopped prematurely by e.g. a timeout.
-	 *
-	 * @return true if has been stopped forcefully.
-	 */
-	public Boolean hasBeenStopped() {
-		return stopped.get();
-	}
+        Future<?> future = executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    //give it a little time to finish by itself
+                    Thread.sleep(1000);
+                    TestBaseUtils.stopCluster(cluster, new FiniteDuration(1000, TimeUnit.SECONDS));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
-	/**
-	 * Getter for the timeout interval
-	 * after the test execution gets stopped.
-	 *
-	 * @return timeout in milliseconds
-	 */
-	public Long getTimeoutInterval() {
-		return timeout;
-	}
+        executor.shutdown();
 
-	/**
-	 * Setter for the timeout interval
-	 * after the test execution gets stopped.
-	 *
-	 * @param interval
-	 */
-	public void setTimeoutInterval(long interval) {
-		timeout = interval;
-	}
+        try {
+            future.get(6, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            System.out.println("caught exception: " + e.getCause());
+        } catch (TimeoutException e) {
+            future.cancel(true);
+        }
+        // wait all unfinished tasks for 5 sec
+        if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+            // force them to quit by interrupting
+            executor.shutdownNow();
+        }
+    }
 
-	/**
-	 * Get a port to use.
-	 *
-	 * @return unused port.
-	 */
-	private int getAvailablePort() {
-		int port = currentPort;
-		currentPort++;
-		return port;
-	}
 
-	/**
-	 * Registers a verifier for a 0MQ port.
-	 *
-	 * @param <OUT>
-	 * @param verifier verifier
-	 * @param trigger
-	 */
-	public <OUT> int registerListener(OutputVerifier<OUT> verifier,
-	                                  VerifyFinishedTrigger<? super OUT> trigger) {
-		int port = getAvailablePort();
+    /**
+     * Stop the execution of the test.
+     * <p/>
+     * Shutting the local cluster down will notify
+     * the sockets when the sinks are closed.
+     * Thus terminating the execution gracefully.
+     */
+    public synchronized void stopExecution() {
+        //execution has failed no cleanup necessary
+        if (failed.get()) {
+            return;
+        }
+        //run is not finished and has to be stopped forcefully
+        if (!finished.get()) {
+            cleanUp();
+            System.out.println("Killing it");
+            try {
+                shutdownLocalCluster();
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Local cluster won't shutdown!");
+            }
+        }
+    }
 
-		ZMQ.Socket subscriber = subscribers.getSubscriber("tcp://127.0.0.1:" + port);
+    private synchronized void cleanUp() {
+        if (!finished.get()) {
+            System.out.println("Runner.cleanUp");
+            subscribers.close();
+            stopTimer.cancel();
+            stopTimer.purge();
+            finished.set(true);
+        }
+    }
 
-		ListenableFuture<OutputSubscriber.ResultState> future = executorService
-				.submit(new OutputSubscriber<OUT>(subscriber, verifier, trigger));
-		runningListeners.incrementAndGet();
-		listenerFutures.add(future);
 
-		Futures.addCallback(future, new FutureCallback<ResultState>() {
+    /**
+     * Starts the test execution.
+     * Collects the results from sockets after
+     * the cluster has terminated.
+     *
+     * @throws Throwable any Exception that has occurred
+     *                   during validation the test.
+     */
+    public void executeTest() throws Throwable {
+        stopTimer.schedule(stopExecution, timeout);
+        try {
+            executeEnvironment();
+        } catch (JobTimeoutException
+                | IllegalStateException e) {
+            //cluster has been shutdown forcefully, most likely by a timeout.
+            failed.set(true);
+            cleanUp();
+        }
 
-			@Override
-			public void onSuccess(ResultState state) {
-				if(state != ResultState.SUCCESS) {
-					if (runningListeners.decrementAndGet() == 0) {
-						stopExecution();
-					}
-				}
-			}
+        //====================
+        // collect failures
+        //====================
+        for (ListenableFuture future : listenerFutures) {
+            try {
+                future.get();
+            } catch (ExecutionException e) {
+                //check if it is a FlinkTestFailedException
+                if (e.getCause() instanceof FlinkTestFailedException) {
+                    //unwrap exception
+                    throw e.getCause().getCause();
+                }
+                if (!failed.get()) {
+                    throw e.getCause();
+                }
+            }
+        }
+        cleanUp();
 
-			@Override
-			public void onFailure(Throwable throwable) {
-				//check if other sockets are still running
-				if (runningListeners.decrementAndGet() == 0) {
-					stopExecution();
-				}
-			}
-		});
+    }
 
-		return port;
-	}
+    /**
+     * This method can be used to check if the environment has been
+     * failed prematurely by e.g. a timeout.
+     *
+     * @return true if has been failed forcefully.
+     */
+    public Boolean hasBeenStopped() {
+        return failed.get();
+    }
+
+    /**
+     * Getter for the timeout interval
+     * after the test execution gets failed.
+     *
+     * @return timeout in milliseconds
+     */
+    public Long getTimeoutInterval() {
+        return timeout;
+    }
+
+    /**
+     * Setter for the timeout interval
+     * after the test execution gets failed.
+     *
+     * @param interval
+     */
+    public void setTimeoutInterval(long interval) {
+        timeout = interval;
+    }
+
+    /**
+     * Get a port to use.
+     *
+     * @return unused port.
+     */
+    private int getAvailablePort() {
+        int port = currentPort;
+        currentPort++;
+        return port;
+    }
+
+    /**
+     * Registers a verifier for a 0MQ port.
+     *
+     * @param <OUT>
+     * @param verifier verifier
+     * @param trigger
+     */
+    public <OUT> int registerListener(OutputVerifier<OUT> verifier,
+                                      VerifyFinishedTrigger<? super OUT> trigger) {
+        int port = getAvailablePort();
+
+        ZMQ.Socket subscriber = subscribers.getSubscriber("tcp://127.0.0.1:" + port);
+
+        ListenableFuture<OutputSubscriber.ResultState> future = executorService
+                .submit(new OutputSubscriber<OUT>(subscriber, verifier, trigger));
+        runningListeners.incrementAndGet();
+        listenerFutures.add(future);
+
+        Futures.addCallback(future, new FutureCallback<ResultState>() {
+
+            @Override
+            public void onSuccess(ResultState state) {
+                if (state != ResultState.SUCCESS) {
+                    if (runningListeners.decrementAndGet() == 0) {
+                        stopExecution();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                //check if other sockets are still running
+                if (runningListeners.decrementAndGet() == 0) {
+                    stopExecution();
+                }
+            }
+        });
+
+        return port;
+    }
 
 }

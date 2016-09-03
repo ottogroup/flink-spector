@@ -37,7 +37,7 @@ public class DataSetTestBase {
 	/**
 	 * Test Environment
 	 */
-	private DataSetTestEnvironment testEnv;
+	public DataSetTestEnvironment testEnv;
 
 	/**
 	 * Creates a new {@link DataSetTestEnvironment}
