@@ -80,7 +80,7 @@ Include in your project's pom.xml:
  ```xml
 <dependency>
     <groupId>org.flinkspector</groupId>
-    <articaftId>flinkspector-dataset_2.10</artifactId>
+    <artifactId>flinkspector-dataset_2.10</artifactId>
     <version>0.4</version>
 </dependency>
 ```
@@ -89,7 +89,7 @@ or for the Flink DataStream API:
 ```xml
 <dependency>
     <groupId>org.flinkspector</groupId>
-    <articaftId>flinkspector-datastream_2.10</artifactId>
+    <artifactId>flinkspector-datastream_2.10</artifactId>
     <version>0.4</version>
 </dependency>
 ```
