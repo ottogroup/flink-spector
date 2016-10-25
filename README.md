@@ -80,7 +80,7 @@ Include in your project's pom.xml:
  ```xml
 <dependency>
     <groupId>org.flinkspector</groupId>
-    <articaftId>flinkspector-dataset_2.10</artifactId>
+    <artifactId>flinkspector-dataset_2.10</artifactId>
     <version>0.4</version>
 </dependency>
 ```
@@ -89,7 +89,7 @@ or for the Flink DataStream API:
 ```xml
 <dependency>
     <groupId>org.flinkspector</groupId>
-    <articaftId>flinkspector-datastream_2.10</artifactId>
+    <artifactId>flinkspector-datastream_2.10</artifactId>
     <version>0.4</version>
 </dependency>
 ```
@@ -116,7 +116,7 @@ If you want to use assertions you should also include hamcrest:
 ```xml
 <dependency>
     <groupId>org.flinkspector</groupId>
-    <articaftId>flinkspector-dataset</artifactId>
+    <artifactId>flinkspector-dataset</artifactId>
     <version>0.5-SNAPSHOT</version>
 </dependency>
 ```
@@ -125,7 +125,7 @@ or for the Flink DataStream API:
 ```xml
 <dependency>
     <groupId>org.flinkspector</groupId>
-    <articaftId>flinkspector-datastream</artifactId>
+    <artifactId>flinkspector-datastream</artifactId>
     <version>0.5-SNAPSHOT</version>
 </dependency>
 ```
