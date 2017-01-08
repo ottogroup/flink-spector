@@ -63,13 +63,13 @@
         <!-- flink -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-runtime_2.11</artifactId>
+            <artifactId>flink-runtime_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
             <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-test-utils_2.11</artifactId>
+            <artifactId>flink-test-utils_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
         <!-- zeromq -->
