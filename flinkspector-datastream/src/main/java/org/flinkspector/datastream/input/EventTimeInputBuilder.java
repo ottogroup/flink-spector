@@ -137,17 +137,17 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 	 * Add an element with timestamp to the input.
 	 *
 	 * @param record
-	 * @param timeStamp
+	 * @param times
 	 * @return
 	 */
-	public EventTimeInputBuilder<T> emit(T record, long timeStamp) {
-		if (timeStamp < 0) {
-			throw new IllegalArgumentException("negative timestamp: " + timeStamp);
+	public EventTimeInputBuilder<T> emit(T record, int times) {
+		if (times < 0) {
+			throw new IllegalArgumentException("negative times: " + times);
 		}
 		if (record == null) {
 			throw new IllegalArgumentException("Elem has to be not null!");
 		}
-		add(new StreamRecord<T>(record, timeStamp));
+		emit(record, new Instant(), times);
 		return this;
 	}
 
@@ -192,7 +192,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
 		if (streamRecord == null) {
 			throw new IllegalArgumentException("Record has to be not null!");
 		}
-		emit(streamRecord.getValue(), streamRecord.getTimestamp());
+		add(streamRecord);
 		return this;
 	}
 

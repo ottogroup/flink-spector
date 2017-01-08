@@ -74,6 +74,8 @@ public class OutputSubscriber<OUT> implements Callable<OutputSubscriber.ResultSt
 	public OutputSubscriber(ZMQ.Socket subscriber,
 							OutputVerifier<OUT> verifier,
 							VerifyFinishedTrigger<? super OUT> trigger) {
+		if(subscriber == null) {
+		}
 		this.subscriber = subscriber;
 		this.verifier = verifier;
 		this.trigger = trigger;

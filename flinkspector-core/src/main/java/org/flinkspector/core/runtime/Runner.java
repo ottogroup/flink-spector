@@ -96,6 +96,7 @@ public abstract class Runner {
     private Integer currentPort;
 
     private final ZMQSubscribers subscribers = new ZMQSubscribers();
+    private boolean stopped;
 
 
     public Runner(ForkableFlinkMiniCluster executor) {
@@ -132,9 +133,7 @@ public abstract class Runner {
         }
 
         public void close() {
-            for (ZMQ.Socket s : sockets) {
-                s.close();
-            }
+            sockets.forEach(ZMQ.Socket::close);
             try {
                 context.term();
             } catch (IllegalStateException e) {
@@ -150,16 +149,13 @@ public abstract class Runner {
 
         ExecutorService executor = Executors.newFixedThreadPool(4);
 
-        Future<?> future = executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    //give it a little time to finish by itself
-                    Thread.sleep(1000);
-                    TestBaseUtils.stopCluster(cluster, new FiniteDuration(1000, TimeUnit.SECONDS));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        Future<?> future = executor.submit((Runnable) () -> {
+            try {
+                //give it a little time to finish by itself
+                Thread.sleep(1000);
+                TestBaseUtils.stopCluster(cluster, new FiniteDuration(1000, TimeUnit.SECONDS));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
 
@@ -181,13 +177,14 @@ public abstract class Runner {
 
 
     /**
-     * Stop the execution of the test.
+     * Stops the execution of the test.
      * <p/>
      * Shutting the local cluster down will notify
      * the sockets when the sinks are closed.
      * Thus terminating the execution gracefully.
      */
     public synchronized void stopExecution() {
+        stopped = true;
         //execution has failed no cleanup necessary
         if (failed.get()) {
             return;
@@ -205,10 +202,10 @@ public abstract class Runner {
 
     private synchronized void cleanUp() {
         if (!finished.get()) {
+            finished.set(true);
             subscribers.close();
             stopTimer.cancel();
             stopTimer.purge();
-            finished.set(true);
         }
     }
 
@@ -255,12 +252,12 @@ public abstract class Runner {
 
     /**
      * This method can be used to check if the environment has been
-     * failed prematurely by e.g. a timeout.
+     * stopped prematurely by e.g. a timeout.
      *
      * @return true if has been failed forcefully.
      */
     public Boolean hasBeenStopped() {
-        return failed.get();
+        return stopped;
     }
 
     /**
@@ -304,9 +301,14 @@ public abstract class Runner {
     public <OUT> int registerListener(OutputVerifier<OUT> verifier,
                                       VerifyFinishedTrigger<? super OUT> trigger) {
         int port = getAvailablePort();
-
-        ZMQ.Socket subscriber = subscribers.getSubscriber("tcp://127.0.0.1:" + port);
-
+        ZMQ.Socket subscriber = null;
+        try {
+            subscriber = subscribers.getSubscriber("tcp://127.0.0.1:" + port);
+        } catch (org.zeromq.ZMQException e) {
+            if (e.getMessage().equals("Errno 48")) {
+                return registerListener(verifier, trigger);
+            }
+        }
         ListenableFuture<OutputSubscriber.ResultState> future = executorService
                 .submit(new OutputSubscriber<OUT>(subscriber, verifier, trigger));
         runningListeners.incrementAndGet();
