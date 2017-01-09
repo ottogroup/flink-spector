@@ -65,7 +65,7 @@ You can find more extensive examples here:
 ## Getting started
 
 ### Get the Latest Release:
-> Note: The current build works with Flink versions 1.1.0 and later.
+> Note: The current build works with Flink version 1.1.4.
 > If you're using Scala 2.11 change the ending of the artifactId.
 
 Include in your project's pom.xml:
@@ -81,7 +81,7 @@ Include in your project's pom.xml:
 <dependency>
     <groupId>org.flinkspector</groupId>
     <artifactId>flinkspector-dataset_2.10</artifactId>
-    <version>0.4</version>
+    <version>0.5</version>
 </dependency>
 ```
 or for the Flink DataStream API:
@@ -90,7 +90,7 @@ or for the Flink DataStream API:
 <dependency>
     <groupId>org.flinkspector</groupId>
     <artifactId>flinkspector-datastream_2.10</artifactId>
-    <version>0.4</version>
+    <version>0.5</version>
 </dependency>
 ```
 If you want to use assertions you should also include hamcrest:
