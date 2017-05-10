@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.flinkspector</groupId>
-    <artifactId>flinkspector-parent_2.10</artifactId>
+    <artifactId>flinkspector-parent_2.11</artifactId>
     <version>0.6</version>
 
 
@@ -52,8 +52,8 @@
         <slf4j.version>1.7.7</slf4j.version>
         <guava.version>18.0</guava.version>
         <!-- Default scala versions, may be overwritten by build profiles -->
-        <scala.version>2.10.6</scala.version>
-        <scala.binary.version>2.10</scala.binary.version>
+        <scala.version>2.11.7</scala.version>
+        <scala.binary.version>2.11</scala.binary.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
