@@ -21,6 +21,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import org.apache.flink.runtime.client.JobExecutionException;
 import org.apache.flink.runtime.client.JobTimeoutException;
 import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
 import org.apache.flink.test.util.TestBaseUtils;
@@ -167,8 +168,7 @@ public abstract class Runner {
 		stopTimer.schedule(stopExecution, timeout);
 		try {
 			executeEnvironment();
-		} catch (JobTimeoutException
-				| IllegalStateException e) {
+		} catch (IllegalStateException | JobExecutionException e) {
 			//cluster has been shutdown forcefully, most likely by at timeout.
 			if (!stopped.get()) {
 				stopped.set(true);
