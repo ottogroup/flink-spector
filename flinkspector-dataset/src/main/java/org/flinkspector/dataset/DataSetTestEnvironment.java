@@ -17,7 +17,7 @@
 package org.flinkspector.dataset;
 
 import org.apache.flink.api.java.DataSet;
-import org.apache.flink.test.util.ForkableFlinkMiniCluster;
+import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
 import org.apache.flink.test.util.TestBaseUtils;
 import org.apache.flink.test.util.TestEnvironment;
 import org.flinkspector.core.input.Input;
@@ -31,7 +31,7 @@ public class DataSetTestEnvironment extends TestEnvironment {
 
 	private final Runner runner;
 
-	public DataSetTestEnvironment(ForkableFlinkMiniCluster executor, int parallelism) {
+	public DataSetTestEnvironment(LocalFlinkMiniCluster executor, int parallelism) {
 		super(executor, parallelism);
 		runner = new Runner(executor) {
 			@Override
@@ -43,7 +43,7 @@ public class DataSetTestEnvironment extends TestEnvironment {
 
 	/**
 	 * Factory method to startWith a new instance, providing a
-	 * new instance of {@link ForkableFlinkMiniCluster}
+	 * new instance of {@link LocalFlinkMiniCluster}
 	 *
 	 * @param parallelism global setting for parallel execution.
 	 * @return new instance of {@link DataSetTestEnvironment}
@@ -51,7 +51,7 @@ public class DataSetTestEnvironment extends TestEnvironment {
 	 */
 	public static DataSetTestEnvironment createTestEnvironment(int parallelism) throws Exception {
 		int taskSlots = Runtime.getRuntime().availableProcessors();
-		ForkableFlinkMiniCluster cluster =
+		LocalFlinkMiniCluster cluster =
 				TestBaseUtils.startCluster(
 						1,
 						taskSlots,

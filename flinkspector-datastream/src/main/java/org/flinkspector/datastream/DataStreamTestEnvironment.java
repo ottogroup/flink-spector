@@ -19,12 +19,12 @@ package org.flinkspector.datastream;
 import com.google.common.base.Preconditions;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
+import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.functions.source.FromElementsFunction;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.util.TestStreamEnvironment;
-import org.apache.flink.test.util.ForkableFlinkMiniCluster;
 import org.apache.flink.test.util.TestBaseUtils;
 import org.flinkspector.core.input.Input;
 import org.flinkspector.core.runtime.OutputVerifier;
@@ -43,7 +43,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 
 	private final Runner runner;
 
-	public DataStreamTestEnvironment(ForkableFlinkMiniCluster cluster, int parallelism) {
+	public DataStreamTestEnvironment(LocalFlinkMiniCluster cluster, int parallelism) {
 		super(cluster, parallelism);
 		runner = new Runner(cluster) {
 			@Override
@@ -59,7 +59,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 
 	/**
 	 * Factory method to startWith a new instance, providing a
-	 * new instance of {@link ForkableFlinkMiniCluster}
+	 * new instance of {@link LocalFlinkMiniCluster}
 	 *
 	 * @param parallelism global setting for parallel execution.
 	 * @return new instance of {@link DataStreamTestEnvironment}
@@ -68,7 +68,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	public static DataStreamTestEnvironment createTestEnvironment(int parallelism) throws Exception {
 		int tasksSlots = Runtime.getRuntime().availableProcessors();
 
-		ForkableFlinkMiniCluster cluster =
+		LocalFlinkMiniCluster cluster =
 				TestBaseUtils.startCluster(
 						1,
 						tasksSlots,
