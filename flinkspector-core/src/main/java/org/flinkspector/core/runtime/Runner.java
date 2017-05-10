@@ -22,7 +22,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.apache.flink.runtime.client.JobTimeoutException;
-import org.apache.flink.test.util.ForkableFlinkMiniCluster;
+import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
 import org.apache.flink.test.util.TestBaseUtils;
 import org.flinkspector.core.runtime.OutputSubscriber.ResultState;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
@@ -42,9 +42,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public abstract class Runner {
 
 	/**
-	 * {@link ForkableFlinkMiniCluster} used for running the test.
+	 * {@link LocalFlinkMiniCluster} used for running the test.
 	 */
-	private final ForkableFlinkMiniCluster cluster;
+	private final LocalFlinkMiniCluster cluster;
 
 	/**
 	 * {@link ListeningExecutorService} used for running the {@link OutputSubscriber},
@@ -91,7 +91,7 @@ public abstract class Runner {
 	private final ZMQSubscribers subscribers = new ZMQSubscribers();
 
 
-	public Runner(ForkableFlinkMiniCluster executor) {
+	public Runner(LocalFlinkMiniCluster executor) {
 		this.cluster = executor;
 		executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
 		currentPort = 5555;
