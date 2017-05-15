@@ -130,6 +130,13 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 		return fromCollectionWithTimestamp(Arrays.asList(data), false);
 	}
 
+	@SafeVarargs
+	public final <OUT> DataStreamSource<OUT> fromElementsWithTimeStamp(TypeInformation<OUT> typeInfo,
+	                                                                   StreamRecord<OUT>... data)
+	                                                                    {
+		return fromCollectionWithTimestamp(Arrays.asList(data),typeInfo);
+	}
+
 	/**
 	 * Creates a data stream form the given non-empty {@link EventTimeInput} object.
 	 * The type of the data stream is that of the {@link EventTimeInput}.
@@ -142,6 +149,10 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 		return fromCollectionWithTimestamp(input.getInput(), input.getFlushWindowsSetting());
 	}
 
+	public <OUT> DataStreamSource<OUT> fromInput(EventTimeInput<OUT> input, TypeInformation<OUT> typeInfo) {
+		return fromCollectionWithTimestamp(input.getInput(),typeInfo);
+	}
+
 	/**
 	 * Creates a data stream form the given non-empty {@link Input} object.
 	 * The type of the data stream is that of the {@link Input}.
@@ -152,6 +163,10 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	 */
 	public <OUT> DataStreamSource<OUT> fromInput(Input<OUT> input) {
 		return fromCollection(input.getInput());
+	}
+
+	public <OUT> DataStreamSource<OUT> fromInput(Input<OUT> input, TypeInformation<OUT> typeInfo) {
+		return fromCollection(input.getInput(),typeInfo);
 	}
 
 	/**
@@ -235,6 +250,10 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 
 	public <OUT> DataStreamSource<OUT> fromInput(Collection<OUT> input) {
 		return super.fromCollection(input);
+	}
+
+	public <OUT> DataStreamSource<OUT> fromInput(Collection<OUT> input, TypeInformation<OUT> typeInfo) {
+		return super.fromCollection(input,typeInfo);
 	}
 
 	/**
