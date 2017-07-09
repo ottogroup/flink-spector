@@ -246,11 +246,12 @@ public class DataStreamTestBase {
 		try {
 			testEnv.executeTest();
 		} catch (AssertionError assertionError) {
-			if (testEnv.hasBeenStopped()) {
-				//the execution has been forcefully stopped inform the user!
-				throw new AssertionError("Test terminated due timeout!" +
-						assertionError.getMessage());
-			}
+//			TODO: find a better way to flag internal errors
+//			if (testEnv.hasBeenStopped()) {
+//			//	the execution has been forcefully stopped inform the user!
+//				throw new AssertionError("Test terminated due timeout!" +
+//						assertionError.getMessage());
+//			}
 			throw assertionError;
 		}
 	}
