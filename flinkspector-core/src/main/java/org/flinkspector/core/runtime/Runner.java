@@ -28,6 +28,8 @@ import org.flinkspector.core.runtime.OutputHandler.ResultState;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 import scala.concurrent.duration.FiniteDuration;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -42,6 +44,8 @@ public abstract class Runner {
      * {@link LocalFlinkMiniCluster} used for running the test.
      */
     private final LocalFlinkMiniCluster cluster;
+
+    private final List<ServerSocket> sockets = new ArrayList<ServerSocket>();
 
     /**
      * {@link ListeningExecutorService} used for running the {@link OutputHandler},
@@ -156,6 +160,12 @@ public abstract class Runner {
 
     private synchronized void cleanUp() {
         if (!finished.get()) {
+            for(ServerSocket s: sockets) {
+                try {
+                    s.close();
+                } catch (IOException ignore) {
+                }
+            }
             finished.set(true);
             stopTimer.cancel();
             stopTimer.purge();
@@ -247,30 +257,38 @@ public abstract class Runner {
     public <OUT> int registerListener(OutputVerifier<OUT> verifier,
                                       VerifyFinishedTrigger<? super OUT> trigger) {
         int port = getAvailablePort();
-        ListenableFuture<OutputHandler.ResultState> future = executorService
-                .submit(new OutputHandler<OUT>(port, verifier, trigger));
-        runningListeners.incrementAndGet();
-        listenerFutures.add(future);
+        ServerSocket socket;
+        try {
+             socket = new ServerSocket(port,1);
+            sockets.add(socket);
 
-        Futures.addCallback(future, new FutureCallback<ResultState>() {
+            ListenableFuture<OutputHandler.ResultState> future = executorService
+                    .submit(new OutputHandler<OUT>(socket, verifier, trigger));
+            runningListeners.incrementAndGet();
+            listenerFutures.add(future);
 
-            @Override
-            public void onSuccess(ResultState state) {
-                if (state != ResultState.SUCCESS) {
+            Futures.addCallback(future, new FutureCallback<ResultState>() {
+
+                @Override
+                public void onSuccess(ResultState state) {
+                    if (state != ResultState.SUCCESS) {
+                        if (runningListeners.decrementAndGet() == 0) {
+                            stopExecution();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable throwable) {
+                    //check if other sockets are still running
                     if (runningListeners.decrementAndGet() == 0) {
                         stopExecution();
                     }
                 }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                //check if other sockets are still running
-                if (runningListeners.decrementAndGet() == 0) {
-                    stopExecution();
-                }
-            }
-        });
+            });
+        } catch (IOException e) {
+            System.out.println("Could not open server socket with port: " + port);
+        }
 
         return port;
     }

@@ -21,6 +21,7 @@ import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.flinkspector.core.util.SerializeUtil;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -71,11 +72,11 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 	 */
 	private final VerifyFinishedTrigger<? super OUT> trigger;
 
-	public OutputHandler(int port,
+	public OutputHandler(ServerSocket socket,
 						 OutputVerifier<OUT> verifier,
 						 VerifyFinishedTrigger<? super OUT> trigger) {
 
-		subscriber = new OutputSubscriber(port);
+		subscriber = new OutputSubscriber(socket);
 		this.verifier = verifier;
 		this.trigger = trigger;
 	}

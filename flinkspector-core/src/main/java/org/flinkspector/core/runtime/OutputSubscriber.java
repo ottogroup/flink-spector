@@ -61,6 +61,14 @@ public class OutputSubscriber {
         return new String(readNextFromStream(), StandardCharsets.UTF_8);
     }
 
+    public OutputSubscriber(ServerSocket socket) {
+        ExecutionConfig config = new ExecutionConfig();
+        TypeInformation<byte[]> typeInfo = TypeExtractor.getForObject(new byte[0]);
+        byteSerializer = typeInfo.createSerializer(config);
+        this.socket = socket;
+        listenForConnection();
+    }
+
     public OutputSubscriber(int port) {
 
         ExecutionConfig config = new ExecutionConfig();
@@ -107,8 +115,6 @@ public class OutputSubscriber {
                     if (inStream == null) {
                         inStream = new DataInputViewStreamWrapper(connectedSocket.getInputStream());
                     }
-                    //check if there is actually data in the stream
-//                if(inStream.available() == 0) return null;
 
                     queue.put(byteSerializer.deserialize(inStream));
                 } catch (EOFException e) {
@@ -125,8 +131,11 @@ public class OutputSubscriber {
                 } catch (Exception e) {
                     if (error == null) {
 //           TODO:             throw e;
+                        e.printStackTrace();
                     } else {
                         // throw the root cause error
+                        System.out.println("Receiving stream failed: " + error.getMessage());
+                        error.printStackTrace();
 //           TODO:             throw new Exception("Receiving stream failed: " + error.getMessage(), error);
                     }
                 }
