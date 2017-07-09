@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 /**
  * Provides a sink that sends all incoming records using a 0MQ connection.
@@ -49,12 +50,11 @@ public class TestSink<IN> extends RichSinkFunction<IN> {
 
 
 	@Override
-	public void open(Configuration configuration) {
+	public void open(Configuration configuration) throws UnknownHostException {
 		String jobManagerAddress = configuration
 				.getString("jobmanager.rpc.address", "localhost");
 		//open a socket to push data
 		handler = new OutputPublisher(jobManagerAddress, port);
-
 	}
 
 	/**
