@@ -21,7 +21,7 @@
 //import org.apache.flink.api.common.typeinfo.TypeInformation
 //import org.apache.flink.api.java.typeutils.TypeExtractor
 //import org.flinkspector.core.CoreSpec
-//import org.flinkspector.core.runtime.OutputSubscriber.ResultState
+//import org.flinkspector.core.runtime.OutputHandler.ResultState
 //import org.flinkspector.core.trigger.VerifyFinishedTrigger
 //import org.flinkspector.core.util.SerializeUtil
 //import org.mockito.Mockito._
@@ -34,7 +34,7 @@
 //  val serializer = typeInfo.createSerializer(config)
 //
 //  "The listener" should "handle output from one sink" in new OutputListenerCase {
-//    val listener = new OutputSubscriber[String](subscriber, verifier, trigger)
+//    val listener = new OutputHandler[String](subscriber, verifier, trigger)
 //
 //    val msg = Bytes.concat("OPEN 0 1 ;".getBytes, SerializeUtil.serialize(serializer))
 //    publisher.send(msg, 0)
@@ -54,7 +54,7 @@
 //  }
 //
 //  it should "handle output from multiple sinks" in new OutputListenerCase {
-//    val listener = new OutputSubscriber[String](subscriber, verifier, trigger)
+//    val listener = new OutputHandler[String](subscriber, verifier, trigger)
 //
 //    val ser = (x: String) =>
 //      Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
@@ -79,7 +79,7 @@
 //  }
 //
 //  it should "throw an Exception if not all sinks were opened" in new OutputListenerCase {
-//    val listener = new OutputSubscriber[String](subscriber, verifier, trigger)
+//    val listener = new OutputHandler[String](subscriber, verifier, trigger)
 //
 //    val ser = (x: String) =>
 //      Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
@@ -102,7 +102,7 @@
 //  }
 //
 //  it should "terminate early if finished trigger fired" in new OutputListenerCase {
-//    val listener = new OutputSubscriber[String](subscriber, verifier, countTrigger)
+//    val listener = new OutputHandler[String](subscriber, verifier, countTrigger)
 //
 //    val ser = (x: String) =>
 //      Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))

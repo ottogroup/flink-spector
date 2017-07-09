@@ -55,6 +55,8 @@ public class TestSink<IN> extends RichSinkFunction<IN> {
 				.getString("jobmanager.rpc.address", "localhost");
 		//open a socket to push data
 		handler = new OutputPublisher(jobManagerAddress, port);
+
+
 	}
 
 	/**

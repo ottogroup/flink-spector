@@ -24,7 +24,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import org.apache.flink.runtime.client.JobTimeoutException;
 import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
 import org.apache.flink.test.util.TestBaseUtils;
-import org.flinkspector.core.runtime.OutputSubscriber.ResultState;
+import org.flinkspector.core.runtime.OutputHandler.ResultState;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 import scala.concurrent.duration.FiniteDuration;
 
@@ -38,28 +38,19 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class Runner {
 
-
-    private final int random = new Random().nextInt(100);
-
-    public void sout(Object o) {
-        System.out.println(random + " -:" + o);
-    }
-
     /**
      * {@link LocalFlinkMiniCluster} used for running the test.
      */
     private final LocalFlinkMiniCluster cluster;
 
     /**
-     * {@link ListeningExecutorService} used for running the {@link OutputSubscriber},
+     * {@link ListeningExecutorService} used for running the {@link OutputHandler},
      * in the background.
      */
     private final ListeningExecutorService executorService;
 
-    ExecutorService clusterExecutor = Executors.newFixedThreadPool(4);
-
     /**
-     * list of {@link ListenableFuture}s wrapping the {@link OutputSubscriber}s.
+     * list of {@link ListenableFuture}s wrapping the {@link OutputHandler}s.
      */
     private final List<ListenableFuture<ResultState>> listenerFutures = new ArrayList<>();
 
@@ -93,16 +84,13 @@ public abstract class Runner {
      */
     Timer stopTimer = new Timer();
 
-
     /**
      * The current port used for transmitting the output from via 0MQ
-     * to the {@link OutputSubscriber}s.
+     * to the {@link OutputHandler}s.
      */
     private Integer currentPort;
 
     private boolean stopped;
-    private Future<?> clusterFuture;
-
 
     public Runner(LocalFlinkMiniCluster executor) {
         this.cluster = executor;
@@ -111,9 +99,7 @@ public abstract class Runner {
         runningListeners = new AtomicInteger(0);
         stopExecution = new TimerTask() {
             public void run() {
-                sout("timer " + random);
                 stopExecution();
-                sout("timer out");
             }
         };
 
@@ -136,37 +122,11 @@ public abstract class Runner {
 
     private void shutdownLocalCluster() throws InterruptedException {
 
-//        ExecutorService executor = Executors.newFixedThreadPool(4);
-
-//        Future<?> future = executor.submit((Runnable) () -> {
             try {
-//                //give it a little time to finish by itself
-//                Thread.sleep(1000);
                 TestBaseUtils.stopCluster(cluster, new FiniteDuration(1000, TimeUnit.SECONDS));
-                sout("stopCluster returned");
             } catch (Exception e) {
                 e.printStackTrace();
             }
-//        });
-
-        clusterExecutor.shutdown();
-//
-        try {
-            clusterFuture.get(6, TimeUnit.SECONDS);
-            sout("stop timeout");
-        } catch (ExecutionException e) {
-            throw new RuntimeException("Error while shutting down the cluster: ", e);
-        } catch (TimeoutException e) {
-            clusterFuture.cancel(true);
-        }
-        // wait all unfinished tasks for 5 sec
-        if (clusterExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
-            sout("waiting?");
-            // force them to quit by interrupting
-            clusterExecutor.shutdownNow();
-            sout("println");
-        }
-        sout("shutdownLocalCluster success?");
     }
 
 
@@ -178,38 +138,27 @@ public abstract class Runner {
      * Thus terminating the execution gracefully.
      */
     public synchronized void stopExecution() {
-        sout("Runner.stopExecution");
         stopped = true;
         //execution has failed no cleanup necessary
         if (failed.get()) {
-            sout("failed");
             return;
         }
         //run is not finished and has to be stopped forcefully
         if (!finished.get()) {
-            sout("cleaning");
             cleanUp();
-            sout("did it");
             try {
                 shutdownLocalCluster();
-                sout("shut down complete");
             } catch (InterruptedException e) {
                 throw new RuntimeException("Local cluster won't shutdown!");
             }
         }
-        sout("stopExecutionFinished");
     }
 
     private synchronized void cleanUp() {
-        sout("Runner.cleanUp");
         if (!finished.get()) {
             finished.set(true);
-            sout("c1");
-            sout("c2");
             stopTimer.cancel();
-            sout("c3");
             stopTimer.purge();
-            sout("c4");
         }
     }
 
@@ -223,11 +172,8 @@ public abstract class Runner {
      *                   during validation the test.
      */
     public void executeTest() throws Throwable {
-        sout("executing...");
         stopTimer.schedule(stopExecution, timeout);
-        sout("timer set");
         runLocalCluster();
-        sout("execute finished");
         //====================
         // collect failures
         //====================
@@ -235,9 +181,7 @@ public abstract class Runner {
 //        executorService.shutdownNow();
         for (ListenableFuture future : listenerFutures) {
             try {
-                sout("future = " + future);
                 future.get();
-                sout("future?");
             } catch (ExecutionException e) {
                 //check if it is a FlinkTestFailedException
                 if (e.getCause() instanceof FlinkTestFailedException) {
@@ -249,10 +193,7 @@ public abstract class Runner {
                 }
             }
         }
-        sout("huhu");
         cleanUp();
-        sout("no?");
-
     }
 
     /**
@@ -306,8 +247,8 @@ public abstract class Runner {
     public <OUT> int registerListener(OutputVerifier<OUT> verifier,
                                       VerifyFinishedTrigger<? super OUT> trigger) {
         int port = getAvailablePort();
-        ListenableFuture<OutputSubscriber.ResultState> future = executorService
-                .submit(new OutputSubscriber<OUT>(port, verifier, trigger));
+        ListenableFuture<OutputHandler.ResultState> future = executorService
+                .submit(new OutputHandler<OUT>(port, verifier, trigger));
         runningListeners.incrementAndGet();
         listenerFutures.add(future);
 
@@ -317,7 +258,6 @@ public abstract class Runner {
             public void onSuccess(ResultState state) {
                 if (state != ResultState.SUCCESS) {
                     if (runningListeners.decrementAndGet() == 0) {
-                        sout("success");
                         stopExecution();
                     }
                 }
@@ -327,7 +267,6 @@ public abstract class Runner {
             public void onFailure(Throwable throwable) {
                 //check if other sockets are still running
                 if (runningListeners.decrementAndGet() == 0) {
-                    sout("fail");
                     stopExecution();
                 }
             }

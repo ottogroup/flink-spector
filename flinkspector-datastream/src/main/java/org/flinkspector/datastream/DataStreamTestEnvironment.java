@@ -48,9 +48,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 		runner = new Runner(cluster) {
 			@Override
 			protected void executeEnvironment() throws Throwable {
-				System.out.println("running");
 				execute();
-				System.out.println("running stopped");
 			}
 		};
 	}
