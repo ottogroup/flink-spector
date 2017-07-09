@@ -13,9 +13,9 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -33,10 +33,12 @@ public class OutputPublisher {
     TypeSerializer<byte[]> serializer;
     private InetAddress hostAdress;
     private int port;
+    private int parallelism = -1;
 
     private boolean socketOpen = false;
 
     public OutputPublisher(String host, int port) throws UnknownHostException {
+        //TODO: hostAddress from constructor
         hostAdress = InetAddress.getLocalHost();
         this.port = port;
         //TODO: use real config
@@ -52,7 +54,6 @@ public class OutputPublisher {
                 outputStream = client.getOutputStream();
                 streamWriter = new DataOutputViewStreamWrapper(outputStream);
             } catch (IOException e) {
-                System.out.println("Error connecting to " + hostAdress + ":" + port);
                 e.printStackTrace();
             }
             socketOpen = true;
@@ -74,7 +75,7 @@ public class OutputPublisher {
                 taskNumber,
                 numTasks);
         byte[] msg = Bytes.concat((open + " ;").getBytes(), serializer);
-
+        parallelism = numTasks;
         sendBytes(msg);
     }
 
@@ -88,6 +89,15 @@ public class OutputPublisher {
         }
 
     }
+
+    public void send(byte[] bytes) {
+        sendBytes(bytes);
+    }
+
+    public void send(String string) {
+        sendBytes(string.getBytes(StandardCharsets.UTF_8));
+    }
+
 
     /**
      * Send a record message to the subscriber.
@@ -112,6 +122,8 @@ public class OutputPublisher {
 
             sendBytes(close.getBytes());
             closed.add(taskNumber);
+        }
+        if(closed.size() == parallelism) {
             try {
                 close();
             } catch (IOException e) {

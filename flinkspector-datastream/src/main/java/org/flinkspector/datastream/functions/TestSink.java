@@ -44,6 +44,7 @@ public class TestSink<IN> extends RichSinkFunction<IN> {
 	private TypeSerializer<IN> serializer;
 	private int port;
 
+
 	public TestSink(int port) {
 		this.port = port;
 	}

@@ -133,7 +133,6 @@ public abstract class Runner {
             }
     }
 
-
     /**
      * Stops the execution of the test.
      * <p/>
@@ -187,8 +186,6 @@ public abstract class Runner {
         //====================
         // collect failures
         //====================
-//        executorService.shutdown();
-//        executorService.shutdownNow();
         for (ListenableFuture future : listenerFutures) {
             try {
                 future.get();
@@ -289,7 +286,7 @@ public abstract class Runner {
         } catch (IOException e) {
             System.out.println("Could not open server socket with port: " + port);
         }
-
+        //TODO: add address as well
         return port;
     }
 }

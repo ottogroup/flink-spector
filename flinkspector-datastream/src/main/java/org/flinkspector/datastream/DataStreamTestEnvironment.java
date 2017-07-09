@@ -55,7 +55,6 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 
 	public void executeTest() throws Throwable {
 		runner.executeTest();
-		System.out.println("testing finished");
 	}
 
 	/**

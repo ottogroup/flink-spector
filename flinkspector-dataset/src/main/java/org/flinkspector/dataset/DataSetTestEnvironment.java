@@ -129,7 +129,6 @@ public class DataSetTestEnvironment extends TestEnvironment {
 
 	public void executeTest() throws Throwable {
 		runner.executeTest();
-		System.out.println("testing finished");
 	}
 
 }

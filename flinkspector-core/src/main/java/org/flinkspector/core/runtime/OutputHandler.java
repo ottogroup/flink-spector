@@ -201,7 +201,6 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 				closedSinks.add(sinkIndex);
 				break;
 		}
-		System.out.println(closedSinks.size() + "s" + parallelism);
 		//check if all sink instances have been closed.
 		if (closedSinks.size() == parallelism &&
 				numRecords == expectedNumRecords) {
