@@ -73,11 +73,7 @@
             <version>${flink.version}</version>
         </dependency>
         <!-- zeromq -->
-        <dependency>
-            <groupId>org.zeromq</groupId>
-            <artifactId>jeromq</artifactId>
-            <version>0.3.5</version>
-        </dependency>
+
         <!-- guava -->
         <dependency>
             <groupId>com.google.guava</groupId>

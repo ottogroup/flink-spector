@@ -16,13 +16,18 @@
 
 package org.flinkspector.core.runtime;
 
+import org.apache.flink.api.common.ExecutionConfig;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
+import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.flinkspector.core.util.SerializeUtil;
-import org.zeromq.ZMQ;
-import org.zeromq.ZMQException;
+import org.apache.flink.core.memory.DataInputViewStreamWrapper;
 
+import java.io.EOFException;
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -36,6 +41,10 @@ import java.util.concurrent.Callable;
  */
 public class OutputSubscriber<OUT> implements Callable<OutputSubscriber.ResultState> {
 
+	/** The socket for the specific stream. */
+	private Socket connectedSocket;
+
+	private final ServerSocket socket;
 	/**
 	 * Verifier provided with output
 	 */
@@ -56,6 +65,8 @@ public class OutputSubscriber<OUT> implements Callable<OutputSubscriber.ResultSt
 	 * Serializer to use for output
 	 */
 	TypeSerializer<OUT> typeSerializer = null;
+
+	TypeSerializer<byte[]> byteSerializer = null;
 	/**
 	 * Number of records received
 	 */
@@ -64,21 +75,68 @@ public class OutputSubscriber<OUT> implements Callable<OutputSubscriber.ResultSt
 	 * Number of records reported
 	 */
 	private int expectedNumRecords = 0;
+
+	private volatile Throwable error;
 	/**
 	 * Trigger
 	 */
 	private final VerifyFinishedTrigger<? super OUT> trigger;
 
-	private final ZMQ.Socket subscriber;
+//	private final ZMQ.Socket subscriber;
 
-	public OutputSubscriber(ZMQ.Socket subscriber,
+	/** Set by the same thread that reads it. */
+	private DataInputViewStreamWrapper inStream;
+
+	private byte[] readNextFromStream() throws Exception {
+		try {
+			if (inStream == null) {
+				connectedSocket = socket.accept();
+				inStream = new DataInputViewStreamWrapper(connectedSocket.getInputStream());
+			}
+			return byteSerializer.deserialize(inStream);
+		}
+		catch (EOFException e) {
+			try {
+				connectedSocket.close();
+			} catch (Throwable ignored) {}
+
+			try {
+				socket.close();
+			} catch (Throwable ignored) {}
+
+			return null;
+		}
+		catch (Exception e) {
+			if (error == null) {
+				throw e;
+			}
+			else {
+				// throw the root cause error
+				throw new Exception("Receiving stream failed: " + error.getMessage(), error);
+			}
+		}
+	}
+
+	public OutputSubscriber(int subscriber,
 							OutputVerifier<OUT> verifier,
 							VerifyFinishedTrigger<? super OUT> trigger) {
-		if(subscriber == null) {
-		}
-		this.subscriber = subscriber;
+//		if(subscriber == null) {
+//		}
+//		this.subscriber = subscriber;
+		ExecutionConfig config = new ExecutionConfig();
+		TypeInformation<byte[]> typeInfo = TypeExtractor.getForObject(new byte[0]);
+		byteSerializer = typeInfo.createSerializer(config);
+
 		this.verifier = verifier;
 		this.trigger = trigger;
+
+		try {
+			System.out.println("subscriber = " + subscriber);
+			socket = new ServerSocket(subscriber, 1);
+		}
+		catch (IOException e) {
+			throw new RuntimeException("Could not open socket to receive back stream results");
+		}
 
 	}
 
@@ -92,14 +150,15 @@ public class OutputSubscriber<OUT> implements Callable<OutputSubscriber.ResultSt
 		Action nextStep = Action.STOP;
 		// receive output from sink until finished all sinks are finished
 		try {
-			nextStep = processMessage(subscriber.recv());
+			nextStep = processMessage(readNextFromStream());
 			while (nextStep == Action.CONTINUE) {
-				nextStep = processMessage(subscriber.recv());
+				nextStep = processMessage(readNextFromStream());
 			}
 		} catch (IOException e) {
 			throw new FlinkTestFailedException(e);
-		} catch (ZMQException e) {
 			//this means the socket was most likely closed forcefully by a timeout
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		// close the connection
 //		subscriber.close();
@@ -152,6 +211,7 @@ public class OutputSubscriber<OUT> implements Callable<OutputSubscriber.ResultSt
 			throws IOException, FlinkTestFailedException {
 
 		MessageType type = MessageType.getMessageType(bytes);
+
 		String msg;
 		byte[] out;
 

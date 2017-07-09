@@ -36,7 +36,9 @@ public class DataSetTestEnvironment extends TestEnvironment {
 		runner = new Runner(executor) {
 			@Override
 			protected void executeEnvironment() throws Throwable {
+				System.out.println("running");
 				execute();
+				System.out.println("not running");
 			}
 		};
 	}
@@ -129,6 +131,7 @@ public class DataSetTestEnvironment extends TestEnvironment {
 
 	public void executeTest() throws Throwable {
 		runner.executeTest();
+		System.out.println("testing finished");
 	}
 
 }
