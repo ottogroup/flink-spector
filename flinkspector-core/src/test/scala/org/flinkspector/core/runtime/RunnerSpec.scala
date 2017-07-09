@@ -20,7 +20,7 @@ import com.google.common.primitives.Bytes
 import org.apache.flink.api.common.ExecutionConfig
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.typeutils.TypeExtractor
-import org.apache.flink.test.util.ForkableFlinkMiniCluster
+import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster
 import org.flinkspector.core.CoreSpec
 import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.flinkspector.core.util.SerializeUtil
@@ -243,7 +243,7 @@ class RunnerSpec extends CoreSpec {
   trait RunnerCase {
 
     val verifier = mock[OutputVerifier[String]]
-    val cluster = mock[ForkableFlinkMiniCluster]
+    val cluster = mock[LocalFlinkMiniCluster]
 
     val trigger = new VerifyFinishedTrigger[String] {
       override def onRecord(record: String): Boolean = false

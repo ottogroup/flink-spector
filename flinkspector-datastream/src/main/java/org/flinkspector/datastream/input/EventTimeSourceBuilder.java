@@ -81,7 +81,7 @@ public class EventTimeSourceBuilder<T> {
 	 * @return
 	 */
 	public EventTimeSourceBuilder<T> emit(T elem, long timeStamp) {
-		builder.emit(elem, timeStamp);
+		builder.emit(new StreamRecord(elem, timeStamp));
 		return this;
 	}
 
