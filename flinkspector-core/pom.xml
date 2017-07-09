@@ -79,7 +79,7 @@
                 <configuration>
                     <checkMultipleScalaVersions>false</checkMultipleScalaVersions>
                     <jvmArgs>
-                        <jvmArg>-Xms128m</jvmArg>
+                        <jvmArg>-Xms1024m</jvmArg>
                         <jvmArg>-Xmx512m</jvmArg>
                     </jvmArgs>
                 </configuration>
