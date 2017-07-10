@@ -39,7 +39,7 @@ public class OutputPublisher {
 
     public OutputPublisher(String host, int port) throws UnknownHostException {
         //TODO: hostAddress from constructor
-        hostAdress = InetAddress.getLocalHost();
+        hostAdress = InetAddress.getLoopbackAddress();
         this.port = port;
         //TODO: use real config
         ExecutionConfig config = new ExecutionConfig();
