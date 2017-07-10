@@ -34,16 +34,16 @@ class OutputPublisherSpec extends CoreSpec {
       (new OutputSubscriber(5558), 5558)
     } catch {
       case _: Exception =>
-        wait(1000)
+        Thread.sleep(1000)
         (new OutputSubscriber(5559), 5559)
     }
 
-    val publisher = new OutputPublisher("", 10000)
+    val publisher = new OutputPublisher("", port)
 
     def close() = {
       subscriber.close()
       publisher.close()
-      wait(500)
+      Thread.sleep(500)
     }
 
     def ser(msg: String) = {
