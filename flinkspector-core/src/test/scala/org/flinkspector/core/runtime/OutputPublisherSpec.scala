@@ -30,12 +30,12 @@ class OutputPublisherSpec extends CoreSpec {
 
   trait OutputPublisherCase {
 
-    val subscriber = try {
-      new OutputSubscriber(10000)
+    val (subscriber, port) = try {
+      (new OutputSubscriber(5558), 5558)
     } catch {
       case _: Exception =>
         wait(1000)
-        new OutputSubscriber(10000)
+        (new OutputSubscriber(5559), 5559)
     }
 
     val publisher = new OutputPublisher("", 10000)
@@ -43,6 +43,7 @@ class OutputPublisherSpec extends CoreSpec {
     def close() = {
       subscriber.close()
       publisher.close()
+      wait(500)
     }
 
     def ser(msg: String) = {

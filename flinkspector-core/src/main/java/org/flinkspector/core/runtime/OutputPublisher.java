@@ -83,7 +83,6 @@ public class OutputPublisher {
         open();
         try {
             serializer.serialize(bytes, streamWriter);
-
         } catch (IOException e) {
             e.printStackTrace();
         }

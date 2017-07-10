@@ -151,6 +151,11 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 	private Action processMessage(byte[] bytes)
 			throws IOException, FlinkTestFailedException {
 
+		if(bytes == null) {
+			System.out.println("Waited too long for message from sink");
+			return Action.FINISH;
+		}
+
 		MessageType type = MessageType.getMessageType(bytes);
 
 		String msg;
