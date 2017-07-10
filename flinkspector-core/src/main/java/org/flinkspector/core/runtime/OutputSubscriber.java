@@ -129,20 +129,23 @@ public class OutputSubscriber {
             while (hasData && !Thread.interrupted()) {
                 try {
                     if (inStream == null) {
-                        out = new DataOutputStream(connectedSocket.getOutputStream());
                         inStream = new DataInputViewStreamWrapper(connectedSocket.getInputStream());
                     }
-                    System.out.println("waiting for message");
+                    if (out == null) {
+                        out = new DataOutputStream(connectedSocket.getOutputStream());
+                    }
                     byte[] result = byteSerializer.deserialize(inStream);
                     System.out.println("result " + MessageType.getMessageType(result));
                     out.writeBytes("ack\n\r");
                     out.flush();
-                    if(result == null) return;
+                    if (result == null) return;
                     queue.put(result);
                 } catch (EOFException e) {
                     try {
-                        out.flush();
-                        out.close();
+                        if (out != null) {
+                            out.flush();
+                            out.close();
+                        }
                         connectedSocket.close();
                     } catch (Throwable ignored) {
                     }

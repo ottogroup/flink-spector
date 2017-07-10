@@ -26,6 +26,7 @@ public class OutputPublisher {
 
     private AtomicInteger msgCount = new AtomicInteger(0);
     private Set<Integer> closed = new HashSet<Integer>();
+    private static final int RETRIES = 3;
 
     private Socket client;
     private OutputStream outputStream;
@@ -53,15 +54,21 @@ public class OutputPublisher {
     private synchronized void open() {
         if (!socketOpen.getAndSet(true)) {
             try {
-                client = new Socket(hostAdress, port);
-                outputStream = client.getOutputStream();
-                inp = client.getInputStream();
-                brinp = new BufferedReader(new InputStreamReader(inp));
-                streamWriter = new DataOutputViewStreamWrapper(outputStream);
+               connect();
+            } catch (SocketException e) {
+                reconnect(RETRIES);
             } catch (IOException e) {
                 System.out.println("Error while opening socket " + e);
             }
         }
+    }
+
+    private void connect() throws IOException {
+        client = new Socket(hostAdress, port);
+        outputStream = client.getOutputStream();
+        inp = client.getInputStream();
+        brinp = new BufferedReader(new InputStreamReader(inp));
+        streamWriter = new DataOutputViewStreamWrapper(outputStream);
     }
 
     /**
@@ -89,7 +96,7 @@ public class OutputPublisher {
             sendBytes(bytes);
         } catch (SocketException e) {
             System.out.println("sending failed");
-            retry(bytes,3);
+            retry(bytes, RETRIES);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -103,12 +110,12 @@ public class OutputPublisher {
     }
 
     private void retry(byte[] bytes, int times) {
-        if(times == 0) {
+        if (times == 0) {
             throw new IllegalStateException("message could not be sent!");
             //do nothing
         } else {
             try {
-                Thread.sleep(10);
+                Thread.sleep(10 ^ (RETRIES - times));
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
@@ -118,6 +125,27 @@ public class OutputPublisher {
                 sendBytes(bytes);
             } catch (IOException e) {
                 retry(bytes, --times);
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    private void reconnect(int times) {
+        if (times == 0) {
+            throw new IllegalStateException("Could not connect to socket");
+            //do nothing
+        } else {
+            try {
+                Thread.sleep(10 ^ (RETRIES - times));
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+            try {
+                close();
+                connect();
+            } catch (IOException e) {
+                reconnect(--times);
                 e.printStackTrace();
             }
         }
@@ -173,7 +201,7 @@ public class OutputPublisher {
                 outputStream.flush();
                 outputStream.close();
             }
-            if(inp != null) {
+            if (inp != null) {
                 brinp.close();
                 inp.close();
             }
