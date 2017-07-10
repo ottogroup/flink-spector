@@ -38,7 +38,7 @@ class OutputPublisherSpec extends CoreSpec {
         (new OutputSubscriber(5559), 5559)
     }
 
-    val publisher = new OutputPublisher("", 10000)
+    val publisher = new OutputPublisher("", port)
 
     def close() = {
       subscriber.close()
