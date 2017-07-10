@@ -16,199 +16,188 @@
 
 package org.flinkspector.core.runtime;
 
+
+import org.apache.flink.api.common.ExecutionConfig;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
-import org.flinkspector.core.trigger.VerifyFinishedTrigger;
-import org.flinkspector.core.util.SerializeUtil;
-import org.zeromq.ZMQ;
-import org.zeromq.ZMQException;
+import org.apache.flink.api.java.typeutils.TypeExtractor;
+import org.apache.flink.core.memory.DataInputViewStreamWrapper;
 
+import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.Callable;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Opens a 0MQ context and listens for output coming from a {@link OutputPublisher}.
- * This sink can run in parallel with multiple instances.
- * Feeds the {@link OutputVerifier} with the output and signals the result.
- *
- * @param <OUT> input type of the sink
- */
-public class OutputSubscriber<OUT> implements Callable<OutputSubscriber.ResultState> {
+public class OutputSubscriber {
 
-	/**
-	 * Verifier provided with output
-	 */
-	private final OutputVerifier<OUT> verifier;
-	/**
-	 * Number of parallel instances
-	 */
-	private int parallelism = -1;
-	/**
-	 * Set of parallel sink instances that have been started
-	 */
-	private final Set<Integer> participatingSinks = new HashSet<>();
-	/**
-	 * Set of finished parallel sink instances
-	 */
-	private final Set<Integer> closedSinks = new HashSet<>();
-	/**
-	 * Serializer to use for output
-	 */
-	TypeSerializer<OUT> typeSerializer = null;
-	/**
-	 * Number of records received
-	 */
-	private int numRecords = 0;
-	/**
-	 * Number of records reported
-	 */
-	private int expectedNumRecords = 0;
-	/**
-	 * Trigger
-	 */
-	private final VerifyFinishedTrigger<? super OUT> trigger;
+    private volatile Throwable error;
 
-	private final ZMQ.Socket subscriber;
+    TypeSerializer<byte[]> byteSerializer = null;
+    /**
+     * Set by the same thread that reads it.
+     */
+    private DataInputViewStreamWrapper inStream;
 
-	public OutputSubscriber(ZMQ.Socket subscriber,
-							OutputVerifier<OUT> verifier,
-							VerifyFinishedTrigger<? super OUT> trigger) {
-		this.subscriber = subscriber;
-		this.verifier = verifier;
-		this.trigger = trigger;
+    /**
+     * The socket for the specific stream.
+     */
+    private List<StreamHandler> handlers = new ArrayList<StreamHandler>();
 
-	}
+    private final ServerSocket socket;
 
-	/**
-	 * Listens for output from the test sink.
-	 *
-	 * @return {@link OutputSubscriber.ResultState}
-	 * @throws FlinkTestFailedException
-	 */
-	public ResultState call() throws FlinkTestFailedException {
-		Action nextStep = Action.STOP;
-		// receive output from sink until finished all sinks are finished
-		try {
-			nextStep = processMessage(subscriber.recv());
-			while (nextStep == Action.CONTINUE) {
-				nextStep = processMessage(subscriber.recv());
-			}
-		} catch (IOException e) {
-			throw new FlinkTestFailedException(e);
-		} catch (ZMQException e) {
-			//this means the socket was most likely closed forcefully by a timeout
-		}
-		// close the connection
-//		subscriber.close();
-		try {
-			verifier.finish();
-		} catch (Throwable e) {
-			throw new FlinkTestFailedException(e);
-		}
-		// determine the final state of the operation
-		if (nextStep == Action.FINISH) {
-			return ResultState.SUCCESS;
-		} else if (nextStep == Action.STOP) {
-			return ResultState.TRIGGERED;
-		} else {
-			return ResultState.FAILURE;
-		}
-	}
+    private AtomicBoolean listening = new AtomicBoolean(false);
 
-	/**
-	 * Signals the final state of the {@link OutputSubscriber}
-	 * SUCCESS if the verification process has been finished.
-	 * TRIGGERED if a trigger stopped the verification.
-	 * FAILURE if the verification protocol was interrupted.
-	 */
-	public enum ResultState {
-		TRIGGERED, SUCCESS, FAILURE
-	}
+    private BlockingQueue<byte[]> queue = new LinkedBlockingQueue<byte[]>(1000);
 
-	/**
-	 * Signals the next step after calling <pre>processMessage()</pre>.
-	 * CONTINUE if further messages are expected.
-	 * STOP if the a trigger has fired.
-	 * FINISH if all messages have been received.
-	 */
-	private enum Action {
-		CONTINUE, STOP, FINISH
-	}
+    public byte[] recv() throws Exception {
+        return readNextFromStream();
+    }
 
-	/**
-	 * Receives a byte encoded message.
-	 * Determines the type of message, processes it
-	 * and returns the next step.
-	 *
-	 * @param bytes byte representation of the msg.
-	 * @return {@link Action} the next step.
-	 * @throws IOException              if deserialization failed.
-	 * @throws FlinkTestFailedException if the validation fails.
-	 */
-	private Action processMessage(byte[] bytes)
-			throws IOException, FlinkTestFailedException {
+    public void listenForConnection() {
+        if (listening.compareAndSet(false, true))
+            new ConnectionListener().start();
+    }
 
-		MessageType type = MessageType.getMessageType(bytes);
-		String msg;
-		byte[] out;
+    public byte[] readNextFromStream() throws Exception {
+        return queue.poll(1, TimeUnit.MINUTES);
+    }
 
-		switch (type) {
-			case OPEN:
-				//Received a open message one of the sink instances
-				//--> Memorize the index and the parallelism.
-				if (participatingSinks.isEmpty()) {
-					verifier.init();
-				}
-				msg = new String(bytes, "UTF-8");
-				String[] values = msg.split(" ");
-				participatingSinks.add(Integer.parseInt(values[1]));
-				parallelism = Integer.parseInt(values[2]);
-				if (typeSerializer == null) {
-					out = type.getPayload(bytes);
-					typeSerializer = SerializeUtil.deserialize(out);
-				}
+    public String recvStr() throws Exception {
+        return new String(readNextFromStream(), StandardCharsets.UTF_8);
+    }
 
-				break;
-			case REC:
-				//Received a record message from the sink.
-				//--> call the verifier and the finishing trigger.
-				out = type.getPayload(bytes);
-				OUT elem = SerializeUtil.deserialize(out, typeSerializer);
-				numRecords++;
+    public OutputSubscriber(ServerSocket socket) {
+        ExecutionConfig config = new ExecutionConfig();
+        TypeInformation<byte[]> typeInfo = TypeExtractor.getForObject(new byte[0]);
+        byteSerializer = typeInfo.createSerializer(config);
+        this.socket = socket;
+        listenForConnection();
+    }
 
-				try {
-					verifier.receive(elem);
-				} catch (Exception e) {
-					throw new FlinkTestFailedException(e);
-				}
+    public OutputSubscriber(int port) {
 
-				if (trigger.onRecord(elem) ||
-						trigger.onRecordCount(numRecords)) {
-					return Action.STOP;
-				}
-				break;
-			case CLOSE:
-				//Received a close message
-				//--> register the index of the closed sink instance.
-				msg = new String(bytes, "UTF-8");
-				int sinkIndex = Integer.parseInt(msg.split(" ")[1]);
-				int countRecords = Integer.parseInt(msg.split(" ")[2]);
-				expectedNumRecords += countRecords;
-				closedSinks.add(sinkIndex);
-				break;
-		}
-		//check if all sink instances have been closed.
-		if (closedSinks.size() == parallelism &&
-				numRecords == expectedNumRecords) {
-			if (participatingSinks.size() < parallelism) {
-				throw new IOException("not all parallel sinks have been initialized");
-			}
-			//finish the listening process
-			return Action.FINISH;
-		}
-		return Action.CONTINUE;
-	}
+        ExecutionConfig config = new ExecutionConfig();
+        TypeInformation<byte[]> typeInfo = TypeExtractor.getForObject(new byte[0]);
+        byteSerializer = typeInfo.createSerializer(config);
+
+        try {
+            socket = new ServerSocket(port, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Could not open socket to receive back stream results");
+        }
+        listenForConnection();
+    }
+
+    public void close() {
+        for (StreamHandler h : handlers) {
+            h.close();
+        }
+        try {
+            socket.close();
+        } catch (Throwable ignored) {
+        }
+    }
+
+    private class StreamHandler implements Runnable {
+        /**
+         * Set by the same thread that reads it.
+         */
+        private DataInputViewStreamWrapper inStream;
+
+        /**
+         * The socket for the specific stream.
+         */
+        private Socket connectedSocket;
+
+        public StreamHandler(Socket clientSocket) {
+            this.connectedSocket = clientSocket;
+        }
+
+        public void run() {
+            boolean hasData = true;
+            DataOutputStream out = null;
+            while (hasData && !Thread.interrupted()) {
+                try {
+                    if (inStream == null) {
+                        inStream = new DataInputViewStreamWrapper(connectedSocket.getInputStream());
+                    }
+                    if (out == null) {
+                        out = new DataOutputStream(connectedSocket.getOutputStream());
+                    }
+                    byte[] result = byteSerializer.deserialize(inStream);
+                    System.out.println("result " + MessageType.getMessageType(result));
+                    out.writeBytes("ack\n\r");
+                    out.flush();
+                    if (result == null) return;
+                    queue.put(result);
+                } catch (EOFException e) {
+                    try {
+                        if (out != null) {
+                            out.flush();
+                            out.close();
+                        }
+                        connectedSocket.close();
+                    } catch (Throwable ignored) {
+                    }
+
+                    try {
+                        socket.close();
+                    } catch (Throwable ignored) {
+                    }
+                    return;
+                } catch (Exception e) {
+                    if (error == null) {
+//           TODO:             throw e;
+                        e.printStackTrace();
+                        return;
+
+                    } else {
+
+                        // throw the root cause error
+                        error.printStackTrace();
+                        return;
+//           TODO:             throw new Exception("Receiving stream failed: " + error.getMessage(), error);
+                    }
+                }
+            }
+        }
+
+        public void close() {
+            System.out.println("StreamHandler.close");
+            if (connectedSocket != null) {
+                try {
+                    connectedSocket.close();
+                } catch (Throwable ignored) {
+                }
+            }
+        }
+    }
+
+    private class ConnectionListener extends Thread {
+        @Override
+        public void run() {
+            try {
+                while (true) {
+                    Socket newSocket = null;
+                    newSocket = socket.accept();
+                    new Thread(new StreamHandler(newSocket)).start();
+                }
+            } catch (SocketException e) {
+                //    TODO: handle
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
-
-

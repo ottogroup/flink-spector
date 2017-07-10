@@ -16,16 +16,17 @@
 
 package org.flinkspector.core.runtime
 
+import java.net.ServerSocket
+
 import com.google.common.primitives.Bytes
 import org.apache.flink.api.common.ExecutionConfig
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.typeutils.TypeExtractor
 import org.flinkspector.core.CoreSpec
-import org.flinkspector.core.runtime.OutputSubscriber.ResultState
+import org.flinkspector.core.runtime.OutputHandler.ResultState
 import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.flinkspector.core.util.SerializeUtil
 import org.mockito.Mockito._
-import org.zeromq.{ZContext, ZMQ}
 
 class OutputSubscriberSpec extends CoreSpec {
 
@@ -34,14 +35,14 @@ class OutputSubscriberSpec extends CoreSpec {
   val serializer = typeInfo.createSerializer(config)
 
   "The listener" should "handle output from one sink" in new OutputListenerCase {
-    val listener = new OutputSubscriber[String](subscriber, verifier, trigger)
+    val listener = new OutputHandler[String](subscriber, verifier, trigger)
 
     val msg = Bytes.concat("OPEN 0 1 ;".getBytes, SerializeUtil.serialize(serializer))
-    publisher.send(msg, 0)
+    publisher.send(msg)
     sendString(publisher, "1")
     sendString(publisher, "2")
     sendString(publisher, "3")
-    publisher.send("CLOSE 0 3", 0)
+    publisher.send("CLOSE 0 3")
 
     listener.call() shouldBe ResultState.SUCCESS
 
@@ -54,19 +55,19 @@ class OutputSubscriberSpec extends CoreSpec {
   }
 
   it should "handle output from multiple sinks" in new OutputListenerCase {
-    val listener = new OutputSubscriber[String](subscriber, verifier, trigger)
+    val listener = new OutputHandler[String](subscriber, verifier, trigger)
 
     val ser = (x: String) =>
       Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
-    publisher.send(ser("OPEN 0 3 "), 0)
-    publisher.send(ser("OPEN 1 3 "), 0)
-    publisher.send(ser("OPEN 2 3 "), 0)
+    publisher.send(ser("OPEN 0 3 "))
+    publisher.send(ser("OPEN 1 3 "))
+    publisher.send(ser("OPEN 2 3 "))
     sendString(publisher, "1")
-    publisher.send("CLOSE 0 1", 0)
+    publisher.send("CLOSE 0 1")
     sendString(publisher, "2")
-    publisher.send("CLOSE 1 1", 0)
+    publisher.send("CLOSE 1 1")
     sendString(publisher, "3")
-    publisher.send("CLOSE 2 1", 0)
+    publisher.send("CLOSE 2 1")
 
     listener.call() shouldBe ResultState.SUCCESS
 
@@ -78,42 +79,19 @@ class OutputSubscriberSpec extends CoreSpec {
     close()
   }
 
-  it should "throw an Exception if not all sinks were opened" in new OutputListenerCase {
-    val listener = new OutputSubscriber[String](subscriber, verifier, trigger)
-
-    val ser = (x: String) =>
-      Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
-    publisher.send(ser("OPEN 0 3 "), 0)
-    publisher.send(ser("OPEN 2 3 "), 0)
-    sendString(publisher, "1")
-    publisher.send("CLOSE 0 1", 0)
-    sendString(publisher, "2")
-    publisher.send("CLOSE 1 1", 0)
-    sendString(publisher, "3")
-    publisher.send("CLOSE 2 1", 0)
-
-    an[FlinkTestFailedException] shouldBe thrownBy(listener.call())
-
-    verify(verifier).init()
-    verify(verifier).receive("1")
-    verify(verifier).receive("2")
-    verify(verifier).receive("3")
-    close()
-  }
-
   it should "terminate early if finished trigger fired" in new OutputListenerCase {
-    val listener = new OutputSubscriber[String](subscriber, verifier, countTrigger)
+    val listener = new OutputHandler[String](subscriber, verifier, countTrigger)
 
     val ser = (x: String) =>
       Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
-    publisher.send(ser("OPEN 0 3 "), 0)
-    publisher.send(ser("OPEN 2 3 "), 0)
+    publisher.send(ser("OPEN 0 3 "))
+    publisher.send(ser("OPEN 2 3 "))
     sendString(publisher, "1")
-    publisher.send("CLOSE 0 1", 0)
+    publisher.send("CLOSE 0 1")
     sendString(publisher, "2")
-    publisher.send("CLOSE 1 1", 0)
+    publisher.send("CLOSE 1 1")
     sendString(publisher, "3")
-    publisher.send("CLOSE 2 1", 0)
+    publisher.send("CLOSE 2 1")
 
     listener.call() shouldBe ResultState.TRIGGERED
 
@@ -124,10 +102,10 @@ class OutputSubscriberSpec extends CoreSpec {
     close()
   }
 
-  def sendString(socket: ZMQ.Socket, msg: String): Unit = {
+  def sendString(publisher: OutputPublisher, msg: String): Unit = {
     val bytes = SerializeUtil.serialize(msg, serializer)
     val packet = Bytes.concat("REC".getBytes, bytes)
-    socket.send(packet, 0)
+    publisher.send(packet)
   }
 
   trait OutputListenerCase {
@@ -145,18 +123,13 @@ class OutputSubscriberSpec extends CoreSpec {
     }
 
     //open a socket to push data
-    val context = new ZContext()
-    val publisher = context.createSocket(ZMQ.PUSH)
-    publisher.connect("tcp://localhost:" + 5557)
-    val context2 = new ZContext()
-    val subscriber: ZMQ.Socket = context2.createSocket(ZMQ.PULL)
-    subscriber.bind("tcp://*:" + 5557)
+    val publisher = new OutputPublisher("", 5557)
+
+    val subscriber = new ServerSocket(5557, 1)
 
     def close(): Unit = {
-      context.destroySocket(subscriber)
-      context.destroySocket(publisher)
-      context2.close()
-      context.close()
+      subscriber.close()
+      publisher.close()
     }
   }
 

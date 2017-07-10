@@ -31,17 +31,14 @@ class DataSetBuilderSpec extends CoreSpec {
   "The data set builder" should "create a working data set" in {
     val env = DataSetTestEnvironment.createTestEnvironment(1)
     val builder = new DataSetBuilder[Int](env)
-
     val source = builder.emit(1)
       .emit(2)
       .emit(3)
       .emit(4)
       .close()
-
     source.output {
       env.createTestOutputFormat(new Verifier[Int](List(1, 2, 3, 4)))
     }
-
     env.executeTest()
   }
 }

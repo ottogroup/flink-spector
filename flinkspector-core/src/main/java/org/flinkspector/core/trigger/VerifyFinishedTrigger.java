@@ -16,11 +16,12 @@
 
 package org.flinkspector.core.trigger;
 
+import org.flinkspector.core.runtime.OutputHandler;
 import org.flinkspector.core.runtime.OutputVerifier;
 
 /**
  * This trigger can be used to stop a
- * {@link org.flinkspector.core.runtime.OutputSubscriber}
+ * {@link OutputHandler}
  * prematurely, and finalizing the {@link OutputVerifier}
  * registered for this listener.
  */

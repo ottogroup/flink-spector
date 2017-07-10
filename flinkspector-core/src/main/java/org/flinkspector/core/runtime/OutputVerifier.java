@@ -26,7 +26,7 @@ package org.flinkspector.core.runtime;
 public interface OutputVerifier<T> {
 
 	/**
-	 * This method is called when the {@link OutputSubscriber} has
+	 * This method is called when the {@link OutputHandler} has
 	 * been successfully initialized
 	 */
 	void init();
@@ -44,7 +44,7 @@ public interface OutputVerifier<T> {
 	void receive(T record) throws Exception;
 
 	/**
-	 * This method is called by the {@link OutputSubscriber}
+	 * This method is called by the {@link OutputHandler}
 	 * when the test is finished and the last record has
 	 * been received.
 	 * <p>
