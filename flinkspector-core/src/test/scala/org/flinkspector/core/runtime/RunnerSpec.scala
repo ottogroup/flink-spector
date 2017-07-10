@@ -190,7 +190,7 @@ class RunnerSpec extends CoreSpec {
     val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val publisher = new OutputPublisher("",5555)
+        val publisher = newPublisher()
 
         val ser = (x: String) =>
           Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
@@ -216,6 +216,16 @@ class RunnerSpec extends CoreSpec {
 //    verify(verifier).receive("2")
 //    verify(verifier).receive("3")
     verify(verifier).finish()
+  }
+
+  def newPublisher() = {
+    try {
+      new OutputPublisher("", 5555)
+    } catch {
+      case e: Exception =>
+        e.printStackTrace()
+        null
+    }
   }
 
   def sendString(publisher: OutputPublisher, msg: String): Unit = {
