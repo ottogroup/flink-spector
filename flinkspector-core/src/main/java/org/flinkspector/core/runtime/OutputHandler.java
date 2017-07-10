@@ -163,6 +163,7 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 
 		switch (type) {
 			case OPEN:
+				System.out.println("OPEN");
 				//Received a open message one of the sink instances
 				//--> Memorize the index and the parallelism.
 				if (participatingSinks.isEmpty()) {
@@ -179,6 +180,7 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 
 				break;
 			case REC:
+				System.out.println("REC");
 				//Received a record message from the sink.
 				//--> call the verifier and the finishing trigger.
 				out = type.getPayload(bytes);
@@ -197,6 +199,7 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 				}
 				break;
 			case CLOSE:
+				System.out.println("close");
 				//Received a close message
 				//--> register the index of the closed sink instance.
 				msg = new String(bytes, "UTF-8");
@@ -206,6 +209,8 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 				closedSinks.add(sinkIndex);
 				break;
 		}
+		System.out.println("open sinks: " + (parallelism - closedSinks.size()));
+		System.out.println("expected records: " + (expectedNumRecords - numRecords));
 		//check if all sink instances have been closed.
 		if (closedSinks.size() == parallelism &&
 				numRecords == expectedNumRecords) {

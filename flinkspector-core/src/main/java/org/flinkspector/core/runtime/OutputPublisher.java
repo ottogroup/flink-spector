@@ -11,10 +11,12 @@ import org.apache.flink.core.memory.DataOutputViewStreamWrapper;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -36,7 +38,7 @@ public class OutputPublisher {
     BufferedReader brinp = null;
     InputStream inp = null;
 
-    private boolean socketOpen = false;
+    private AtomicBoolean socketOpen = new AtomicBoolean(false);
 
     public OutputPublisher(String host, int port) throws UnknownHostException {
         //TODO: hostAddress from constructor
@@ -48,18 +50,17 @@ public class OutputPublisher {
         serializer = typeInfo.createSerializer(config);
     }
 
-    private void open() {
-        if (!socketOpen) {
+    private synchronized void open() {
+        if (!socketOpen.getAndSet(true)) {
             try {
-                inp = client.getInputStream();
-                brinp = new BufferedReader(new InputStreamReader(inp));
                 client = new Socket(hostAdress, port);
                 outputStream = client.getOutputStream();
+                inp = client.getInputStream();
+                brinp = new BufferedReader(new InputStreamReader(inp));
                 streamWriter = new DataOutputViewStreamWrapper(outputStream);
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("Error while opening socket " + e);
             }
-            socketOpen = true;
         }
     }
 
@@ -79,30 +80,56 @@ public class OutputPublisher {
                 numTasks);
         byte[] msg = Bytes.concat((open + " ;").getBytes(), serializer);
         parallelism = numTasks;
-        sendBytes(msg);
+        sendMessage(msg);
     }
 
-    private void sendBytes(byte[] bytes) {
+    private synchronized void sendMessage(byte[] bytes) {
         open();
         try {
-            serializer.serialize(bytes, streamWriter);
-// wait for ack
-            System.out.println(brinp.readLine());
-
+            sendBytes(bytes);
+        } catch (SocketException e) {
+            System.out.println("sending failed");
+            retry(bytes,3);
         } catch (IOException e) {
             e.printStackTrace();
-            //dumb retry
-//            sendBytes(bytes);
         }
 
     }
 
+    private void sendBytes(byte[] bytes) throws IOException {
+        serializer.serialize(bytes, streamWriter);
+        // wait for ack
+        brinp.readLine();
+    }
+
+    private void retry(byte[] bytes, int times) {
+        if(times == 0) {
+            throw new IllegalStateException("message could not be sent!");
+            //do nothing
+        } else {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+            try {
+                close();
+                open();
+                sendBytes(bytes);
+            } catch (IOException e) {
+                retry(bytes, --times);
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     public void send(byte[] bytes) {
-        sendBytes(bytes);
+        sendMessage(bytes);
     }
 
     public void send(String string) {
-        sendBytes(string.getBytes(StandardCharsets.UTF_8));
+        sendMessage(string.getBytes(StandardCharsets.UTF_8));
     }
 
 
@@ -114,7 +141,7 @@ public class OutputPublisher {
     public synchronized void sendRecord(byte[] bytes) {
         byte[] msg = Bytes.concat("REC".getBytes(), bytes);
         msgCount.incrementAndGet();
-        sendBytes(msg);
+        sendMessage(msg);
     }
 
     /**
@@ -127,27 +154,29 @@ public class OutputPublisher {
             String close = String.format("CLOSE %d %d",
                     taskNumber, msgCount.get());
 
-            sendBytes(close.getBytes());
+            sendMessage(close.getBytes());
             closed.add(taskNumber);
         }
-        if(closed.size() == parallelism) {
-            try {
-                close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+//        if(closed.size() == parallelism) {
+//            try {
+//                close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
+        System.out.println("closing publisher");
         try {
             if (outputStream != null) {
                 outputStream.flush();
                 outputStream.close();
             }
-
-            brinp.close();
-            inp.close();
+            if(inp != null) {
+                brinp.close();
+                inp.close();
+            }
 
             // first regular attempt to cleanly close. Failing that will escalate
             if (client != null) {

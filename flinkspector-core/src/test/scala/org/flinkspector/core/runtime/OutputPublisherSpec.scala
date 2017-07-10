@@ -58,6 +58,7 @@ class OutputPublisherSpec extends CoreSpec {
   "The outputPublisher" should "send a open message" in new OutputPublisherCase {
     publisher.sendOpen(0, 0, SerializeUtil.serialize(serializer))
     val open = subscriber.recv()
+
     MessageType.getMessageType(open) shouldBe MessageType.OPEN
     close()
   }
@@ -65,6 +66,7 @@ class OutputPublisherSpec extends CoreSpec {
   "The outputPublisher" should "send a message with a record" in new OutputPublisherCase {
     publisher.sendRecord(ser("hello"))
     val record = subscriber.recv()
+
     MessageType.getMessageType(record) shouldBe MessageType.REC
     der(MessageType.REC.getPayload(record)) shouldBe "hello"
     close()
@@ -73,6 +75,7 @@ class OutputPublisherSpec extends CoreSpec {
   "The outputPublisher" should "send a close message" in new OutputPublisherCase {
     publisher.sendOpen(0, 0, SerializeUtil.serialize(serializer))
     subscriber.recv()
+
     publisher.sendClose(2)
     val record = subscriber.recv()
     MessageType.getMessageType(record) shouldBe MessageType.CLOSE

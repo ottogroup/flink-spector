@@ -132,12 +132,16 @@ public class OutputSubscriber {
                         out = new DataOutputStream(connectedSocket.getOutputStream());
                         inStream = new DataInputViewStreamWrapper(connectedSocket.getInputStream());
                     }
-
-                    queue.put(byteSerializer.deserialize(inStream));
-//                    out.writeBytes("ack\n\r");
-//                    out.flush();
+                    System.out.println("waiting for message");
+                    byte[] result = byteSerializer.deserialize(inStream);
+                    System.out.println("result " + MessageType.getMessageType(result));
+                    out.writeBytes("ack\n\r");
+                    out.flush();
+                    if(result == null) return;
+                    queue.put(result);
                 } catch (EOFException e) {
                     try {
+                        out.flush();
                         out.close();
                         connectedSocket.close();
                     } catch (Throwable ignored) {
@@ -147,14 +151,18 @@ public class OutputSubscriber {
                         socket.close();
                     } catch (Throwable ignored) {
                     }
-                    hasData = false;
+                    return;
                 } catch (Exception e) {
                     if (error == null) {
 //           TODO:             throw e;
                         e.printStackTrace();
+                        return;
+
                     } else {
+
                         // throw the root cause error
                         error.printStackTrace();
+                        return;
 //           TODO:             throw new Exception("Receiving stream failed: " + error.getMessage(), error);
                     }
                 }
@@ -162,6 +170,7 @@ public class OutputSubscriber {
         }
 
         public void close() {
+            System.out.println("StreamHandler.close");
             if (connectedSocket != null) {
                 try {
                     connectedSocket.close();
