@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OutputSubscriber {
@@ -66,7 +67,7 @@ public class OutputSubscriber {
     }
 
     public byte[] readNextFromStream() throws Exception {
-        return queue.take();
+        return queue.poll(1, TimeUnit.MINUTES);
     }
 
     public String recvStr() throws Exception {
@@ -90,6 +91,7 @@ public class OutputSubscriber {
         try {
             socket = new ServerSocket(port, 1);
         } catch (IOException e) {
+            e.printStackTrace();
             throw new RuntimeException("Could not open socket to receive back stream results");
         }
         listenForConnection();
