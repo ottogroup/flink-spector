@@ -21,7 +21,6 @@ import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.typeutils.TypeExtractor
 import org.flinkspector.core.CoreSpec
 import org.flinkspector.core.util.SerializeUtil
-//import org.zeromq.{ZContext, ZMQ}
 
 class OutputPublisherSpec extends CoreSpec {
 
@@ -30,8 +29,16 @@ class OutputPublisherSpec extends CoreSpec {
   val serializer = typeInfo.createSerializer(config)
 
   trait OutputPublisherCase {
-    val subscriber = new OutputSubscriber(10000)
-    val publisher = new OutputPublisher("tcp://127.0.0.1:", 10000)
+
+    val subscriber = try {
+      new OutputSubscriber(10000)
+    } catch {
+      case _: Exception =>
+        wait(1000)
+        new OutputSubscriber(10000)
+    }
+
+    val publisher = new OutputPublisher("", 10000)
 
     def close() = {
       subscriber.close()
