@@ -8,8 +8,7 @@ import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.core.memory.DataOutputViewStreamWrapper;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -34,6 +33,8 @@ public class OutputPublisher {
     private InetAddress hostAdress;
     private int port;
     private int parallelism = -1;
+    BufferedReader brinp = null;
+    InputStream inp = null;
 
     private boolean socketOpen = false;
 
@@ -50,6 +51,8 @@ public class OutputPublisher {
     private void open() {
         if (!socketOpen) {
             try {
+                inp = client.getInputStream();
+                brinp = new BufferedReader(new InputStreamReader(inp));
                 client = new Socket(hostAdress, port);
                 outputStream = client.getOutputStream();
                 streamWriter = new DataOutputViewStreamWrapper(outputStream);
@@ -83,10 +86,13 @@ public class OutputPublisher {
         open();
         try {
             serializer.serialize(bytes, streamWriter);
+// wait for ack
+            System.out.println(brinp.readLine());
+
         } catch (IOException e) {
             e.printStackTrace();
             //dumb retry
-            sendBytes(bytes);
+//            sendBytes(bytes);
         }
 
     }
@@ -139,6 +145,9 @@ public class OutputPublisher {
                 outputStream.flush();
                 outputStream.close();
             }
+
+            brinp.close();
+            inp.close();
 
             // first regular attempt to cleanly close. Failing that will escalate
             if (client != null) {

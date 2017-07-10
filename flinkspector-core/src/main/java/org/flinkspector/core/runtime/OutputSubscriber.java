@@ -23,6 +23,7 @@ import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.core.memory.DataInputViewStreamWrapper;
 
+import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -124,15 +125,20 @@ public class OutputSubscriber {
 
         public void run() {
             boolean hasData = true;
+            DataOutputStream out = null;
             while (hasData && !Thread.interrupted()) {
                 try {
                     if (inStream == null) {
+                        out = new DataOutputStream(connectedSocket.getOutputStream());
                         inStream = new DataInputViewStreamWrapper(connectedSocket.getInputStream());
                     }
 
                     queue.put(byteSerializer.deserialize(inStream));
+//                    out.writeBytes("ack\n\r");
+//                    out.flush();
                 } catch (EOFException e) {
                     try {
+                        out.close();
                         connectedSocket.close();
                     } catch (Throwable ignored) {
                     }
