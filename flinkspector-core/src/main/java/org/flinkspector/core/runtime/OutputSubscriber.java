@@ -155,6 +155,10 @@ public class OutputSubscriber {
                     } catch (Throwable ignored) {
                     }
                     return;
+                } catch (SocketException e) {
+                    System.out.println("socket stress");
+                    e.printStackTrace();
+                    return;
                 } catch (Exception e) {
                     if (error == null) {
 //           TODO:             throw e;
@@ -168,6 +172,8 @@ public class OutputSubscriber {
                         return;
 //           TODO:             throw new Exception("Receiving stream failed: " + error.getMessage(), error);
                     }
+                } finally {
+                    close();
                 }
             }
         }
