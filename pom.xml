@@ -47,12 +47,12 @@
     </modules>
 
     <properties>
-        <flink.version>1.2.1</flink.version>
+        <flink.version>1.3.1</flink.version>
         <log4j.configuration>log4j-test.properties</log4j.configuration>
         <slf4j.version>1.7.7</slf4j.version>
         <guava.version>18.0</guava.version>
         <!-- Default scala versions, may be overwritten by build profiles -->
-        <scala.version>2.11.7</scala.version>
+        <scala.version>2.11.11</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

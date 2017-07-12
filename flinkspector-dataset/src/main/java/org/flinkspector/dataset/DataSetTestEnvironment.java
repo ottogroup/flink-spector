@@ -32,7 +32,7 @@ public class DataSetTestEnvironment extends TestEnvironment {
 	private final Runner runner;
 
 	public DataSetTestEnvironment(LocalFlinkMiniCluster executor, int parallelism) {
-		super(executor, parallelism);
+		super(executor, parallelism, false);
 		runner = new Runner(executor) {
 			@Override
 			protected void executeEnvironment() throws Throwable {
