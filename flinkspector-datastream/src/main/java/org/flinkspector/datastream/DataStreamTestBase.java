@@ -246,6 +246,7 @@ public class DataStreamTestBase {
 		try {
 			testEnv.executeTest();
 		} catch (AssertionError assertionError) {
+
 //			TODO: find a better way to flag internal errors
 //			if (testEnv.hasBeenStopped()) {
 //			//	the execution has been forcefully stopped inform the user!
