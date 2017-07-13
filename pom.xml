@@ -60,6 +60,12 @@
     <packaging>pom</packaging>
 
     <dependencies>
+        <!--vertx-->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-core</artifactId>
+            <version>3.4.2</version>
+        </dependency>
         <!-- flink -->
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -73,17 +79,14 @@
             <version>${flink.version}</version>
         </dependency>
         <!-- zeromq -->
-        <dependency>
-            <groupId>org.zeromq</groupId>
-            <artifactId>jeromq</artifactId>
-            <version>0.3.5</version>
-        </dependency>
+
         <!-- guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
+
         <!-- test -->
         <dependency>
             <groupId>junit</groupId>

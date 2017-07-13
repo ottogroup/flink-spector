@@ -19,10 +19,9 @@ package org.flinkspector.dataset
 import org.apache.flink.api.common.functions.RuntimeContext
 import org.apache.flink.api.common.typeutils.TypeSerializer
 import org.apache.flink.configuration.Configuration
-import org.flinkspector.core.runtime.MessageType
+import org.flinkspector.core.runtime.{MessageType, OutputHandler, OutputSubscriber}
 import org.flinkspector.core.util.SerializeUtil
 import org.mockito.Mockito._
-import org.zeromq.ZMQ
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -42,7 +41,7 @@ class TestOutputFormatSpec extends CoreSpec {
     subscriber.recvStr() shouldBe "CLOSE 0 2"
 
     subscriber.close()
-    context.close()
+
   }
 
   it should "send output in parallel" in new TestOutputFormatCase(2) {
@@ -67,7 +66,6 @@ class TestOutputFormatSpec extends CoreSpec {
     subscriber.recvStr() shouldBe "CLOSE 1 1"
 
     subscriber.close()
-    context.close()
   }
 
   class TestOutputFormatCase(parallelism: Int) {
@@ -89,10 +87,8 @@ class TestOutputFormatSpec extends CoreSpec {
 
     val config = new Configuration()
 
-    val context: ZMQ.Context = ZMQ.context(1)
     // socket to receive from outputFormat
-    val subscriber: ZMQ.Socket = context.socket(ZMQ.PULL)
-    subscriber.bind("tcp://*:" + 5555)
+    val subscriber = new OutputSubscriber(5555)
   }
 
 

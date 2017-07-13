@@ -71,7 +71,7 @@ public class MapperTest extends DataStreamTestBase {
 				.expect(Tuple2.of("test", 1))
 				.expect(Tuple2.of("foo", 2));
 		// refine your expectations by adding requirements
-		expectedRecords.refine().sameFrequency().inOrder(strict).all();
+		expectedRecords.refine().sameFrequency().inOrder(notStrict).all();
 
 		/*
 		 * Use assertStream to map DataStream to an OutputMatcher.

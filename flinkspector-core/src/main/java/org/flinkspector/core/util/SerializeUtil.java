@@ -21,15 +21,7 @@ import org.apache.flink.core.memory.DataInputView;
 import org.apache.flink.core.memory.DataInputViewStreamWrapper;
 import org.apache.flink.core.memory.DataOutputViewStreamWrapper;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
+import java.io.*;
 
 //TODO org.apache.flink.streaming.test this class
 
@@ -66,7 +58,11 @@ public class SerializeUtil {
 	public static <OUT> OUT deserialize(byte[] bytes, TypeSerializer<OUT> serializer) throws IOException {
 		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 		final DataInputView input = new DataInputViewStreamWrapper(new DataInputStream(bais));
-		return serializer.deserialize(input);
+		try {
+			return serializer.deserialize(input);
+		} catch (EOFException e) {
+			throw new EOFException("Could not des: " + new String(bytes));
+		}
 	}
 
 	/**

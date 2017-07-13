@@ -21,7 +21,6 @@ import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.typeutils.TypeExtractor
 import org.flinkspector.core.CoreSpec
 import org.flinkspector.core.util.SerializeUtil
-import org.zeromq.{ZContext, ZMQ}
 
 class OutputPublisherSpec extends CoreSpec {
 
@@ -30,14 +29,21 @@ class OutputPublisherSpec extends CoreSpec {
   val serializer = typeInfo.createSerializer(config)
 
   trait OutputPublisherCase {
-    val context = new ZContext()
-    val subscriber = context.createSocket(ZMQ.PULL)
-    subscriber.bind("tcp://127.0.0.1:10000")
-    val publisher = new OutputPublisher("tcp://127.0.0.1:", 10000)
+
+    val (subscriber, port) = try {
+      (new OutputSubscriber(5558), 5558)
+    } catch {
+      case _: Exception =>
+        Thread.sleep(1000)
+        (new OutputSubscriber(5559), 5559)
+    }
+
+    val publisher = new OutputPublisher("", port)
 
     def close() = {
-      context.destroySocket(subscriber)
-      context.close()
+      subscriber.close()
+      publisher.close()
+      Thread.sleep(500)
     }
 
     def ser(msg: String) = {
@@ -52,21 +58,21 @@ class OutputPublisherSpec extends CoreSpec {
   "The outputPublisher" should "send a open message" in new OutputPublisherCase {
     publisher.sendOpen(0, 0, SerializeUtil.serialize(serializer))
     val open = subscriber.recv()
+
     MessageType.getMessageType(open) shouldBe MessageType.OPEN
     close()
   }
 
-  "The outputPublisher" should "send a message with a record" in new OutputPublisherCase {
+  it should "send a message with a record" in new OutputPublisherCase {
     publisher.sendRecord(ser("hello"))
     val record = subscriber.recv()
+
     MessageType.getMessageType(record) shouldBe MessageType.REC
     der(MessageType.REC.getPayload(record)) shouldBe "hello"
     close()
   }
 
-  "The outputPublisher" should "send a close message" in new OutputPublisherCase {
-    publisher.sendOpen(0, 0, SerializeUtil.serialize(serializer))
-    subscriber.recv()
+  it should "send a close message" in new OutputPublisherCase {
     publisher.sendClose(2)
     val record = subscriber.recv()
     MessageType.getMessageType(record) shouldBe MessageType.CLOSE

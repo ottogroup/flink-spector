@@ -19,6 +19,7 @@ package org.flinkspector.core.runtime;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -61,7 +62,7 @@ public enum MessageType {
 				return type;
 			}
 		}
-		throw new UnsupportedOperationException("could not find type for message");
+		throw new UnsupportedOperationException("could not find type for message m" + message + " v" +  new String(message, StandardCharsets.UTF_8));
 	}
 
 	/**

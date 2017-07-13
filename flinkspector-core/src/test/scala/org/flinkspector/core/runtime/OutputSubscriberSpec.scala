@@ -16,16 +16,17 @@
 
 package org.flinkspector.core.runtime
 
+import java.net.ServerSocket
+
 import com.google.common.primitives.Bytes
 import org.apache.flink.api.common.ExecutionConfig
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.typeutils.TypeExtractor
 import org.flinkspector.core.CoreSpec
-import org.flinkspector.core.runtime.OutputSubscriber.ResultState
+import org.flinkspector.core.runtime.OutputHandler.ResultState
 import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.flinkspector.core.util.SerializeUtil
 import org.mockito.Mockito._
-import org.zeromq.{ZContext, ZMQ}
 
 class OutputSubscriberSpec extends CoreSpec {
 
@@ -33,130 +34,56 @@ class OutputSubscriberSpec extends CoreSpec {
   val typeInfo: TypeInformation[String] = TypeExtractor.getForObject("test")
   val serializer = typeInfo.createSerializer(config)
 
-  "The listener" should "handle output from one sink" in new OutputListenerCase {
-    val listener = new OutputSubscriber[String](subscriber, verifier, trigger)
+  "The subscriber" should "receive a message" in new OutputListenerCase {
+    val listener = new OutputSubscriber(subscriber)
 
-    val msg = Bytes.concat("OPEN 0 1 ;".getBytes, SerializeUtil.serialize(serializer))
-    publisher.send(msg, 0)
-    sendString(publisher, "1")
-    sendString(publisher, "2")
-    sendString(publisher, "3")
-    publisher.send("CLOSE 0 3", 0)
+    publisher.send("hello")
+    listener.recvStr() shouldBe("hello")
 
-    listener.call() shouldBe ResultState.SUCCESS
-
-    verify(verifier).init()
-    verify(verifier).receive("1")
-    verify(verifier).receive("2")
-    verify(verifier).receive("3")
-    verify(verifier).finish()
+    listener.close()
     close()
   }
 
-  it should "handle output from multiple sinks" in new OutputListenerCase {
-    val listener = new OutputSubscriber[String](subscriber, verifier, trigger)
+  "The subscriber" should "receive two messages" in new OutputListenerCase {
+    val listener = new OutputSubscriber(subscriber)
 
-    val ser = (x: String) =>
-      Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
-    publisher.send(ser("OPEN 0 3 "), 0)
-    publisher.send(ser("OPEN 1 3 "), 0)
-    publisher.send(ser("OPEN 2 3 "), 0)
-    sendString(publisher, "1")
-    publisher.send("CLOSE 0 1", 0)
-    sendString(publisher, "2")
-    publisher.send("CLOSE 1 1", 0)
-    sendString(publisher, "3")
-    publisher.send("CLOSE 2 1", 0)
+    publisher.send("hello")
+    listener.recvStr() shouldBe("hello")
+    publisher.send("world")
+    listener.recvStr() shouldBe("world")
 
-    listener.call() shouldBe ResultState.SUCCESS
-
-    verify(verifier).init()
-    verify(verifier).receive("1")
-    verify(verifier).receive("2")
-    verify(verifier).receive("3")
-    verify(verifier).finish()
+    listener.close()
     close()
   }
 
-  it should "throw an Exception if not all sinks were opened" in new OutputListenerCase {
-    val listener = new OutputSubscriber[String](subscriber, verifier, trigger)
+  "The subscriber" should "receive 10 messages" in new OutputListenerCase {
+    val listener = new OutputSubscriber(subscriber)
 
-    val ser = (x: String) =>
-      Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
-    publisher.send(ser("OPEN 0 3 "), 0)
-    publisher.send(ser("OPEN 2 3 "), 0)
-    sendString(publisher, "1")
-    publisher.send("CLOSE 0 1", 0)
-    sendString(publisher, "2")
-    publisher.send("CLOSE 1 1", 0)
-    sendString(publisher, "3")
-    publisher.send("CLOSE 2 1", 0)
+    for (i <- 1 to 10) {
+      publisher.send(s"hello$i")
+    }
 
-    an[FlinkTestFailedException] shouldBe thrownBy(listener.call())
+    var out = List.empty[String]
+    for(i <- 1 to 10) {
+      println(i)
+      out = listener.recvStr() :: out
+    }
+    out should have length(10)
 
-    verify(verifier).init()
-    verify(verifier).receive("1")
-    verify(verifier).receive("2")
-    verify(verifier).receive("3")
+    listener.close()
     close()
-  }
-
-  it should "terminate early if finished trigger fired" in new OutputListenerCase {
-    val listener = new OutputSubscriber[String](subscriber, verifier, countTrigger)
-
-    val ser = (x: String) =>
-      Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
-    publisher.send(ser("OPEN 0 3 "), 0)
-    publisher.send(ser("OPEN 2 3 "), 0)
-    sendString(publisher, "1")
-    publisher.send("CLOSE 0 1", 0)
-    sendString(publisher, "2")
-    publisher.send("CLOSE 1 1", 0)
-    sendString(publisher, "3")
-    publisher.send("CLOSE 2 1", 0)
-
-    listener.call() shouldBe ResultState.TRIGGERED
-
-    verify(verifier).init()
-    verify(verifier).receive("1")
-    verify(verifier).receive("2")
-    verify(verifier).finish()
-    close()
-  }
-
-  def sendString(socket: ZMQ.Socket, msg: String): Unit = {
-    val bytes = SerializeUtil.serialize(msg, serializer)
-    val packet = Bytes.concat("REC".getBytes, bytes)
-    socket.send(packet, 0)
   }
 
   trait OutputListenerCase {
-    val verifier = mock[OutputVerifier[String]]
-    val trigger = new VerifyFinishedTrigger[String] {
-      override def onRecord(record: String): Boolean = false
-
-      override def onRecordCount(count: Long): Boolean = false
-    }
-
-    val countTrigger = new VerifyFinishedTrigger[String] {
-      override def onRecord(record: String): Boolean = false
-
-      override def onRecordCount(count: Long): Boolean = count >= 2
-    }
 
     //open a socket to push data
-    val context = new ZContext()
-    val publisher = context.createSocket(ZMQ.PUSH)
-    publisher.connect("tcp://localhost:" + 5557)
-    val context2 = new ZContext()
-    val subscriber: ZMQ.Socket = context2.createSocket(ZMQ.PULL)
-    subscriber.bind("tcp://*:" + 5557)
+    val publisher = new OutputPublisher("", 5557)
+
+    val subscriber = 5557
 
     def close(): Unit = {
-      context.destroySocket(subscriber)
-      context.destroySocket(publisher)
-      context2.close()
-      context.close()
+      //      subscriber.close()
+      publisher.close()
     }
   }
 

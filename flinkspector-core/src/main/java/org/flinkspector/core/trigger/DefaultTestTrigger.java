@@ -16,8 +16,10 @@
 
 package org.flinkspector.core.trigger;
 
+import org.flinkspector.core.runtime.OutputHandler;
+
 /**
- * The default trigger used by the {@link org.flinkspector.core.runtime.OutputSubscriber}.
+ * The default trigger used by the {@link OutputHandler}.
  * This trigger will not terminate the listener prematurely.
  */
 public class DefaultTestTrigger implements VerifyFinishedTrigger {

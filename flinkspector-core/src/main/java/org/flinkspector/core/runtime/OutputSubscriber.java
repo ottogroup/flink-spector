@@ -16,199 +16,122 @@
 
 package org.flinkspector.core.runtime;
 
+
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.net.NetServer;
+import io.vertx.core.net.NetServerOptions;
+import org.apache.flink.api.common.ExecutionConfig;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
-import org.flinkspector.core.trigger.VerifyFinishedTrigger;
-import org.flinkspector.core.util.SerializeUtil;
-import org.zeromq.ZMQ;
-import org.zeromq.ZMQException;
+import org.apache.flink.api.java.typeutils.TypeExtractor;
+import org.apache.flink.core.memory.DataInputViewStreamWrapper;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.Callable;
+import java.net.ServerSocket;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Opens a 0MQ context and listens for output coming from a {@link OutputPublisher}.
- * This sink can run in parallel with multiple instances.
- * Feeds the {@link OutputVerifier} with the output and signals the result.
- *
- * @param <OUT> input type of the sink
- */
-public class OutputSubscriber<OUT> implements Callable<OutputSubscriber.ResultState> {
+public class OutputSubscriber {
 
-	/**
-	 * Verifier provided with output
-	 */
-	private final OutputVerifier<OUT> verifier;
-	/**
-	 * Number of parallel instances
-	 */
-	private int parallelism = -1;
-	/**
-	 * Set of parallel sink instances that have been started
-	 */
-	private final Set<Integer> participatingSinks = new HashSet<>();
-	/**
-	 * Set of finished parallel sink instances
-	 */
-	private final Set<Integer> closedSinks = new HashSet<>();
-	/**
-	 * Serializer to use for output
-	 */
-	TypeSerializer<OUT> typeSerializer = null;
-	/**
-	 * Number of records received
-	 */
-	private int numRecords = 0;
-	/**
-	 * Number of records reported
-	 */
-	private int expectedNumRecords = 0;
-	/**
-	 * Trigger
-	 */
-	private final VerifyFinishedTrigger<? super OUT> trigger;
+    private volatile Throwable error;
 
-	private final ZMQ.Socket subscriber;
+    TypeSerializer<byte[]> byteSerializer = null;
+    /**
+     * Set by the same thread that reads it.
+     */
+    private DataInputViewStreamWrapper inStream;
 
-	public OutputSubscriber(ZMQ.Socket subscriber,
-							OutputVerifier<OUT> verifier,
-							VerifyFinishedTrigger<? super OUT> trigger) {
-		this.subscriber = subscriber;
-		this.verifier = verifier;
-		this.trigger = trigger;
+    Vertx vertx = Vertx.vertx();
 
-	}
+    NetServer server;
 
-	/**
-	 * Listens for output from the test sink.
-	 *
-	 * @return {@link OutputSubscriber.ResultState}
-	 * @throws FlinkTestFailedException
-	 */
-	public ResultState call() throws FlinkTestFailedException {
-		Action nextStep = Action.STOP;
-		// receive output from sink until finished all sinks are finished
-		try {
-			nextStep = processMessage(subscriber.recv());
-			while (nextStep == Action.CONTINUE) {
-				nextStep = processMessage(subscriber.recv());
-			}
-		} catch (IOException e) {
-			throw new FlinkTestFailedException(e);
-		} catch (ZMQException e) {
-			//this means the socket was most likely closed forcefully by a timeout
-		}
-		// close the connection
-//		subscriber.close();
-		try {
-			verifier.finish();
-		} catch (Throwable e) {
-			throw new FlinkTestFailedException(e);
-		}
-		// determine the final state of the operation
-		if (nextStep == Action.FINISH) {
-			return ResultState.SUCCESS;
-		} else if (nextStep == Action.STOP) {
-			return ResultState.TRIGGERED;
-		} else {
-			return ResultState.FAILURE;
-		}
-	}
+    Buffer rest;
+    int waitSize;
 
-	/**
-	 * Signals the final state of the {@link OutputSubscriber}
-	 * SUCCESS if the verification process has been finished.
-	 * TRIGGERED if a trigger stopped the verification.
-	 * FAILURE if the verification protocol was interrupted.
-	 */
-	public enum ResultState {
-		TRIGGERED, SUCCESS, FAILURE
-	}
+    private AtomicBoolean listening = new AtomicBoolean(false);
 
-	/**
-	 * Signals the next step after calling <pre>processMessage()</pre>.
-	 * CONTINUE if further messages are expected.
-	 * STOP if the a trigger has fired.
-	 * FINISH if all messages have been received.
-	 */
-	private enum Action {
-		CONTINUE, STOP, FINISH
-	}
+    private BlockingQueue<byte[]> queue = new LinkedBlockingQueue<byte[]>(1000);
 
-	/**
-	 * Receives a byte encoded message.
-	 * Determines the type of message, processes it
-	 * and returns the next step.
-	 *
-	 * @param bytes byte representation of the msg.
-	 * @return {@link Action} the next step.
-	 * @throws IOException              if deserialization failed.
-	 * @throws FlinkTestFailedException if the validation fails.
-	 */
-	private Action processMessage(byte[] bytes)
-			throws IOException, FlinkTestFailedException {
+    public byte[] recv() throws Exception {
+        return getNextMessage();
+    }
 
-		MessageType type = MessageType.getMessageType(bytes);
-		String msg;
-		byte[] out;
+    public byte[] getNextMessage() throws Exception {
+        return queue.poll(1, TimeUnit.MINUTES);
+    }
 
-		switch (type) {
-			case OPEN:
-				//Received a open message one of the sink instances
-				//--> Memorize the index and the parallelism.
-				if (participatingSinks.isEmpty()) {
-					verifier.init();
-				}
-				msg = new String(bytes, "UTF-8");
-				String[] values = msg.split(" ");
-				participatingSinks.add(Integer.parseInt(values[1]));
-				parallelism = Integer.parseInt(values[2]);
-				if (typeSerializer == null) {
-					out = type.getPayload(bytes);
-					typeSerializer = SerializeUtil.deserialize(out);
-				}
 
-				break;
-			case REC:
-				//Received a record message from the sink.
-				//--> call the verifier and the finishing trigger.
-				out = type.getPayload(bytes);
-				OUT elem = SerializeUtil.deserialize(out, typeSerializer);
-				numRecords++;
 
-				try {
-					verifier.receive(elem);
-				} catch (Exception e) {
-					throw new FlinkTestFailedException(e);
-				}
+    public String recvStr() throws Exception {
+        return new String(getNextMessage(), StandardCharsets.UTF_8);
+    }
 
-				if (trigger.onRecord(elem) ||
-						trigger.onRecordCount(numRecords)) {
-					return Action.STOP;
-				}
-				break;
-			case CLOSE:
-				//Received a close message
-				//--> register the index of the closed sink instance.
-				msg = new String(bytes, "UTF-8");
-				int sinkIndex = Integer.parseInt(msg.split(" ")[1]);
-				int countRecords = Integer.parseInt(msg.split(" ")[2]);
-				expectedNumRecords += countRecords;
-				closedSinks.add(sinkIndex);
-				break;
-		}
-		//check if all sink instances have been closed.
-		if (closedSinks.size() == parallelism &&
-				numRecords == expectedNumRecords) {
-			if (participatingSinks.size() < parallelism) {
-				throw new IOException("not all parallel sinks have been initialized");
-			}
-			//finish the listening process
-			return Action.FINISH;
-		}
-		return Action.CONTINUE;
-	}
+    public void close() {
+        server.close();
+        vertx.close();
+    }
+
+    public OutputSubscriber(ServerSocket socket) {
+        throw new UnsupportedOperationException();
+    }
+
+    public OutputSubscriber(int port) {
+        NetServerOptions options = new NetServerOptions().setPort(port);
+        server = vertx.createNetServer(options);
+
+        server.connectHandler(socket -> {
+
+            socket.handler(buffer -> {
+//                System.out.println("I received some bytes: " + buffer.length() + " " + buffer.toString());
+                try {
+                    if(rest != null) {
+                        rest.appendBuffer(buffer);
+                    }
+                    int iend = buffer.getInt(0);
+                    while (iend > 0) {
+                        int l = iend + 4;
+                        if(buffer.length() < l) {
+                            System.out.println("rest da");
+                            rest = buffer;
+                            waitSize = l;
+                            return;
+                        }
+                        Buffer slice = buffer.slice(4,l);
+//                        System.out.println("s: " + slice.toString());
+                        queue.put(slice.getBytes());
+                        buffer = buffer.slice(l,buffer.length());
+                        if(buffer.length() == 0) {
+                            iend = -1;
+                        } else {
+                            iend = buffer.getInt(0);
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            socket.closeHandler(v -> {
+//                System.out.println("The socket has been closed");
+            });
+        });
+
+        server.listen(port, "localhost", res -> {
+            if (res.succeeded()) {
+//                System.out.println("Server is now listening! " + server.actualPort());
+            } else {
+//                System.out.println("Failed to bind!");
+            }
+        });
+
+
+    }
+
+
 }
-
-

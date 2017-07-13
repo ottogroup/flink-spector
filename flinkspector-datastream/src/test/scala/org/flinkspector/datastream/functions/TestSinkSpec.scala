@@ -20,10 +20,9 @@ import org.apache.flink.api.common.typeutils.TypeSerializer
 import org.apache.flink.configuration.Configuration
 import org.apache.flink.streaming.api.operators.StreamingRuntimeContext
 import org.flinkspector.CoreSpec
-import org.flinkspector.core.runtime.MessageType
+import org.flinkspector.core.runtime.{MessageType, OutputSubscriber}
 import org.flinkspector.core.util.SerializeUtil
 import org.mockito.Mockito._
-import org.zeromq.ZMQ
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -44,7 +43,7 @@ class TestSinkSpec extends CoreSpec {
     subscriber.recvStr() shouldBe "CLOSE 0 2"
 
     subscriber.close()
-    context.close()
+
   }
 
   it should "send output in parallel" in new TestSinkCase(2) {
@@ -69,7 +68,7 @@ class TestSinkSpec extends CoreSpec {
     subscriber.recvStr() shouldBe "CLOSE 1 1"
 
     subscriber.close()
-    context.close()
+
   }
 
   class TestSinkCase(parallelism: Int) {
@@ -91,10 +90,9 @@ class TestSinkSpec extends CoreSpec {
 
     val config = new Configuration()
 
-    val context: ZMQ.Context = ZMQ.context(1)
-    // socket to receive from sink
-    val subscriber: ZMQ.Socket = context.socket(ZMQ.PULL)
-    subscriber.bind("tcp://*:" + 5555)
+
+    val subscriber = new OutputSubscriber(5555);
+
   }
 
 
