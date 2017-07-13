@@ -17,18 +17,18 @@
 package org.flinkspector.core.runtime;
 
 
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.net.NetServer;
+import io.vertx.core.net.NetServerOptions;
 import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.core.memory.DataInputViewStreamWrapper;
 
-import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,163 +47,91 @@ public class OutputSubscriber {
      */
     private DataInputViewStreamWrapper inStream;
 
-    /**
-     * The socket for the specific stream.
-     */
-    private List<StreamHandler> handlers = new ArrayList<StreamHandler>();
+    Vertx vertx = Vertx.vertx();
 
-    private final ServerSocket socket;
+    NetServer server;
+
+    Buffer rest;
+    int waitSize;
 
     private AtomicBoolean listening = new AtomicBoolean(false);
 
     private BlockingQueue<byte[]> queue = new LinkedBlockingQueue<byte[]>(1000);
 
     public byte[] recv() throws Exception {
-        return readNextFromStream();
+        return getNextMessage();
     }
 
-    public void listenForConnection() {
-        if (listening.compareAndSet(false, true))
-            new ConnectionListener().start();
-    }
-
-    public byte[] readNextFromStream() throws Exception {
+    public byte[] getNextMessage() throws Exception {
         return queue.poll(1, TimeUnit.MINUTES);
     }
 
+
+
     public String recvStr() throws Exception {
-        return new String(readNextFromStream(), StandardCharsets.UTF_8);
-    }
-
-    public OutputSubscriber(ServerSocket socket) {
-        ExecutionConfig config = new ExecutionConfig();
-        TypeInformation<byte[]> typeInfo = TypeExtractor.getForObject(new byte[0]);
-        byteSerializer = typeInfo.createSerializer(config);
-        this.socket = socket;
-        listenForConnection();
-    }
-
-    public OutputSubscriber(int port) {
-
-        ExecutionConfig config = new ExecutionConfig();
-        TypeInformation<byte[]> typeInfo = TypeExtractor.getForObject(new byte[0]);
-        byteSerializer = typeInfo.createSerializer(config);
-
-        try {
-            socket = new ServerSocket(port, 1);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Could not open socket to receive back stream results");
-        }
-        listenForConnection();
+        return new String(getNextMessage(), StandardCharsets.UTF_8);
     }
 
     public void close() {
-        for (StreamHandler h : handlers) {
-            h.close();
-        }
-        try {
-            socket.close();
-        } catch (Throwable ignored) {
-        }
+        server.close();
+        vertx.close();
     }
 
-    private class StreamHandler implements Runnable {
-        /**
-         * Set by the same thread that reads it.
-         */
-        private DataInputViewStreamWrapper inStream;
+    public OutputSubscriber(ServerSocket socket) {
+        throw new UnsupportedOperationException();
+    }
 
-        /**
-         * The socket for the specific stream.
-         */
-        private Socket connectedSocket;
+    public OutputSubscriber(int port) {
+        NetServerOptions options = new NetServerOptions().setPort(port);
+        server = vertx.createNetServer(options);
 
-        public StreamHandler(Socket clientSocket) {
-            this.connectedSocket = clientSocket;
-        }
+        server.connectHandler(socket -> {
 
-        public void run() {
-            boolean hasData = true;
-            DataOutputStream out = null;
-            while (hasData && !Thread.interrupted()) {
+            socket.handler(buffer -> {
+//                System.out.println("I received some bytes: " + buffer.length() + " " + buffer.toString());
                 try {
-                    if (inStream == null) {
-                        inStream = new DataInputViewStreamWrapper(connectedSocket.getInputStream());
+                    if(rest != null) {
+                        rest.appendBuffer(buffer);
                     }
-                    if (out == null) {
-                        out = new DataOutputStream(connectedSocket.getOutputStream());
-                    }
-                    byte[] result = byteSerializer.deserialize(inStream);
-                    System.out.println("result " + MessageType.getMessageType(result));
-                    out.writeBytes("ack\n\r");
-                    out.flush();
-                    if (result == null) return;
-                    queue.put(result);
-                } catch (EOFException e) {
-                    try {
-                        if (out != null) {
-                            out.flush();
-                            out.close();
+                    int iend = buffer.getInt(0);
+                    while (iend > 0) {
+                        int l = iend + 4;
+                        if(buffer.length() < l) {
+                            System.out.println("rest da");
+                            rest = buffer;
+                            waitSize = l;
+                            return;
                         }
-                        connectedSocket.close();
-                    } catch (Throwable ignored) {
+                        Buffer slice = buffer.slice(4,l);
+//                        System.out.println("s: " + slice.toString());
+                        queue.put(slice.getBytes());
+                        buffer = buffer.slice(l,buffer.length());
+                        if(buffer.length() == 0) {
+                            iend = -1;
+                        } else {
+                            iend = buffer.getInt(0);
+                        }
                     }
-
-                    try {
-                        socket.close();
-                    } catch (Throwable ignored) {
-                    }
-                    return;
-                } catch (SocketException e) {
-                    System.out.println("socket stress");
+                } catch (InterruptedException e) {
                     e.printStackTrace();
-                    return;
-                } catch (Exception e) {
-                    if (error == null) {
-//           TODO:             throw e;
-                        e.printStackTrace();
-                        return;
-
-                    } else {
-
-                        // throw the root cause error
-                        error.printStackTrace();
-                        return;
-//           TODO:             throw new Exception("Receiving stream failed: " + error.getMessage(), error);
-                    }
-                } finally {
-                    close();
                 }
-            }
-        }
+            });
 
-        public void close() {
-            System.out.println("StreamHandler.close");
-            if (connectedSocket != null) {
-                try {
-                    connectedSocket.close();
-                } catch (Throwable ignored) {
-                }
+            socket.closeHandler(v -> {
+//                System.out.println("The socket has been closed");
+            });
+        });
+
+        server.listen(port, "localhost", res -> {
+            if (res.succeeded()) {
+//                System.out.println("Server is now listening! " + server.actualPort());
+            } else {
+//                System.out.println("Failed to bind!");
             }
-        }
+        });
+
+
     }
 
-    private class ConnectionListener extends Thread {
-        @Override
-        public void run() {
-            try {
-                while (true) {
-                    Socket newSocket = null;
-                    newSocket = socket.accept();
-                    new Thread(new StreamHandler(newSocket)).start();
-                }
-            } catch (SocketException e) {
-                //    TODO: handle
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
 }

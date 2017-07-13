@@ -17,13 +17,14 @@
 package org.flinkspector.core.runtime;
 
 import org.apache.flink.api.common.typeutils.TypeSerializer;
+import org.apache.flink.streaming.api.transformations.SourceTransformation;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.flinkspector.core.util.SerializeUtil;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 /**
@@ -56,6 +57,8 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 	 */
 	TypeSerializer<OUT> typeSerializer = null;
 
+	private List<byte[]> unserialized = new ArrayList<byte[]>();
+
 	/**
 	 * Number of records received
 	 */
@@ -72,13 +75,18 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 	 */
 	private final VerifyFinishedTrigger<? super OUT> trigger;
 
-	public OutputHandler(ServerSocket socket,
+	public OutputHandler(int port,
 						 OutputVerifier<OUT> verifier,
 						 VerifyFinishedTrigger<? super OUT> trigger) {
 
-		subscriber = new OutputSubscriber(socket);
+		subscriber = new OutputSubscriber(port);
 		this.verifier = verifier;
 		this.trigger = trigger;
+	}
+
+	public void close() {
+		System.out.println("klappe zu");
+		subscriber.close();
 	}
 
 	/**
@@ -91,10 +99,12 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 		Action nextStep = Action.STOP;
 		// receive output from sink until finished all sinks are finished
 		try {
-			nextStep = processMessage(subscriber.readNextFromStream());
+			nextStep = processMessage(subscriber.getNextMessage());
 			while (nextStep == Action.CONTINUE) {
-				nextStep = processMessage(subscriber.readNextFromStream());
+				nextStep = processMessage(subscriber.getNextMessage());
 			}
+		} catch (EOFException e) {
+			e.printStackTrace();
 		} catch (IOException e) {
 			throw new FlinkTestFailedException(e);
 			//this means the socket was most likely closed forcefully by a timeout
@@ -138,6 +148,20 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 		CONTINUE, STOP, FINISH
 	}
 
+	private boolean feedVerifier(byte[] bytes) throws IOException, FlinkTestFailedException {
+		OUT elem = SerializeUtil.deserialize(bytes, typeSerializer);
+		numRecords++;
+
+		try {
+			verifier.receive(elem);
+		} catch (Exception e) {
+			throw new FlinkTestFailedException(e);
+		}
+
+		return trigger.onRecord(elem) ||
+				trigger.onRecordCount(numRecords);
+	}
+
 	/**
 	 * Receives a byte encoded message.
 	 * Determines the type of message, processes it
@@ -176,6 +200,9 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 				if (typeSerializer == null) {
 					out = type.getPayload(bytes);
 					typeSerializer = SerializeUtil.deserialize(out);
+					for(byte[] b: unserialized) {
+						if(feedVerifier(b)) return Action.STOP;
+					}
 				}
 
 				break;
@@ -184,22 +211,14 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 				//Received a record message from the sink.
 				//--> call the verifier and the finishing trigger.
 				out = type.getPayload(bytes);
-				OUT elem = SerializeUtil.deserialize(out, typeSerializer);
-				numRecords++;
-
-				try {
-					verifier.receive(elem);
-				} catch (Exception e) {
-					throw new FlinkTestFailedException(e);
-				}
-
-				if (trigger.onRecord(elem) ||
-						trigger.onRecordCount(numRecords)) {
-					return Action.STOP;
+				if(typeSerializer == null) {
+					unserialized.add(out);
+				} else {
+					if (feedVerifier(out)) return Action.STOP;
 				}
 				break;
 			case CLOSE:
-				System.out.println("close");
+				System.out.println("CLOSE");
 				//Received a close message
 				//--> register the index of the closed sink instance.
 				msg = new String(bytes, "UTF-8");

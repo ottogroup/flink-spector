@@ -150,6 +150,7 @@ class RunnerSpec extends CoreSpec {
     runner.executeTest()
 
     verify(verifier).init()
+    //TODO: mockito receive(any)
     verify(verifier).receive("1")
     verify(verifier).receive("2")
     verify(verifier).finish()
@@ -212,9 +213,9 @@ class RunnerSpec extends CoreSpec {
     runner.hasBeenStopped shouldBe true
 
     verify(verifier).init()
-//    verify(verifier).receive("1")
-//    verify(verifier).receive("2")
-//    verify(verifier).receive("3")
+    verify(verifier).receive("1")
+    verify(verifier).receive("2")
+    verify(verifier).receive("3")
     verify(verifier).finish()
   }
 

@@ -259,12 +259,12 @@ public abstract class Runner {
                                       VerifyFinishedTrigger<? super OUT> trigger) {
         int port = getAvailablePort();
         ServerSocket socket;
-        try {
-             socket = new ServerSocket(port,1);
-            sockets.add(socket);
+
+//             socket = new ServerSocket(port,1);
+//            sockets.add(socket);
 
             ListenableFuture<OutputHandler.ResultState> future = executorService
-                    .submit(new OutputHandler<OUT>(socket, verifier, trigger));
+                    .submit(new OutputHandler<OUT>(port, verifier, trigger));
             runningListeners.incrementAndGet();
             listenerFutures.add(future);
 
@@ -287,9 +287,7 @@ public abstract class Runner {
                     }
                 }
             });
-        } catch (IOException e) {
-            System.out.println("Could not open server socket with port: " + port);
-        }
+
         //TODO: add address as well
         return port;
     }

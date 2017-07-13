@@ -60,6 +60,12 @@
     <packaging>pom</packaging>
 
     <dependencies>
+        <!--vertx-->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-core</artifactId>
+            <version>3.4.2</version>
+        </dependency>
         <!-- flink -->
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -80,6 +86,7 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
+
         <!-- test -->
         <dependency>
             <groupId>junit</groupId>

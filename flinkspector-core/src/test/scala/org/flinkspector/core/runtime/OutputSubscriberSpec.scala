@@ -34,101 +34,55 @@ class OutputSubscriberSpec extends CoreSpec {
   val typeInfo: TypeInformation[String] = TypeExtractor.getForObject("test")
   val serializer = typeInfo.createSerializer(config)
 
-  "The listener" should "handle output from one sink" in new OutputListenerCase {
-    val listener = new OutputHandler[String](subscriber, verifier, trigger)
+  "The subscriber" should "receive a message" in new OutputListenerCase {
+    val listener = new OutputSubscriber(subscriber)
 
-    val msg = Bytes.concat("OPEN 0 1 ;".getBytes, SerializeUtil.serialize(serializer))
-    publisher.send(msg)
-    sendString(publisher, "1")
-    sendString(publisher, "2")
-    sendString(publisher, "3")
-    publisher.send("CLOSE 0 3")
+    publisher.send("hello")
+    listener.recvStr() shouldBe("hello")
 
-    listener.call() shouldBe ResultState.SUCCESS
-
-    verify(verifier).init()
-    verify(verifier).receive("1")
-    verify(verifier).receive("2")
-    verify(verifier).receive("3")
-    verify(verifier).finish()
+    listener.close()
     close()
   }
 
-  it should "handle output from multiple sinks" in new OutputListenerCase {
-    val listener = new OutputHandler[String](subscriber, verifier, trigger)
+  "The subscriber" should "receive two messages" in new OutputListenerCase {
+    val listener = new OutputSubscriber(subscriber)
 
-    val ser = (x: String) =>
-      Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
-    publisher.send(ser("OPEN 0 3 "))
-    publisher.send(ser("OPEN 1 3 "))
-    publisher.send(ser("OPEN 2 3 "))
-    sendString(publisher, "1")
-    publisher.send("CLOSE 0 1")
-    sendString(publisher, "2")
-    publisher.send("CLOSE 1 1")
-    sendString(publisher, "3")
-    publisher.send("CLOSE 2 1")
+    publisher.send("hello")
+    listener.recvStr() shouldBe("hello")
+    publisher.send("world")
+    listener.recvStr() shouldBe("world")
 
-    listener.call() shouldBe ResultState.SUCCESS
-
-    verify(verifier).init()
-    verify(verifier).receive("1")
-    verify(verifier).receive("2")
-    verify(verifier).receive("3")
-    verify(verifier).finish()
+    listener.close()
     close()
   }
 
-  it should "terminate early if finished trigger fired" in new OutputListenerCase {
-    val listener = new OutputHandler[String](subscriber, verifier, countTrigger)
+  "The subscriber" should "receive 10 messages" in new OutputListenerCase {
+    val listener = new OutputSubscriber(subscriber)
 
-    val ser = (x: String) =>
-      Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
-    publisher.send(ser("OPEN 0 3 "))
-    publisher.send(ser("OPEN 2 3 "))
-    sendString(publisher, "1")
-    publisher.send("CLOSE 0 1")
-    sendString(publisher, "2")
-    publisher.send("CLOSE 1 1")
-    sendString(publisher, "3")
-    publisher.send("CLOSE 2 1")
+    for (i <- 1 to 10) {
+      publisher.send(s"hello$i")
+    }
 
-    listener.call() shouldBe ResultState.TRIGGERED
+    var out = List.empty[String]
+    for(i <- 1 to 10) {
+      println(i)
+      out = listener.recvStr() :: out
+    }
+    out should have length(10)
 
-    verify(verifier).init()
-    verify(verifier).receive("1")
-    verify(verifier).receive("2")
-    verify(verifier).finish()
+    listener.close()
     close()
-  }
-
-  def sendString(publisher: OutputPublisher, msg: String): Unit = {
-    val bytes = SerializeUtil.serialize(msg, serializer)
-    val packet = Bytes.concat("REC".getBytes, bytes)
-    publisher.send(packet)
   }
 
   trait OutputListenerCase {
-    val verifier = mock[OutputVerifier[String]]
-    val trigger = new VerifyFinishedTrigger[String] {
-      override def onRecord(record: String): Boolean = false
-
-      override def onRecordCount(count: Long): Boolean = false
-    }
-
-    val countTrigger = new VerifyFinishedTrigger[String] {
-      override def onRecord(record: String): Boolean = false
-
-      override def onRecordCount(count: Long): Boolean = count >= 2
-    }
 
     //open a socket to push data
     val publisher = new OutputPublisher("", 5557)
 
-    val subscriber = new ServerSocket(5557, 1)
+    val subscriber = 5557
 
     def close(): Unit = {
-      subscriber.close()
+      //      subscriber.close()
       publisher.close()
     }
   }
