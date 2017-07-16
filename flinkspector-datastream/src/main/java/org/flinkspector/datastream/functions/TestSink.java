@@ -16,11 +16,13 @@
 
 package org.flinkspector.datastream.functions;
 
+import com.lmax.disruptor.RingBuffer;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+import org.flinkspector.core.runtime.ByteEvent;
 import org.flinkspector.core.runtime.OutputPublisher;
 import org.flinkspector.core.util.SerializeUtil;
 import org.slf4j.Logger;
@@ -42,11 +44,16 @@ public class TestSink<IN> extends RichSinkFunction<IN> {
 
 	private OutputPublisher handler;
 	private TypeSerializer<IN> serializer;
-	private int port;
+	private final int instance;
 
+	/*
+	 * RingBuffer not serializable
+	 */
+	private static RingBuffer<ByteEvent> buffer;
 
-	public TestSink(int port) {
-		this.port = port;
+	public TestSink(int instance, RingBuffer<ByteEvent> buffer) {
+		this.instance = instance;
+		TestSink.buffer = buffer;
 	}
 
 
@@ -55,9 +62,7 @@ public class TestSink<IN> extends RichSinkFunction<IN> {
 		String jobManagerAddress = configuration
 				.getString("jobmanager.rpc.address", "localhost");
 		//open a socket to push data
-		handler = new OutputPublisher(jobManagerAddress, port);
-
-
+		handler = new OutputPublisher(instance, buffer);
 	}
 
 	/**

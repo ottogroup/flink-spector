@@ -60,11 +60,11 @@
     <packaging>pom</packaging>
 
     <dependencies>
-        <!--vertx-->
+        <!--disruptor-->
         <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-core</artifactId>
-            <version>3.4.2</version>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>3.3.6</version>
         </dependency>
         <!-- flink -->
         <dependency>

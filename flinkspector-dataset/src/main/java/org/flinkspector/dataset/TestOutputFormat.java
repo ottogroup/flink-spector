@@ -16,11 +16,13 @@
 
 package org.flinkspector.dataset;
 
+import com.lmax.disruptor.RingBuffer;
 import org.apache.flink.api.common.io.RichOutputFormat;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.configuration.Configuration;
+import org.flinkspector.core.runtime.ByteEvent;
 import org.flinkspector.core.runtime.OutputPublisher;
 import org.flinkspector.core.util.SerializeUtil;
 import org.slf4j.Logger;
@@ -32,25 +34,24 @@ public class TestOutputFormat<IN> extends RichOutputFormat<IN> {
 
 	private static final long serialVersionUID = 1L;
 
-
 	private OutputPublisher handler;
 	private TypeSerializer<IN> serializer;
-	private final int port;
-	private String jobManagerAddress;
+	private static RingBuffer<ByteEvent> ringBuffer;
+	private int instance;
 
 	private int taskNumber;
 	private int numTasks;
 
 	private Logger LOG = LoggerFactory.getLogger(RichOutputFormat.class);
 
-	public TestOutputFormat(int port) {
-		this.port = port;
+	public TestOutputFormat(int instance, RingBuffer<ByteEvent> ringBuffer) {
+		this.ringBuffer = ringBuffer;
+		this.instance = instance;
 	}
 
 	@Override
 	public void configure(Configuration configuration) {
-		jobManagerAddress = configuration
-				.getString("jobmanager.rpc.address", "localhost");
+
 	}
 
 	@Override
@@ -58,7 +59,7 @@ public class TestOutputFormat<IN> extends RichOutputFormat<IN> {
 		this.taskNumber = taskNumber;
 		this.numTasks = numTasks;
 		//open a socket to push data
-		handler = new OutputPublisher(jobManagerAddress, port);
+		handler = new OutputPublisher(instance, ringBuffer);
 	}
 
 	@Override

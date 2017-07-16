@@ -17,10 +17,8 @@
 package org.flinkspector.core.runtime;
 
 
-import io.vertx.core.Vertx;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.net.NetServer;
-import io.vertx.core.net.NetServerOptions;
+import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.dsl.Disruptor;
 import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
@@ -39,22 +37,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class OutputSubscriber {
 
-    private volatile Throwable error;
-
-    TypeSerializer<byte[]> byteSerializer = null;
     /**
      * Set by the same thread that reads it.
      */
     private DataInputViewStreamWrapper inStream;
 
-    Vertx vertx = Vertx.vertx();
-
-    NetServer server;
-
-    Buffer rest;
-    int waitSize;
-
-    private AtomicBoolean listening = new AtomicBoolean(false);
+    private int instance;
 
     private BlockingQueue<byte[]> queue = new LinkedBlockingQueue<byte[]>(1000);
 
@@ -73,65 +61,26 @@ public class OutputSubscriber {
     }
 
     public void close() {
-        server.close();
-        vertx.close();
+
     }
 
-    public OutputSubscriber(ServerSocket socket) {
-        throw new UnsupportedOperationException();
+    public OutputSubscriber(int instance, Disruptor<ByteEvent> disruptor) {
+        this.instance = instance;
+        disruptor.handleEventsWith(new ByteEventHandler());
     }
 
-    public OutputSubscriber(int port) {
-        NetServerOptions options = new NetServerOptions().setPort(port);
-        server = vertx.createNetServer(options);
-
-        server.connectHandler(socket -> {
-
-            socket.handler(buffer -> {
-//                System.out.println("I received some bytes: " + buffer.length() + " " + buffer.toString());
+    private class ByteEventHandler implements EventHandler<ByteEvent>
+    {
+        public void onEvent(ByteEvent event, long sequence, boolean endOfBatch)
+        {
+            if(instance == event.getSender()) {
                 try {
-                    if(rest != null) {
-                        rest.appendBuffer(buffer);
-                    }
-                    int iend = buffer.getInt(0);
-                    while (iend > 0) {
-                        int l = iend + 4;
-                        if(buffer.length() < l) {
-                            System.out.println("rest da");
-                            rest = buffer;
-                            waitSize = l;
-                            return;
-                        }
-                        Buffer slice = buffer.slice(4,l);
-//                        System.out.println("s: " + slice.toString());
-                        queue.put(slice.getBytes());
-                        buffer = buffer.slice(l,buffer.length());
-                        if(buffer.length() == 0) {
-                            iend = -1;
-                        } else {
-                            iend = buffer.getInt(0);
-                        }
-                    }
+                    queue.put(event.getMsg());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            });
-
-            socket.closeHandler(v -> {
-//                System.out.println("The socket has been closed");
-            });
-        });
-
-        server.listen(port, "localhost", res -> {
-            if (res.succeeded()) {
-//                System.out.println("Server is now listening! " + server.actualPort());
-            } else {
-//                System.out.println("Failed to bind!");
             }
-        });
-
-
+        }
     }
-
 
 }

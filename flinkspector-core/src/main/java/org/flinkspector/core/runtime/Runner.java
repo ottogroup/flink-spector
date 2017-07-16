@@ -21,6 +21,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.lmax.disruptor.RingBuffer;
+import com.lmax.disruptor.dsl.Disruptor;
 import org.apache.flink.runtime.client.JobTimeoutException;
 import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
 import org.apache.flink.test.util.TestBaseUtils;
@@ -35,10 +37,21 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.mortbay.util.IO.bufferSize;
+
 /**
  * This class is responsible for orchestrating tests run with Flinkspector
  */
 public abstract class Runner {
+
+
+    Executor executor = Executors.newCachedThreadPool();
+
+    ByteEventFactory factory = new ByteEventFactory();
+
+    Disruptor<ByteEvent> disruptor = new Disruptor<>(factory, bufferSize, executor);
+
+    ResultState state = null;
 
     /**
      * {@link LocalFlinkMiniCluster} used for running the test.
@@ -62,6 +75,7 @@ public abstract class Runner {
      * Number of running sockets
      */
     private final AtomicInteger runningListeners;
+    private final AtomicBoolean running = new AtomicBoolean(true);
 
     /**
      * Flag indicating whether the previous test has been finished .
@@ -92,14 +106,14 @@ public abstract class Runner {
      * The current port used for transmitting the output from via 0MQ
      * to the {@link OutputHandler}s.
      */
-    private Integer currentPort;
+    private Integer currentInstance;
 
     private boolean stopped;
 
     public Runner(LocalFlinkMiniCluster executor) {
         this.cluster = executor;
         executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
-        currentPort = 5555;
+        currentInstance = 1;
         runningListeners = new AtomicInteger(0);
         stopExecution = new TimerTask() {
             public void run() {
@@ -113,26 +127,27 @@ public abstract class Runner {
     protected abstract void executeEnvironment() throws JobTimeoutException, Throwable;
 
     private synchronized void runLocalCluster() throws Throwable {
-            try {
-                executeEnvironment();
-                finished.set(true);
-                cleanUp();
-            } catch (JobTimeoutException
-                    | IllegalStateException e) {
-                //cluster has been shutdown forcefully, most likely by a timeout.
-                cleanUp();
-                failed.set(true);
-            }
+        try {
+            running.set(true);
+            executeEnvironment();
+            finished.set(true);
+            cleanUp();
+        } catch (JobTimeoutException
+                | IllegalStateException e) {
+            //cluster has been shutdown forcefully, most likely by a timeout.
+            cleanUp();
+            failed.set(true);
+        }
     }
 
     private void shutdownLocalCluster() throws InterruptedException {
-            try {
-                TestBaseUtils.stopCluster(cluster, new FiniteDuration(1000, TimeUnit.SECONDS));
-            } catch (InterruptedException e) {
-                throw e;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+            TestBaseUtils.stopCluster(cluster, new FiniteDuration(1000, TimeUnit.SECONDS));
+        } catch (InterruptedException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -163,7 +178,7 @@ public abstract class Runner {
     private synchronized void cleanUp() {
         if (!finished.get()) {
             System.out.println("closing everything!");
-            for(ServerSocket s: sockets) {
+            for (ServerSocket s : sockets) {
                 try {
                     s.close();
                 } catch (IOException ignore) {
@@ -185,6 +200,7 @@ public abstract class Runner {
      *                   during validation the test.
      */
     public void executeTest() throws Throwable {
+        disruptor.start();
         stopTimer.schedule(stopExecution, timeout);
         runLocalCluster();
         //====================
@@ -242,10 +258,15 @@ public abstract class Runner {
      *
      * @return unused port.
      */
-    private int getAvailablePort() {
-        int port = currentPort;
-        currentPort++;
-        return port;
+    private int getNextInstance() {
+        int instance = currentInstance;
+        currentInstance++;
+        return instance;
+    }
+
+
+    public RingBuffer<ByteEvent> getRingBuffer() {
+        return disruptor.getRingBuffer();
     }
 
     /**
@@ -257,38 +278,35 @@ public abstract class Runner {
      */
     public <OUT> int registerListener(OutputVerifier<OUT> verifier,
                                       VerifyFinishedTrigger<? super OUT> trigger) {
-        int port = getAvailablePort();
-        ServerSocket socket;
 
-//             socket = new ServerSocket(port,1);
-//            sockets.add(socket);
+        int instance = getNextInstance();
 
-            ListenableFuture<OutputHandler.ResultState> future = executorService
-                    .submit(new OutputHandler<OUT>(port, verifier, trigger));
-            runningListeners.incrementAndGet();
-            listenerFutures.add(future);
+        ListenableFuture<OutputHandler.ResultState> future = executorService
+                .submit(new OutputHandler<OUT>(instance, disruptor, verifier, trigger));
+        runningListeners.incrementAndGet();
+        listenerFutures.add(future);
 
-            Futures.addCallback(future, new FutureCallback<ResultState>() {
+        Futures.addCallback(future, new FutureCallback<ResultState>() {
 
-                @Override
-                public void onSuccess(ResultState state) {
-                    if (state != ResultState.SUCCESS) {
-                        if (runningListeners.decrementAndGet() == 0) {
-                            stopExecution();
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(Throwable throwable) {
-                    //check if other sockets are still running
+            @Override
+            public void onSuccess(ResultState state) {
+                System.out.println("state = " + state);
+                if (state != ResultState.SUCCESS) {
                     if (runningListeners.decrementAndGet() == 0) {
                         stopExecution();
                     }
                 }
-            });
+            }
 
-        //TODO: add address as well
-        return port;
+            @Override
+            public void onFailure(Throwable throwable) {
+                //check if other sockets are still running
+                if (runningListeners.decrementAndGet() == 0) {
+                    stopExecution();
+                }
+            }
+        });
+
+        return instance;
     }
 }

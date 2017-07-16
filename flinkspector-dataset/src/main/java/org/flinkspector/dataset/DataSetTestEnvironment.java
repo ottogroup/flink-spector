@@ -16,11 +16,13 @@
 
 package org.flinkspector.dataset;
 
+import com.lmax.disruptor.RingBuffer;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
 import org.apache.flink.test.util.TestBaseUtils;
 import org.apache.flink.test.util.TestEnvironment;
 import org.flinkspector.core.input.Input;
+import org.flinkspector.core.runtime.ByteEvent;
 import org.flinkspector.core.runtime.OutputVerifier;
 import org.flinkspector.core.runtime.Runner;
 import org.flinkspector.core.trigger.DefaultTestTrigger;
@@ -77,8 +79,8 @@ public class DataSetTestEnvironment extends TestEnvironment {
 	 */
 	public <IN> TestOutputFormat<IN> createTestOutputFormat(OutputVerifier<IN> verifier) {
 		VerifyFinishedTrigger trigger = new DefaultTestTrigger();
-		int port = runner.registerListener(verifier, trigger);
-		TestOutputFormat<IN> format = new TestOutputFormat<>(port);
+		int instance = runner.registerListener(verifier, trigger);
+		TestOutputFormat<IN> format = new TestOutputFormat<IN>(instance, runner.getRingBuffer());
 		return format;
 	}
 
@@ -92,8 +94,8 @@ public class DataSetTestEnvironment extends TestEnvironment {
 	 */
 	public <IN> TestOutputFormat<IN> createTestOutputFormat(OutputVerifier<IN> verifier,
 															VerifyFinishedTrigger trigger) {
-		int port = runner.registerListener(verifier, trigger);
-		TestOutputFormat<IN> format = new TestOutputFormat<IN>(port);
+		int instance = runner.registerListener(verifier, trigger);
+		TestOutputFormat<IN> format = new TestOutputFormat<IN>(instance, runner.getRingBuffer());
 		return format;
 	}
 

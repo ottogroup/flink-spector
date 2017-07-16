@@ -16,6 +16,7 @@
 
 package org.flinkspector.core.runtime;
 
+import com.lmax.disruptor.dsl.Disruptor;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.streaming.api.transformations.SourceTransformation;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
@@ -75,11 +76,12 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 	 */
 	private final VerifyFinishedTrigger<? super OUT> trigger;
 
-	public OutputHandler(int port,
+	public OutputHandler(int instance,
+						 Disruptor<ByteEvent> disruptor,
 						 OutputVerifier<OUT> verifier,
 						 VerifyFinishedTrigger<? super OUT> trigger) {
 
-		subscriber = new OutputSubscriber(port);
+		subscriber = new OutputSubscriber(instance, disruptor);
 		this.verifier = verifier;
 		this.trigger = trigger;
 	}

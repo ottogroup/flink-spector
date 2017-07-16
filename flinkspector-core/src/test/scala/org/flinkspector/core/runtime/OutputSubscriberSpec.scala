@@ -16,17 +16,14 @@
 
 package org.flinkspector.core.runtime
 
-import java.net.ServerSocket
+import java.util.concurrent.Executors
 
-import com.google.common.primitives.Bytes
+import com.lmax.disruptor.dsl.Disruptor
 import org.apache.flink.api.common.ExecutionConfig
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.typeutils.TypeExtractor
 import org.flinkspector.core.CoreSpec
-import org.flinkspector.core.runtime.OutputHandler.ResultState
-import org.flinkspector.core.trigger.VerifyFinishedTrigger
-import org.flinkspector.core.util.SerializeUtil
-import org.mockito.Mockito._
+import org.mortbay.util.IO.bufferSize
 
 class OutputSubscriberSpec extends CoreSpec {
 
@@ -35,7 +32,6 @@ class OutputSubscriberSpec extends CoreSpec {
   val serializer = typeInfo.createSerializer(config)
 
   "The subscriber" should "receive a message" in new OutputListenerCase {
-    val listener = new OutputSubscriber(subscriber)
 
     publisher.send("hello")
     listener.recvStr() shouldBe("hello")
@@ -45,7 +41,6 @@ class OutputSubscriberSpec extends CoreSpec {
   }
 
   "The subscriber" should "receive two messages" in new OutputListenerCase {
-    val listener = new OutputSubscriber(subscriber)
 
     publisher.send("hello")
     listener.recvStr() shouldBe("hello")
@@ -57,7 +52,6 @@ class OutputSubscriberSpec extends CoreSpec {
   }
 
   "The subscriber" should "receive 10 messages" in new OutputListenerCase {
-    val listener = new OutputSubscriber(subscriber)
 
     for (i <- 1 to 10) {
       publisher.send(s"hello$i")
@@ -76,10 +70,18 @@ class OutputSubscriberSpec extends CoreSpec {
 
   trait OutputListenerCase {
 
-    //open a socket to push data
-    val publisher = new OutputPublisher("", 5557)
+    val executor = Executors.newCachedThreadPool
 
-    val subscriber = 5557
+    val factory = new ByteEventFactory
+
+    val disruptor = new Disruptor[ByteEvent](factory, bufferSize, executor)
+
+    //open a socket to push data
+    val publisher = new OutputPublisher(1, disruptor.getRingBuffer)
+
+    val listener = new OutputSubscriber(1, disruptor)
+
+    disruptor.start()
 
     def close(): Unit = {
       //      subscriber.close()

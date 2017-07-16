@@ -17,6 +17,7 @@
 package org.flinkspector.datastream;
 
 import com.google.common.base.Preconditions;
+import com.lmax.disruptor.RingBuffer;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
@@ -27,6 +28,7 @@ import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.util.TestStreamEnvironment;
 import org.apache.flink.test.util.TestBaseUtils;
 import org.flinkspector.core.input.Input;
+import org.flinkspector.core.runtime.ByteEvent;
 import org.flinkspector.core.runtime.OutputVerifier;
 import org.flinkspector.core.runtime.Runner;
 import org.flinkspector.core.trigger.DefaultTestTrigger;
@@ -90,8 +92,8 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	 */
 	public <IN> TestSink<IN> createTestSink(OutputVerifier<IN> verifier) {
 		VerifyFinishedTrigger trigger = new DefaultTestTrigger();
-		int port = runner.registerListener(verifier, trigger);
-		TestSink<IN> sink = new TestSink<IN>(port);
+		int instance = runner.registerListener(verifier, trigger);
+		TestSink<IN> sink = new TestSink<IN>(instance, runner.getRingBuffer());
 		return sink;
 	}
 
@@ -105,8 +107,8 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	 */
 	public <IN> TestSink<IN> createTestSink(OutputVerifier<IN> verifier,
 											VerifyFinishedTrigger trigger) {
-		int port = runner.registerListener(verifier, trigger);
-		TestSink<IN> sink = new TestSink<IN>(port);
+		int instance = runner.registerListener(verifier, trigger);
+		TestSink<IN> sink = new TestSink<IN>(instance, runner.getRingBuffer());
 		return sink;
 	}
 

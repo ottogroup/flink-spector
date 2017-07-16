@@ -17,6 +17,7 @@
 package org.flinkspector.core.runtime
 
 import com.google.common.primitives.Bytes
+import com.lmax.disruptor.dsl.Disruptor
 import org.apache.flink.api.common.ExecutionConfig
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.typeutils.TypeExtractor
@@ -37,7 +38,7 @@ class RunnerSpec extends CoreSpec {
     val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val publisher = new OutputPublisher("",5555)
+        val publisher = new OutputPublisher(1, disruptor.getRingBuffer)
 
         val msg = Bytes.concat("OPEN 0 1 ;".getBytes, SerializeUtil.serialize(serializer))
         publisher.send(msg)
@@ -53,8 +54,6 @@ class RunnerSpec extends CoreSpec {
     runner.registerListener(verifier, trigger)
     runner.executeTest()
 
-
-
     verify(verifier).init()
     verify(verifier).receive("1")
     verify(verifier).receive("2")
@@ -68,7 +67,7 @@ class RunnerSpec extends CoreSpec {
     val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val publisher = new OutputPublisher("",5555)
+        val publisher = new OutputPublisher(1, disruptor.getRingBuffer)
 
         val ser = (x: String) =>
           Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
@@ -102,7 +101,7 @@ class RunnerSpec extends CoreSpec {
     val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val publisher = new OutputPublisher("",5555)
+        val publisher = new OutputPublisher(1, disruptor.getRingBuffer)
 
         val ser = (x: String) =>
           Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
@@ -132,7 +131,7 @@ class RunnerSpec extends CoreSpec {
     val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val publisher = new OutputPublisher("",5555)
+        val publisher = new OutputPublisher(1, disruptor.getRingBuffer)
 
         val ser = (x: String) =>
           Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
@@ -161,7 +160,7 @@ class RunnerSpec extends CoreSpec {
     val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val publisher = new OutputPublisher("",5555)
+        val publisher = new OutputPublisher(1, disruptor.getRingBuffer)
 
         val ser = (x: String) =>
           Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
@@ -191,7 +190,7 @@ class RunnerSpec extends CoreSpec {
     val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
         //open a socket to push data
-        val publisher = newPublisher()
+        val publisher = newPublisher(disruptor)
 
         val ser = (x: String) =>
           Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
@@ -204,7 +203,7 @@ class RunnerSpec extends CoreSpec {
       }
     }
     //TODO: timeout does not fire at all????
-//    runner.setTimeoutInterval(1000)
+    runner.setTimeoutInterval(500)
     runner.registerListener(verifier, trigger)
     failAfter(5000 millis) {
       runner.executeTest()
@@ -219,14 +218,8 @@ class RunnerSpec extends CoreSpec {
     verify(verifier).finish()
   }
 
-  def newPublisher() = {
-    try {
-      new OutputPublisher("", 5555)
-    } catch {
-      case e: Exception =>
-        e.printStackTrace()
-        null
-    }
+  def newPublisher(disruptor: Disruptor[ByteEvent]) = {
+      new OutputPublisher(1, disruptor.getRingBuffer)
   }
 
   def sendString(publisher: OutputPublisher, msg: String): Unit = {
@@ -237,6 +230,8 @@ class RunnerSpec extends CoreSpec {
 
 
   trait RunnerCase {
+
+
 
     val verifier = mock[OutputVerifier[String]]
     val cluster = mock[LocalFlinkMiniCluster]

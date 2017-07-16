@@ -16,11 +16,15 @@
 
 package org.flinkspector.core.runtime
 
+import java.util.concurrent.Executors
+
+import com.lmax.disruptor.dsl.Disruptor
 import org.apache.flink.api.common.ExecutionConfig
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.typeutils.TypeExtractor
 import org.flinkspector.core.CoreSpec
 import org.flinkspector.core.util.SerializeUtil
+import org.mortbay.util.IO.bufferSize
 
 class OutputPublisherSpec extends CoreSpec {
 
@@ -30,15 +34,17 @@ class OutputPublisherSpec extends CoreSpec {
 
   trait OutputPublisherCase {
 
-    val (subscriber, port) = try {
-      (new OutputSubscriber(5558), 5558)
-    } catch {
-      case _: Exception =>
-        Thread.sleep(1000)
-        (new OutputSubscriber(5559), 5559)
-    }
+    val executor = Executors.newCachedThreadPool
 
-    val publisher = new OutputPublisher("", port)
+    val factory = new ByteEventFactory
+
+    val disruptor = new Disruptor[ByteEvent](factory, bufferSize, executor)
+
+    val (subscriber, port) = (new OutputSubscriber(1, disruptor), 1)
+
+    val publisher = new OutputPublisher(port, disruptor.getRingBuffer)
+
+    disruptor.start()
 
     def close() = {
       subscriber.close()
