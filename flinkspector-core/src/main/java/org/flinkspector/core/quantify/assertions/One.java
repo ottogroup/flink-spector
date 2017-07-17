@@ -29,36 +29,36 @@ import org.hamcrest.Matcher;
  */
 public class One<T> extends WhileCombineMatcher<T> {
 
-	/**
-	 * Default constructor
-	 *
-	 * @param matchers {@link Iterable} of {@link Matcher}
-	 */
-	public One(Iterable<Matcher<? super T>> matchers) {
-		super(matchers);
-	}
+    /**
+     * Default constructor
+     *
+     * @param matchers {@link Iterable} of {@link Matcher}
+     */
+    public One(Iterable<Matcher<? super T>> matchers) {
+        super(matchers);
+    }
 
-	protected Description describeCondition(Description description) {
-		return description.appendText("exactly ").appendValue(1);
-	}
+    @Factory
+    public static <T> One<T> one(Iterable<Matcher<? super T>> matchers) {
+        return new One<T>(matchers);
+    }
 
-	@Override
-	public String prefix() {
-		return "one of ";
-	}
+    protected Description describeCondition(Description description) {
+        return description.appendText("exactly ").appendValue(1);
+    }
 
-	@Override
-	public boolean validWhile(int matches) {
-		return matches <= 1;
-	}
+    @Override
+    public String prefix() {
+        return "one of ";
+    }
 
-	@Override
-	public boolean validAfter(int matches) {
-		return matches == 1;
-	}
+    @Override
+    public boolean validWhile(int matches) {
+        return matches <= 1;
+    }
 
-	@Factory
-	public static <T> One<T> one(Iterable<Matcher<? super T>> matchers) {
-		return new One<T>(matchers);
-	}
+    @Override
+    public boolean validAfter(int matches) {
+        return matches == 1;
+    }
 }

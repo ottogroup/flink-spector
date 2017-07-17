@@ -29,49 +29,49 @@ import org.flinkspector.datastream.DataStreamTestBase;
  */
 public class MapperTest extends DataStreamTestBase {
 
-	/**
-	 * DataStream transformation to test.
-	 * Swaps the fields of a {@link Tuple2}
-	 *
-	 * @param stream input {@link DataStream}
-	 * @return {@link DataStream}
-	 */
-	public static DataStream<Tuple2<String, Integer>> swap(DataStream<Tuple2<Integer, String>> stream) {
-		return stream.map(new MapFunction<Tuple2<Integer, String>, Tuple2<String, Integer>>() {
-			@Override
-			public Tuple2<String, Integer> map(Tuple2<Integer, String> input) throws Exception {
-				return input.swap();
-			}
-		});
-	}
+    /**
+     * DataStream transformation to test.
+     * Swaps the fields of a {@link Tuple2}
+     *
+     * @param stream input {@link DataStream}
+     * @return {@link DataStream}
+     */
+    public static DataStream<Tuple2<String, Integer>> swap(DataStream<Tuple2<Integer, String>> stream) {
+        return stream.map(new MapFunction<Tuple2<Integer, String>, Tuple2<String, Integer>>() {
+            @Override
+            public Tuple2<String, Integer> map(Tuple2<Integer, String> input) throws Exception {
+                return input.swap();
+            }
+        });
+    }
 
-	/**
-	 * JUnit Test
-	 */
-	@org.junit.Test
-	public void testMap() {
+    /**
+     * JUnit Test
+     */
+    @org.junit.Test
+    public void testMap() {
 
 		/*
-		 * Define the input DataStream:
+         * Define the input DataStream:
 		 * Get a SourceBuilder with .createTestStreamWith(record).
 		 * Add data records to it and retrieve a DataStreamSource
 		 * by calling .complete().
 		 */
-		DataStream<Tuple2<Integer, String>> stream =
-				createTestStreamWith(Tuple2.of(1, "test"))
-						.emit(Tuple2.of(2, "foo"))
-						.emit(Tuple2.of(3, "bar"))
-						.close();
+        DataStream<Tuple2<Integer, String>> stream =
+                createTestStreamWith(Tuple2.of(1, "test"))
+                        .emit(Tuple2.of(2, "foo"))
+                        .emit(Tuple2.of(3, "bar"))
+                        .close();
 
 		/*
 		 * Define the output you expect from the the transformation under test.
 		 * Add the tuples you want to see with .expect(record).
 		 */
-		ExpectedRecords<Tuple2<String, Integer>> expectedRecords = new ExpectedRecords<Tuple2<String, Integer>>()
-				.expect(Tuple2.of("test", 1))
-				.expect(Tuple2.of("foo", 2));
-		// refine your expectations by adding requirements
-		expectedRecords.refine().sameFrequency().inOrder(notStrict).all();
+        ExpectedRecords<Tuple2<String, Integer>> expectedRecords = new ExpectedRecords<Tuple2<String, Integer>>()
+                .expect(Tuple2.of("test", 1))
+                .expect(Tuple2.of("foo", 2));
+        // refine your expectations by adding requirements
+        expectedRecords.refine().sameFrequency().inOrder(notStrict).all();
 
 		/*
 		 * Use assertStream to map DataStream to an OutputMatcher.
@@ -81,7 +81,7 @@ public class MapperTest extends DataStreamTestBase {
 		 * assertStream(swap(stream), and(expectedRecords,outputWithSize(3))
 		 * would additionally assert that the number of produced records is exactly 3.
 		 */
-		assertStream(swap(stream), expectedRecords);
+        assertStream(swap(stream), expectedRecords);
 
-	}
+    }
 }

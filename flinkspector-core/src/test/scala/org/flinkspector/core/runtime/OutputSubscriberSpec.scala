@@ -34,7 +34,7 @@ class OutputSubscriberSpec extends CoreSpec {
   "The subscriber" should "receive a message" in new OutputListenerCase {
 
     publisher.send("hello")
-    listener.recvStr() shouldBe("hello")
+    listener.recvStr() shouldBe ("hello")
 
     listener.close()
     close()
@@ -43,9 +43,9 @@ class OutputSubscriberSpec extends CoreSpec {
   "The subscriber" should "receive two messages" in new OutputListenerCase {
 
     publisher.send("hello")
-    listener.recvStr() shouldBe("hello")
+    listener.recvStr() shouldBe ("hello")
     publisher.send("world")
-    listener.recvStr() shouldBe("world")
+    listener.recvStr() shouldBe ("world")
 
     listener.close()
     close()
@@ -58,10 +58,10 @@ class OutputSubscriberSpec extends CoreSpec {
     }
 
     var out = List.empty[String]
-    for(i <- 1 to 10) {
+    for (i <- 1 to 10) {
       out = listener.recvStr() :: out
     }
-    out should have length(10)
+    out should have length (10)
 
     out shouldBe List("hello10", "hello9", "hello8", "hello7", "hello6", "hello5", "hello4", "hello3", "hello2", "hello1")
 
@@ -73,9 +73,9 @@ class OutputSubscriberSpec extends CoreSpec {
 
     val executor = Executors.newCachedThreadPool
 
-    val factory = new ByteEventFactory
+    val factory = new OutputEventFactory
 
-    val disruptor = new Disruptor[ByteEvent](factory, bufferSize, executor)
+    val disruptor = new Disruptor[OutputEvent](factory, bufferSize, executor)
 
     //open a socket to push data
     val publisher = new OutputPublisher(1, disruptor.getRingBuffer)

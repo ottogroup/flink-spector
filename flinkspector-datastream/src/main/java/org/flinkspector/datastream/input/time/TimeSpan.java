@@ -18,15 +18,15 @@ package org.flinkspector.datastream.input.time;
 
 public abstract class TimeSpan extends Moment {
 
-	/**
-	 * Getter for defined time span
-	 *
-	 * @return time span in milliseconds
-	 */
-	public abstract long getTimeSpan();
+    /**
+     * Getter for defined time span
+     *
+     * @return time span in milliseconds
+     */
+    public abstract long getTimeSpan();
 
-	@Override
-	public long getTimestamp(long currentTimestamp) {
-		return currentTimestamp + getTimeSpan();
-	}
+    @Override
+    public long getTimestamp(long currentTimestamp) {
+        return currentTimestamp + getTimeSpan();
+    }
 }

@@ -37,8 +37,8 @@ class RunnerSpec extends CoreSpec {
   "The runner" should "handle output from one sink" in new RunnerCase {
     val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
-        //open a socket to push data
-        val publisher = new OutputPublisher(1, disruptor.getRingBuffer)
+        //publisher used to push data
+        val publisher = new OutputPublisher(1, getRingBuffer)
 
         val msg = Bytes.concat("OPEN 0 1 ;".getBytes, SerializeUtil.serialize(serializer))
         publisher.send(msg)
@@ -66,8 +66,8 @@ class RunnerSpec extends CoreSpec {
 
     val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
-        //open a socket to push data
-        val publisher = new OutputPublisher(1, disruptor.getRingBuffer)
+        //publisher used to push data
+        val publisher = new OutputPublisher(1, getRingBuffer)
 
         val ser = (x: String) =>
           Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
@@ -100,8 +100,8 @@ class RunnerSpec extends CoreSpec {
   it should "terminate early if finished trigger fired" in new RunnerCase {
     val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
-        //open a socket to push data
-        val publisher = new OutputPublisher(1, disruptor.getRingBuffer)
+        //publisher used to push data
+        val publisher = new OutputPublisher(1, getRingBuffer)
 
         val ser = (x: String) =>
           Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
@@ -130,8 +130,8 @@ class RunnerSpec extends CoreSpec {
   it should "throw a timeout if finished trigger fired" in new RunnerCase {
     val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
-        //open a socket to push data
-        val publisher = new OutputPublisher(1, disruptor.getRingBuffer)
+        //publisher used to push data
+        val publisher = new OutputPublisher(1, getRingBuffer)
 
         val ser = (x: String) =>
           Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
@@ -156,11 +156,11 @@ class RunnerSpec extends CoreSpec {
   }
 
 
-  ignore should "stop with a timeout and sleep" in new RunnerCase {
+  it should "stop with a timeout and sleep" in new RunnerCase {
     val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
-        //open a socket to push data
-        val publisher = new OutputPublisher(1, disruptor.getRingBuffer)
+        //publisher used to push data
+        val publisher = new OutputPublisher(1, getRingBuffer)
 
         val ser = (x: String) =>
           Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
@@ -170,27 +170,32 @@ class RunnerSpec extends CoreSpec {
         publisher.send("CLOSE 0 1")
         sendString(publisher, "2")
         sendString(publisher, "3")
-//        Thread.sleep(2000)
+        Thread.sleep(2000)
         sendString(publisher, "4")
       }
     }
+
     runner.setTimeoutInterval(500)
     runner.registerListener(verifier, trigger)
-    runner.executeTest()
+    failAfter(5000 millis) {
+      runner.executeTest()
+    }
+
+    runner.hasBeenStopped shouldBe true
 
     verify(verifier).init()
     verify(verifier).receive("1")
     verify(verifier).receive("2")
     verify(verifier).receive("3")
     verify(verifier).finish()
-    verifyNoMoreInteractions(verifier)
+    //    verifyNoMoreInteractions(verifier)
   }
 
   it should "stop with a timeout" in new RunnerCase {
     val runner: Runner = new Runner(cluster) {
       override protected def executeEnvironment(): Unit = {
-        //open a socket to push data
-        val publisher = newPublisher(disruptor)
+        //publisher used to push data
+        val publisher = newPublisher(getDisruptor())
 
         val ser = (x: String) =>
           Bytes.concat((x + ";").getBytes, SerializeUtil.serialize(serializer))
@@ -200,7 +205,6 @@ class RunnerSpec extends CoreSpec {
         publisher.send("CLOSE 0 1")
         sendString(publisher, "2")
         sendString(publisher, "3")
-//        Thread.sleep(100)
       }
     }
 
@@ -210,7 +214,7 @@ class RunnerSpec extends CoreSpec {
       runner.executeTest()
     }
 
-//    runner.hasBeenStopped shouldBe true
+    //    runner.hasBeenStopped shouldBe true
 
     verify(verifier).init()
     verify(verifier).receive("1")
@@ -219,8 +223,8 @@ class RunnerSpec extends CoreSpec {
     verify(verifier).finish()
   }
 
-  def newPublisher(disruptor: Disruptor[ByteEvent]) = {
-      new OutputPublisher(1, disruptor.getRingBuffer)
+  def newPublisher(disruptor: Disruptor[OutputEvent]) = {
+    new OutputPublisher(1, disruptor.getRingBuffer)
   }
 
   def sendString(publisher: OutputPublisher, msg: String): Unit = {
@@ -231,7 +235,6 @@ class RunnerSpec extends CoreSpec {
 
 
   trait RunnerCase {
-
 
 
     val verifier = mock[OutputVerifier[String]]

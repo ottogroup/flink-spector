@@ -18,6 +18,6 @@ package org.flinkspector.dataset;
 
 public class DataSetExtendedBase extends DataSetTestBase {
 
-	public DataSetTestEnvironment environment = testEnv;
+    public DataSetTestEnvironment environment = testEnv;
 
 }

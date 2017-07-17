@@ -16,13 +16,10 @@
 
 package org.flinkspector.core.runtime;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.*;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
+import com.lmax.disruptor.util.DaemonThreadFactory;
 import org.apache.flink.runtime.client.JobTimeoutException;
 import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
 import org.apache.flink.test.util.TestBaseUtils;
@@ -30,10 +27,10 @@ import org.flinkspector.core.runtime.OutputHandler.ResultState;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 import scala.concurrent.duration.FiniteDuration;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.sql.Time;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -46,63 +43,56 @@ import static org.mortbay.util.IO.bufferSize;
 public abstract class Runner {
 
 
-    Executor executor = Executors.newCachedThreadPool();
-
-    ByteEventFactory factory = new ByteEventFactory();
-
-    Disruptor<ByteEvent> disruptor = new Disruptor<>(factory, bufferSize, executor);
-
-    ResultState state = null;
-
     /**
      * {@link LocalFlinkMiniCluster} used for running the test.
      */
     private final LocalFlinkMiniCluster cluster;
-
-    private final List<ServerSocket> sockets = new ArrayList<ServerSocket>();
-
     /**
      * {@link ListeningExecutorService} used for running the {@link OutputHandler},
      * in the background.
      */
     private final ListeningExecutorService executorService;
-
     /**
      * list of {@link ListenableFuture}s wrapping the {@link OutputHandler}s.
      */
     private final List<ListenableFuture<ResultState>> listenerFutures = new ArrayList<>();
-
     /**
      * Number of running sockets
      */
     private final AtomicInteger runningListeners;
     private final AtomicBoolean running = new AtomicBoolean(true);
-
     /**
      * Flag indicating whether the previous test has been finished .
      */
     private final AtomicBoolean finished = new AtomicBoolean(false);
-
     /**
      * Flag indicating whether the env has been shutdown forcefully.
      */
     private final AtomicBoolean failed = new AtomicBoolean(false);
-
-    /**
-     * Time in milliseconds before the test gets failed with a timeout.
-     */
-    private long timeout = 4000;
-
-    /**
-     * {@link TimerTask} to stop the test execution.
-     */
-    private TimerTask stopExecution;
-
     /**
      * {@link Timer} to stop the execution
      */
     Timer stopTimer = new Timer();
-
+    /**
+     * Executor for disruptor
+     */
+    private ThreadFactory threadFactory = DaemonThreadFactory.INSTANCE;
+    /**
+     * Factory for disruptor
+     */
+    private OutputEventFactory factory = new OutputEventFactory();
+    /**
+     * Disruptor for transfering output from sinks
+     */
+    private Disruptor<OutputEvent> disruptor = new Disruptor<>(factory, bufferSize, threadFactory);
+    /**
+     * Time in milliseconds before the test gets failed with a timeout.
+     */
+    private long timeout = 4000;
+    /**
+     * {@link TimerTask} to stop the test execution.
+     */
+    private TimerTask stopExecution;
     /**
      * The current port used for transmitting the output from via 0MQ
      * to the {@link OutputHandler}s.
@@ -157,7 +147,6 @@ public abstract class Runner {
      * Thus terminating the execution gracefully.
      */
     public synchronized void stopExecution() {
-        System.out.println("++++++++++   stopping schedoscope");
         stopped = true;
         //execution has failed no cleanup necessary
         if (failed.get()) {
@@ -176,7 +165,7 @@ public abstract class Runner {
     }
 
     private void cancelListener() {
-        for (ListenableFuture<ResultState> f: listenerFutures) {
+        for (ListenableFuture<ResultState> f : listenerFutures) {
             f.cancel(true);
         }
     }
@@ -270,9 +259,12 @@ public abstract class Runner {
         return instance;
     }
 
-
-    public RingBuffer<ByteEvent> getRingBuffer() {
+    public RingBuffer<OutputEvent> getRingBuffer() {
         return disruptor.getRingBuffer();
+    }
+
+    protected Disruptor<OutputEvent> getDisruptor() {
+        return disruptor;
     }
 
     /**

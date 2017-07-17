@@ -21,15 +21,15 @@ package org.flinkspector.datastream.input.time;
  */
 public abstract class Moment {
 
-	/**
-	 * Getter for defined time span
-	 *
-	 * @param currentTimestamp the timestamp of the current record
-	 * @return time span in milliseconds
-	 */
-	public abstract long getTimestamp(long currentTimestamp);
+    /**
+     * Getter for defined time span
+     *
+     * @param currentTimestamp the timestamp of the current record
+     * @return time span in milliseconds
+     */
+    public abstract long getTimestamp(long currentTimestamp);
 
-	public long getShift() {
-		return 0;
-	}
+    public long getShift() {
+        return 0;
+    }
 }

@@ -24,16 +24,16 @@ import org.flinkspector.core.CoreSpec
 
 class SerializeUtilSpec extends CoreSpec {
 
-  class Person {
-    var age: Integer = _
-    var name: String = _
-
-  }
-
   trait SerializeUtilCase {
     val config = new ExecutionConfig()
     val typeInfo: TypeInformation[String] = TypeExtractor.getForObject("test")
     val serializer = typeInfo.createSerializer(config)
+  }
+
+  class Person {
+    var age: Integer = _
+    var name: String = _
+
   }
 
   "The util" should "serialize and deserialize a String" in new SerializeUtilCase {

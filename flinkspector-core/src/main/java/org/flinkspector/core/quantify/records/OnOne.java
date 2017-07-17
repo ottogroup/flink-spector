@@ -28,37 +28,37 @@ import org.hamcrest.Matcher;
  */
 public class OnOne<T> extends WhileList<T> {
 
-	/**
-	 * Default constructor
-	 *
-	 * @param matcher to apply to the {@link Iterable}
-	 */
-	public OnOne(Matcher<T> matcher) {
-		super(matcher);
-	}
+    /**
+     * Default constructor
+     *
+     * @param matcher to apply to the {@link Iterable}
+     */
+    public OnOne(Matcher<T> matcher) {
+        super(matcher);
+    }
 
-	@Override
-	protected Description describeCondition(Description description) {
-		return description.appendText("exactly ").appendValue(1);
-	}
+    @Factory
+    public static <T> OnOne<T> one(Matcher<T> matcher) {
+        return new OnOne<T>(matcher);
+    }
 
-	@Override
-	public String prefix() {
-		return "one of";
-	}
+    @Override
+    protected Description describeCondition(Description description) {
+        return description.appendText("exactly ").appendValue(1);
+    }
 
-	@Override
-	public boolean validWhile(int matches, int mismatches) {
-		return matches <= 1;
-	}
+    @Override
+    public String prefix() {
+        return "one of";
+    }
 
-	@Override
-	public boolean validAfter(int numMatches) {
-		return numMatches == 1;
-	}
+    @Override
+    public boolean validWhile(int matches, int mismatches) {
+        return matches <= 1;
+    }
 
-	@Factory
-	public static <T> OnOne<T> one(Matcher<T> matcher) {
-		return new OnOne<T>(matcher);
-	}
+    @Override
+    public boolean validAfter(int numMatches) {
+        return numMatches == 1;
+    }
 }

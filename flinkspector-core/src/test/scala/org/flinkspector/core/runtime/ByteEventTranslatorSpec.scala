@@ -29,7 +29,7 @@ class ByteEventTranslatorSpec extends FlatSpec with Matchers {
     val message = "hello".getBytes(StandardCharsets.UTF_8)
     val bb = ByteEventTranslator.translateToBuffer(1, message)
 
-    val event = new ByteEvent()
+    val event = new OutputEvent()
 
     translator.translateTo(event, 1, bb)
 

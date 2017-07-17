@@ -30,50 +30,50 @@ import java.util.List;
  */
 public class MatcherBuilder<T> extends OutputMatcher<T> {
 
-	private ListMatcherBuilder<T> builder;
-	private List<T> right;
+    private ListMatcherBuilder<T> builder;
+    private List<T> right;
 
-	public MatcherBuilder(List<T> right) {
-		this.right = right;
-		builder = new ListMatcherBuilder<>(right);
-	}
+    public MatcherBuilder(List<T> right) {
+        this.right = right;
+        builder = new ListMatcherBuilder<>(right);
+    }
 
-	/**
-	 * Tests whether the output contains only the expected records
-	 */
-	public MatcherBuilder<T> only() {
-		builder.only();
-		return this;
-	}
+    /**
+     * Tests whether the output contains only the expected records
+     */
+    public MatcherBuilder<T> only() {
+        builder.only();
+        return this;
+    }
 
-	/**
-	 * Tests whether the output has the same number of occurrences for each element
-	 * in the expected output
-	 */
-	public MatcherBuilder<T> sameFrequency() {
-		builder.sameFrequency();
-		return this;
-	}
+    /**
+     * Tests whether the output has the same number of occurrences for each element
+     * in the expected output
+     */
+    public MatcherBuilder<T> sameFrequency() {
+        builder.sameFrequency();
+        return this;
+    }
 
-	/**
-	 * Provides a {@link OrderMatcher} to verify the order of
-	 * elements in the output
-	 */
-	public FromListMatcher inOrder(Order order) {
-		if (order == Order.STRICT) {
-			return new SeriesMatcher<T>(builder);
-		}
-		return new OrderMatcher<T>(builder);
-	}
+    /**
+     * Provides a {@link OrderMatcher} to verify the order of
+     * elements in the output
+     */
+    public FromListMatcher inOrder(Order order) {
+        if (order == Order.STRICT) {
+            return new SeriesMatcher<T>(builder);
+        }
+        return new OrderMatcher<T>(builder);
+    }
 
-	@Override
-	public void describeTo(Description description) {
-		builder.describeTo(description);
-	}
+    @Override
+    public void describeTo(Description description) {
+        builder.describeTo(description);
+    }
 
-	@Override
-	protected boolean matchesSafely(Iterable<T> item) {
-		return builder.validate(item);
-	}
+    @Override
+    protected boolean matchesSafely(Iterable<T> item) {
+        return builder.validate(item);
+    }
 
 }

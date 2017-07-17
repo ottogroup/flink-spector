@@ -24,61 +24,61 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 public abstract class UntilList<T> extends TypeSafeDiagnosingMatcher<Iterable<T>> {
 
-	private final Matcher<T> matcher;
+    private final Matcher<T> matcher;
 
-	public UntilList(Matcher<T> matcher) {
-		this.matcher = matcher;
-	}
+    public UntilList(Matcher<T> matcher) {
+        this.matcher = matcher;
+    }
 
-	@Override
-	public boolean matchesSafely(Iterable<T> objects, Description mismatch) {
-		int numMatches = 0;
-		int numMismatches = 0;
-		int possibleMatches = Iterables.size(objects);
-		int i = 0;
-		Description mismatches = new StringDescription();
-		for (T item : objects) {
+    @Override
+    public boolean matchesSafely(Iterable<T> objects, Description mismatch) {
+        int numMatches = 0;
+        int numMismatches = 0;
+        int possibleMatches = Iterables.size(objects);
+        int i = 0;
+        Description mismatches = new StringDescription();
+        for (T item : objects) {
 
-			if (!matcher.matches(item)) {
-				if (numMismatches < 10) {
-					matcher.describeMismatch(item, mismatches);
-					mismatches.appendText(" on record #" + (i + 1));
-				}
-				numMismatches++;
-			} else {
-				numMatches++;
+            if (!matcher.matches(item)) {
+                if (numMismatches < 10) {
+                    matcher.describeMismatch(item, mismatches);
+                    mismatches.appendText(" on record #" + (i + 1));
+                }
+                numMismatches++;
+            } else {
+                numMatches++;
 
-				if (validWhen(numMatches, possibleMatches)) {
-					return true;
-				}
-			}
-			i++;
-		}
-		describeMismatch(numMatches, mismatch, mismatches);
-		return false;
-	}
+                if (validWhen(numMatches, possibleMatches)) {
+                    return true;
+                }
+            }
+            i++;
+        }
+        describeMismatch(numMatches, mismatch, mismatches);
+        return false;
+    }
 
-	private void describeMismatch(int matches,
-								  Description mismatch,
-								  Description mismatches) {
-		mismatch.appendText("expected matches to be ");
-		describeCondition(mismatch);
-		mismatch.appendText(", was ")
-				.appendValue(matches)
-				.appendText(" because:")
-				.appendText(mismatches.toString());
-	}
+    private void describeMismatch(int matches,
+                                  Description mismatch,
+                                  Description mismatches) {
+        mismatch.appendText("expected matches to be ");
+        describeCondition(mismatch);
+        mismatch.appendText(", was ")
+                .appendValue(matches)
+                .appendText(" because:")
+                .appendText(mismatches.toString());
+    }
 
-	protected abstract Description describeCondition(Description description);
+    protected abstract Description describeCondition(Description description);
 
-	protected abstract boolean validWhen(int matches, int possibleMatches);
+    protected abstract boolean validWhen(int matches, int possibleMatches);
 
-	protected abstract String prefix();
+    protected abstract String prefix();
 
-	@Override
-	public void describeTo(Description description) {
-		description.appendText(prefix()).appendText(", to be ").appendDescriptionOf(matcher);
-	}
+    @Override
+    public void describeTo(Description description) {
+        description.appendText(prefix()).appendText(", to be ").appendDescriptionOf(matcher);
+    }
 
 
 }

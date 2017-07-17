@@ -27,36 +27,36 @@ import org.hamcrest.Matcher;
  */
 public class AtMost<T> extends WhileCombineMatcher<T> {
 
-	private final int n;
+    private final int n;
 
-	/**
-	 * Default constructor
-	 *
-	 * @param matchers {@link Iterable} of {@link Matcher}
-	 * @param n        number of expected matches
-	 */
-	public AtMost(Iterable<Matcher<? super T>> matchers, int n) {
-		super(matchers);
-		this.n = n;
-	}
+    /**
+     * Default constructor
+     *
+     * @param matchers {@link Iterable} of {@link Matcher}
+     * @param n        number of expected matches
+     */
+    public AtMost(Iterable<Matcher<? super T>> matchers, int n) {
+        super(matchers);
+        this.n = n;
+    }
 
-	protected Description describeCondition(Description description) {
-		return description.appendText("at most ").appendValue(n);
-	}
+    @Factory
+    public static <T> AtMost<T> atMost(Iterable<Matcher<? super T>> matchers,
+                                       int n) {
+        return new AtMost<T>(matchers, n);
+    }
 
-	@Override
-	public String prefix() {
-		return "at most ";
-	}
+    protected Description describeCondition(Description description) {
+        return description.appendText("at most ").appendValue(n);
+    }
 
-	@Override
-	public boolean validWhile(int matches) {
-		return matches <= n;
-	}
+    @Override
+    public String prefix() {
+        return "at most ";
+    }
 
-	@Factory
-	public static <T> AtMost<T> atMost(Iterable<Matcher<? super T>> matchers,
-									   int n) {
-		return new AtMost<T>(matchers, n);
-	}
+    @Override
+    public boolean validWhile(int matches) {
+        return matches <= n;
+    }
 }

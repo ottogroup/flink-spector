@@ -43,7 +43,7 @@ class StreamTestEnvironmentSpec extends CoreSpec {
 
   class CountVerifier[T](cnt: Int) extends SimpleOutputVerifier[T] {
     override def verify(output: JList[T]): Unit =
-      output should have length(cnt)
+      output should have length (cnt)
   }
 
   "The stream environment" should "initialize" in {

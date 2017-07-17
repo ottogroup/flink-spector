@@ -28,28 +28,28 @@ import java.util.concurrent.TimeUnit;
 
 public class ParallelFromStreamRecordsTest extends DataStreamTestBase {
 
-	@Test
-	public void testFlushWindows() {
-		EventTimeInput<Integer> input = EventTimeInputBuilder
-				.startWith(1)
-				.emit(1)
-				.emit(1, intoWindow(2, minutes))
-				.emit(2, after(30, seconds))
-				.flushOpenWindowsOnTermination();
+    @Test
+    public void testFlushWindows() {
+        EventTimeInput<Integer> input = EventTimeInputBuilder
+                .startWith(1)
+                .emit(1)
+                .emit(1, intoWindow(2, minutes))
+                .emit(2, after(30, seconds))
+                .flushOpenWindowsOnTermination();
 
 
-		DataStream<Integer> stream = createTestStream(input);
+        DataStream<Integer> stream = createTestStream(input);
 
-		DataStream<Integer> result = stream
-				.timeWindowAll(Time.of(2, TimeUnit.MINUTES))
-				.sum(0);
+        DataStream<Integer> result = stream
+                .timeWindowAll(Time.of(2, TimeUnit.MINUTES))
+                .sum(0);
 
-		ExpectedRecords<Integer> expected = ExpectedRecords
-				.create(3)
-				.expect(2);
-		expected.refine().only();
+        ExpectedRecords<Integer> expected = ExpectedRecords
+                .create(3)
+                .expect(2);
+        expected.refine().only();
 
-		assertStream(result, expected);
+        assertStream(result, expected);
 
-	}
+    }
 }

@@ -22,12 +22,12 @@ package org.flinkspector.core.runtime;
  * Used as an wrapper around the specific exception thrown by the used Test Framework.
  */
 public class FlinkTestFailedException extends Exception {
-	public FlinkTestFailedException(Throwable throwable) {
-		super(throwable);
-		if (throwable == null) {
-			throw new IllegalArgumentException("The cause has to be defined. " +
-					"It will be unwrapped by the runtime later.");
-		}
+    public FlinkTestFailedException(Throwable throwable) {
+        super(throwable);
+        if (throwable == null) {
+            throw new IllegalArgumentException("The cause has to be defined. " +
+                    "It will be unwrapped by the runtime later.");
+        }
 
-	}
+    }
 }

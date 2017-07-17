@@ -36,9 +36,9 @@ class OutputPublisherSpec extends CoreSpec {
 
     val executor = Executors.newCachedThreadPool
 
-    val factory = new ByteEventFactory
+    val factory = new OutputEventFactory
 
-    val disruptor = new Disruptor[ByteEvent](factory, bufferSize, executor)
+    val disruptor = new Disruptor[OutputEvent](factory, bufferSize, executor)
 
     val (subscriber, port) = (new OutputSubscriber(1, disruptor), 1)
 

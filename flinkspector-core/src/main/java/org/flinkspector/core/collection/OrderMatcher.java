@@ -25,28 +25,28 @@ import java.util.List;
 
 public class OrderMatcher<T> implements FromListMatcher {
 
-	private org.flinkspector.matcher.OrderMatcher<T> matcher;
+    private org.flinkspector.matcher.OrderMatcher<T> matcher;
 
-	public OrderMatcher(ListMatcherBuilder<T> builder) {
-		matcher = org.flinkspector.matcher.OrderMatcher.createFromBuilder(builder);
-	}
+    public OrderMatcher(ListMatcherBuilder<T> builder) {
+        matcher = org.flinkspector.matcher.OrderMatcher.createFromBuilder(builder);
+    }
 
-	public FromPartialMatcher from(int n) {
-		return matcher.from(n);
-	}
+    public FromPartialMatcher from(int n) {
+        return matcher.from(n);
+    }
 
-	public void to(int n) {
-		matcher.to(n);
-	}
+    public void to(int n) {
+        matcher.to(n);
+    }
 
-	public void all() {
-		matcher.all();
-	}
+    public void all() {
+        matcher.all();
+    }
 
-	public void indices(int first, int second, int... rest) {
-		int[] front = new int[]{first, second};
-		List<Integer> list = Arrays.asList(ArrayUtils.toObject(ArrayUtils.addAll(front, rest)));
-		matcher.indices(list);
-	}
+    public void indices(int first, int second, int... rest) {
+        int[] front = new int[]{first, second};
+        List<Integer> list = Arrays.asList(ArrayUtils.toObject(ArrayUtils.addAll(front, rest)));
+        matcher.indices(list);
+    }
 
 }

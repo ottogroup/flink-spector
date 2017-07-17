@@ -31,98 +31,98 @@ import java.util.List;
  */
 public class ExpectedRecords<T> extends OutputMatcher<T> {
 
-	/**
-	 * list of expected records
-	 */
-	private List<T> expectedRecords;
-	/**
-	 * matcher to test the output
-	 */
-	private MatcherBuilder<T> matcher;
+    /**
+     * list of expected records
+     */
+    private List<T> expectedRecords;
+    /**
+     * matcher to test the output
+     */
+    private MatcherBuilder<T> matcher;
 
-	public ExpectedRecords() {
-		expectedRecords = new ArrayList<>();
-	}
+    public ExpectedRecords() {
+        expectedRecords = new ArrayList<>();
+    }
 
-	public static <T> ExpectedRecords<T> create(T record) {
-		ExpectedRecords<T> output = new ExpectedRecords<>();
-		return output.expect(record);
-	}
+    public static <T> ExpectedRecords<T> create(T record) {
+        ExpectedRecords<T> output = new ExpectedRecords<>();
+        return output.expect(record);
+    }
 
-	public static <T> ExpectedRecords<T> create(Collection<T> records) {
-		ExpectedRecords<T> output = new ExpectedRecords<>();
-		return output.expectAll(records);
-	}
+    public static <T> ExpectedRecords<T> create(Collection<T> records) {
+        ExpectedRecords<T> output = new ExpectedRecords<>();
+        return output.expectAll(records);
+    }
 
-	/**
-	 * Provides the {@link MatcherBuilder} to define
-	 * expectations for the test
-	 *
-	 * @return builder for refining expectations
-	 */
-	public MatcherBuilder<T> refine() {
-		if (matcher == null) {
-			matcher = new MatcherBuilder<>(expectedRecords);
-		}
-		return matcher;
-	}
+    /**
+     * Provides the {@link MatcherBuilder} to define
+     * expectations for the test
+     *
+     * @return builder for refining expectations
+     */
+    public MatcherBuilder<T> refine() {
+        if (matcher == null) {
+            matcher = new MatcherBuilder<>(expectedRecords);
+        }
+        return matcher;
+    }
 
-	/**
-	 * Adds an record to the list of expected output
-	 *
-	 * @param record to add
-	 */
-	public ExpectedRecords<T> expect(T record) {
-		expectedRecords.add(record);
-		return this;
-	}
+    /**
+     * Adds an record to the list of expected output
+     *
+     * @param record to add
+     */
+    public ExpectedRecords<T> expect(T record) {
+        expectedRecords.add(record);
+        return this;
+    }
 
-	/**
-	 * Adds a {@link Collection} of records to the expected output
-	 *
-	 * @param records to add
-	 */
-	public ExpectedRecords<T> expectAll(Collection<T> records) {
-		expectedRecords.addAll(records);
-		return this;
-	}
+    /**
+     * Adds a {@link Collection} of records to the expected output
+     *
+     * @param records to add
+     */
+    public ExpectedRecords<T> expectAll(Collection<T> records) {
+        expectedRecords.addAll(records);
+        return this;
+    }
 
-	/**
-	 * Adds an record to the collection of expected output
-	 *
-	 * @param record to add
-	 */
-	public ExpectedRecords<T> expect(T record, int times) {
-		if (record == null) {
-			throw new IllegalArgumentException("Record has too be not null!");
-		}
-		expectedRecords.add(record);
-		return this;
-	}
+    /**
+     * Adds an record to the collection of expected output
+     *
+     * @param record to add
+     */
+    public ExpectedRecords<T> expect(T record, int times) {
+        if (record == null) {
+            throw new IllegalArgumentException("Record has too be not null!");
+        }
+        expectedRecords.add(record);
+        return this;
+    }
 
-	/**
-	 * Expect the current output a number of times
-	 *
-	 * @param times number of times the input ist will be repeated
-	 */
-	public ExpectedRecords<T> repeatAll(int times) {
-		List<T> toAppend = new ArrayList<>();
-		for (int i = 0; i < times; i++) {
-			toAppend.addAll(expectedRecords);
-		}
-		expectedRecords.addAll(toAppend);
-		return this;
-	}
+    /**
+     * Expect the current output a number of times
+     *
+     * @param times number of times the input ist will be repeated
+     */
+    public ExpectedRecords<T> repeatAll(int times) {
+        List<T> toAppend = new ArrayList<>();
+        for (int i = 0; i < times; i++) {
+            toAppend.addAll(expectedRecords);
+        }
+        expectedRecords.addAll(toAppend);
+        return this;
+    }
 
-	@Override
-	public boolean matchesSafely(Iterable<T> output) {
-		return refine().matches(output);
-	}
+    @Override
+    public boolean matchesSafely(Iterable<T> output) {
+        return refine().matches(output);
+    }
 
-	@Override
-	public void describeTo(Description description) {
-		refine().describeTo(description);
-	}
+    @Override
+    public void describeTo(Description description) {
+        refine().describeTo(description);
+    }
 
 //	public <T> getValidator() {
 //		return matcher;

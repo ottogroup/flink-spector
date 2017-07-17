@@ -29,7 +29,7 @@ import java.util.List;
  */
 public interface EventTimeInput<T> extends Input<StreamRecord<T>> {
 
-	Boolean getFlushWindowsSetting();
+    Boolean getFlushWindowsSetting();
 
-	List<StreamRecord<T>> getInput();
+    List<StreamRecord<T>> getInput();
 }

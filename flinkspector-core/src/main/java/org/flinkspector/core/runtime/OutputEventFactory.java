@@ -16,23 +16,15 @@
 
 package org.flinkspector.core.runtime;
 
-public class ByteEvent {
+import com.lmax.disruptor.EventFactory;
 
-    private byte[] bytes;
+/**
+ * Used by the disruptor to initialize a new {@link OutputEvent}
+ */
+public class OutputEventFactory implements EventFactory<OutputEvent> {
 
-    private int sender;
-
-    public void set(int sender, byte[] bytes) {
-        this.sender = sender;
-        this.bytes = bytes;
-    }
-
-    public byte[] getMsg() {
-        return bytes;
-    }
-
-    public int getSender() {
-        return sender;
+    public OutputEvent newInstance() {
+        return new OutputEvent();
     }
 
 }

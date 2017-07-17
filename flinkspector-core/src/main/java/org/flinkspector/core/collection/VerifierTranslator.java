@@ -20,26 +20,26 @@ import org.flinkspector.core.runtime.OutputVerifier;
 
 public abstract class VerifierTranslator<IN, OUT> implements OutputVerifier<IN> {
 
-	OutputVerifier<OUT> verifier;
+    OutputVerifier<OUT> verifier;
 
-	public VerifierTranslator(OutputVerifier<OUT> verifier) {
-		this.verifier = verifier;
-	}
+    public VerifierTranslator(OutputVerifier<OUT> verifier) {
+        this.verifier = verifier;
+    }
 
-	protected abstract OUT translate(IN record);
+    protected abstract OUT translate(IN record);
 
-	@Override
-	public void init() {
-		verifier.init();
-	}
+    @Override
+    public void init() {
+        verifier.init();
+    }
 
-	@Override
-	public void receive(IN record) throws Exception {
-		verifier.receive(translate(record));
-	}
+    @Override
+    public void receive(IN record) throws Exception {
+        verifier.receive(translate(record));
+    }
 
-	@Override
-	public void finish() throws Exception {
-		verifier.finish();
-	}
+    @Override
+    public void finish() throws Exception {
+        verifier.finish();
+    }
 }

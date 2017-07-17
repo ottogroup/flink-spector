@@ -20,11 +20,11 @@ import org.flinkspector.matcher.FromPartialMatcher;
 
 public interface FromListMatcher {
 
-	FromPartialMatcher from(int n);
+    FromPartialMatcher from(int n);
 
-	void to(int n);
+    void to(int n);
 
-	void all();
+    void all();
 
-	void indices(int first, int second, int... rest);
+    void indices(int first, int second, int... rest);
 }

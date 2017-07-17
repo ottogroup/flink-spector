@@ -28,33 +28,33 @@ import org.hamcrest.Matcher;
  */
 public class OnAny<T> extends UntilList<T> {
 
-	/**
-	 * Default Constructor
-	 *
-	 * @param matcher to apply to the {@link Iterable}
-	 */
-	public OnAny(Matcher<T> matcher) {
-		super(matcher);
-	}
+    /**
+     * Default Constructor
+     *
+     * @param matcher to apply to the {@link Iterable}
+     */
+    public OnAny(Matcher<T> matcher) {
+        super(matcher);
+    }
 
-	@Override
-	protected Description describeCondition(Description description) {
-		return description.appendText("at least ").appendValue(1);
-	}
+    @Factory
+    public static <T> OnAny<T> any(Matcher<T> matcher) {
+        return new OnAny<>(matcher);
+    }
 
-	@Override
-	protected boolean validWhen(int matches, int possibleMatches) {
-		return matches == 1;
-	}
+    @Override
+    protected Description describeCondition(Description description) {
+        return description.appendText("at least ").appendValue(1);
+    }
 
-	@Override
-	public String prefix() {
-		return "any record";
-	}
+    @Override
+    protected boolean validWhen(int matches, int possibleMatches) {
+        return matches == 1;
+    }
 
-	@Factory
-	public static <T> OnAny<T> any(Matcher<T> matcher) {
-		return new OnAny<>(matcher);
-	}
+    @Override
+    public String prefix() {
+        return "any record";
+    }
 
 }

@@ -16,26 +16,20 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class OutputPublisher {
 
-    private final RingBuffer<ByteEvent> ringBuffer;
-
-    private int instance;
-
-    private static final EventTranslatorOneArg<ByteEvent, ByteBuffer> TRANSLATOR =
+    private static final EventTranslatorOneArg<OutputEvent, ByteBuffer> TRANSLATOR =
             new ByteEventTranslator();
-
-    public void onData(ByteBuffer bb)
-    {
-        ringBuffer.publishEvent(TRANSLATOR, bb);
-    }
-
+    private final RingBuffer<OutputEvent> ringBuffer;
+    private int instance;
     private AtomicInteger msgCount = new AtomicInteger(0);
     private Set<Integer> closed = new HashSet<Integer>();
-
-    public OutputPublisher(int instance, RingBuffer<ByteEvent> buffer) {
+    public OutputPublisher(int instance, RingBuffer<OutputEvent> buffer) {
         ringBuffer = buffer;
         this.instance = instance;
     }
 
+    public void onData(ByteBuffer bb) {
+        ringBuffer.publishEvent(TRANSLATOR, bb);
+    }
 
     public void close() {
 
@@ -60,8 +54,8 @@ public class OutputPublisher {
     }
 
     private void queueMessage(byte[] bytes) {
-      ByteBuffer bb = ByteEventTranslator.translateToBuffer(instance, bytes);
-      ringBuffer.publishEvent(TRANSLATOR, bb);
+        ByteBuffer bb = ByteEventTranslator.translateToBuffer(instance, bytes);
+        ringBuffer.publishEvent(TRANSLATOR, bb);
     }
 
     public void send(byte[] bytes) {

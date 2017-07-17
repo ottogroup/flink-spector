@@ -16,12 +16,32 @@
 
 package org.flinkspector.core.runtime;
 
-import com.lmax.disruptor.EventFactory;
+/**
+ * Used to wrap output from the sinks to the listeners during test runs
+ */
+public class OutputEvent {
 
-public class ByteEventFactory implements EventFactory<ByteEvent> {
+    /**
+     * serialized output event
+     */
+    private byte[] bytes;
 
-    public ByteEvent newInstance() {
-        return new ByteEvent();
+    /**
+     * id of the sink sending the event
+     */
+    private int sender;
+
+    public void set(int sender, byte[] bytes) {
+        this.sender = sender;
+        this.bytes = bytes;
+    }
+
+    public byte[] getMsg() {
+        return bytes;
+    }
+
+    public int getSender() {
+        return sender;
     }
 
 }

@@ -110,6 +110,7 @@ object InputUtil {
       seen += ts
       recur(l.tail)
     }
+
     recur(timestamps)
     array.toList
   }

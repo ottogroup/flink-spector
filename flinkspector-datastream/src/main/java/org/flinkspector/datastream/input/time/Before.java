@@ -23,23 +23,23 @@ import java.util.concurrent.TimeUnit;
  */
 public class Before extends TimeSpan {
 
-	private long timeSpan;
+    private long timeSpan;
 
-	public static Before period(long time, TimeUnit timeUnit) {
-		return new Before(time, timeUnit);
-	}
+    private Before(long time, TimeUnit timeUnit) {
+        this.timeSpan = timeUnit.toMillis(time);
+    }
 
-	private Before(long time, TimeUnit timeUnit) {
-		this.timeSpan = timeUnit.toMillis(time);
-	}
+    public static Before period(long time, TimeUnit timeUnit) {
+        return new Before(time, timeUnit);
+    }
 
-	/**
-	 * Getter for defined time span
-	 *
-	 * @return time span in milliseconds
-	 */
-	@Override
-	public long getTimeSpan() {
-		return timeSpan * -1;
-	}
+    /**
+     * Getter for defined time span
+     *
+     * @return time span in milliseconds
+     */
+    @Override
+    public long getTimeSpan() {
+        return timeSpan * -1;
+    }
 }

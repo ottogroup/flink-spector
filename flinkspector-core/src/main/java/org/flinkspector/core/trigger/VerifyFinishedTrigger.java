@@ -27,21 +27,21 @@ import org.flinkspector.core.runtime.OutputVerifier;
  */
 public interface VerifyFinishedTrigger<OUT> {
 
-	/**
-	 * Returns true if the listener should be
-	 * closed on receiving a record.
-	 *
-	 * @param record current record received by the listener.
-	 * @return true if close.
-	 */
-	boolean onRecord(OUT record);
+    /**
+     * Returns true if the listener should be
+     * closed on receiving a record.
+     *
+     * @param record current record received by the listener.
+     * @return true if close.
+     */
+    boolean onRecord(OUT record);
 
-	/**
-	 * Determines if the listener should be
-	 * closed on receiving a count of records.
-	 *
-	 * @param count current count of records received by the listener.
-	 * @return true if close.
-	 */
-	boolean onRecordCount(long count);
+    /**
+     * Determines if the listener should be
+     * closed on receiving a count of records.
+     *
+     * @param count current count of records received by the listener.
+     * @return true if close.
+     */
+    boolean onRecordCount(long count);
 }

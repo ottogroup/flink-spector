@@ -29,89 +29,89 @@ import org.hamcrest.Matcher;
  */
 public class RecordsMatcher<T> {
 
-	/**
-	 * wrapped {@link Matcher}
-	 */
-	private final Matcher<T> matcher;
+    /**
+     * wrapped {@link Matcher}
+     */
+    private final Matcher<T> matcher;
 
-	/**
-	 * Default constructor.
-	 *
-	 * @param matcher
-	 */
-	public RecordsMatcher(Matcher<T> matcher) {
-		this.matcher = matcher;
-	}
+    /**
+     * Default constructor.
+     *
+     * @param matcher
+     */
+    public RecordsMatcher(Matcher<T> matcher) {
+        this.matcher = matcher;
+    }
 
-	/**
-	 * Creates a {@link OutputMatcherFactory} matching when at least one
-	 * inspected tuple returns a positive match.
-	 *
-	 * @return {@link OutputMatcherFactory}
-	 */
-	public OutputMatcher<T> onAnyRecord() {
-		return OutputMatcherFactory.create(ListQuantifyMatchers.any(matcher));
-	}
+    /**
+     * Creates a {@link OutputMatcherFactory} matching when at least one
+     * inspected tuple returns a positive match.
+     *
+     * @return {@link OutputMatcherFactory}
+     */
+    public OutputMatcher<T> onAnyRecord() {
+        return OutputMatcherFactory.create(ListQuantifyMatchers.any(matcher));
+    }
 
-	/**
-	 * Creates a {@link OutputMatcherFactory} matching when all
-	 * inspected tuples return a positive match.
-	 *
-	 * @return {@link OutputMatcherFactory}
-	 */
-	public OutputMatcher<T> onEachRecord() {
-		return OutputMatcherFactory.create(ListQuantifyMatchers.each(matcher));
-	}
+    /**
+     * Creates a {@link OutputMatcherFactory} matching when all
+     * inspected tuples return a positive match.
+     *
+     * @return {@link OutputMatcherFactory}
+     */
+    public OutputMatcher<T> onEachRecord() {
+        return OutputMatcherFactory.create(ListQuantifyMatchers.each(matcher));
+    }
 
-	/**
-	 * Creates a {@link OutputMatcherFactory} matching when exactly one inspected tuple
-	 * return a positive match.
-	 *
-	 * @return {@link OutputMatcherFactory}
-	 */
-	public OutputMatcher<T> onOneRecord() {
-		return OutputMatcherFactory.create(ListQuantifyMatchers.one(matcher));
-	}
+    /**
+     * Creates a {@link OutputMatcherFactory} matching when exactly one inspected tuple
+     * return a positive match.
+     *
+     * @return {@link OutputMatcherFactory}
+     */
+    public OutputMatcher<T> onOneRecord() {
+        return OutputMatcherFactory.create(ListQuantifyMatchers.one(matcher));
+    }
 
-	/**
-	 * Creates a {@link OutputMatcherFactory} matching when no inspected tuple
-	 * return a positive match.
-	 *
-	 * @return {@link OutputMatcherFactory}
-	 */
-	public OutputMatcher<T> onNoRecord() {
-		return OutputMatcherFactory.create(ListQuantifyMatchers.none(matcher));
-	}
+    /**
+     * Creates a {@link OutputMatcherFactory} matching when no inspected tuple
+     * return a positive match.
+     *
+     * @return {@link OutputMatcherFactory}
+     */
+    public OutputMatcher<T> onNoRecord() {
+        return OutputMatcherFactory.create(ListQuantifyMatchers.none(matcher));
+    }
 
-	/**
-	 * Creates a {@link OutputMatcherFactory} matching when a exact number of
-	 * inspected tuples return a positive match.
-	 *
-	 * @return {@link OutputMatcherFactory}
-	 */
-	public OutputMatcher<T> onExactlyNRecords(int n) {
-		return OutputMatcherFactory.create(ListQuantifyMatchers.exactly(matcher, n));
-	}
+    /**
+     * Creates a {@link OutputMatcherFactory} matching when a exact number of
+     * inspected tuples return a positive match.
+     *
+     * @return {@link OutputMatcherFactory}
+     */
+    public OutputMatcher<T> onExactlyNRecords(int n) {
+        return OutputMatcherFactory.create(ListQuantifyMatchers.exactly(matcher, n));
+    }
 
-	/**
-	 * Creates a {@link OutputMatcherFactory} matching when at least a number of
-	 * inspected tuples return a positive match.
-	 *
-	 * @return {@link OutputMatcherFactory}
-	 */
-	public OutputMatcher<T> onAtLeastNRecords(int n) {
-		return OutputMatcherFactory.create(ListQuantifyMatchers.atLeast(matcher, n));
-	}
+    /**
+     * Creates a {@link OutputMatcherFactory} matching when at least a number of
+     * inspected tuples return a positive match.
+     *
+     * @return {@link OutputMatcherFactory}
+     */
+    public OutputMatcher<T> onAtLeastNRecords(int n) {
+        return OutputMatcherFactory.create(ListQuantifyMatchers.atLeast(matcher, n));
+    }
 
-	/**
-	 * Creates a {@link OutputMatcherFactory} matching when at most a number of
-	 * inspected tuples return a positive match.
-	 *
-	 * @return {@link OutputMatcherFactory}
-	 */
-	public OutputMatcher<T> onAtMostNRecords(int n) {
-		return OutputMatcherFactory.create(ListQuantifyMatchers.atMost(matcher, n));
-	}
+    /**
+     * Creates a {@link OutputMatcherFactory} matching when at most a number of
+     * inspected tuples return a positive match.
+     *
+     * @return {@link OutputMatcherFactory}
+     */
+    public OutputMatcher<T> onAtMostNRecords(int n) {
+        return OutputMatcherFactory.create(ListQuantifyMatchers.atMost(matcher, n));
+    }
 
 
 }

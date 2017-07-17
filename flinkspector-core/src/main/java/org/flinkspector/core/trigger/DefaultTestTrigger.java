@@ -24,13 +24,13 @@ import org.flinkspector.core.runtime.OutputHandler;
  */
 public class DefaultTestTrigger implements VerifyFinishedTrigger {
 
-	@Override
-	public boolean onRecord(Object record) {
-		return false;
-	}
+    @Override
+    public boolean onRecord(Object record) {
+        return false;
+    }
 
-	@Override
-	public boolean onRecordCount(long count) {
-		return false;
-	}
+    @Override
+    public boolean onRecordCount(long count) {
+        return false;
+    }
 }

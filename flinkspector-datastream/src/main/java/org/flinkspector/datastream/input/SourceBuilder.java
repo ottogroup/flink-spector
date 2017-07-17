@@ -31,76 +31,76 @@ import java.util.Collection;
  */
 public class SourceBuilder<T> {
 
-	private final InputBuilder<T> builder = new InputBuilder<>();
-	private final DataStreamTestEnvironment env;
+    private final InputBuilder<T> builder = new InputBuilder<>();
+    private final DataStreamTestEnvironment env;
 
-	public SourceBuilder(DataStreamTestEnvironment env) {
-		this.env = env;
-	}
+    public SourceBuilder(DataStreamTestEnvironment env) {
+        this.env = env;
+    }
 
-	/**
-	 * Factory method used to dynamically type the {@link SourceBuilder}
-	 * using the type of the provided input object.
-	 *
-	 * @param record first record to emit
-	 * @param env    to work on.
-	 * @param <T>
-	 * @return created {@link SourceBuilder}
-	 */
-	public static <T> SourceBuilder<T> createBuilder(T record,
-													 DataStreamTestEnvironment env) {
-		SourceBuilder<T> sourceBuilder = new SourceBuilder<>(env);
-		return sourceBuilder.emit(record);
-	}
+    /**
+     * Factory method used to dynamically type the {@link SourceBuilder}
+     * using the type of the provided input object.
+     *
+     * @param record first record to emit
+     * @param env    to work on.
+     * @param <T>
+     * @return created {@link SourceBuilder}
+     */
+    public static <T> SourceBuilder<T> createBuilder(T record,
+                                                     DataStreamTestEnvironment env) {
+        SourceBuilder<T> sourceBuilder = new SourceBuilder<>(env);
+        return sourceBuilder.emit(record);
+    }
 
-	/**
-	 * Produces a {@link DataStreamSource} with the predefined input.
-	 *
-	 * @return {@link DataStreamSource}
-	 */
-	public DataStreamSource<T> close() {
-		return env.fromInput(builder);
-	}
+    /**
+     * Produces a {@link DataStreamSource} with the predefined input.
+     *
+     * @return {@link DataStreamSource}
+     */
+    public DataStreamSource<T> close() {
+        return env.fromInput(builder);
+    }
 
-	/**
-	 * Adds a new element to the input
-	 *
-	 * @param record
-	 */
-	public SourceBuilder<T> emit(T record) {
-		builder.emit(record);
-		return this;
-	}
+    /**
+     * Adds a new element to the input
+     *
+     * @param record
+     */
+    public SourceBuilder<T> emit(T record) {
+        builder.emit(record);
+        return this;
+    }
 
 
-	/**
-	 * Repeat the current input list
-	 *
-	 * @param times number of times the input list will be repeated
-	 */
-	public SourceBuilder<T> repeatAll(int times) {
-		builder.repeatAll(times);
-		return this;
-	}
+    /**
+     * Repeat the current input list
+     *
+     * @param times number of times the input list will be repeated
+     */
+    public SourceBuilder<T> repeatAll(int times) {
+        builder.repeatAll(times);
+        return this;
+    }
 
-	/**
-	 * Adds a new element to the input multiple times
-	 *
-	 * @param record
-	 * @param times
-	 */
-	public SourceBuilder<T> emit(T record, int times) {
-		builder.emit(record, times);
-		return this;
-	}
+    /**
+     * Adds a new element to the input multiple times
+     *
+     * @param record
+     * @param times
+     */
+    public SourceBuilder<T> emit(T record, int times) {
+        builder.emit(record, times);
+        return this;
+    }
 
-	/**
-	 * Adds a collection of elements to the input
-	 *
-	 * @param records
-	 */
-	public SourceBuilder<T> emitAll(Collection<T> records) {
-		builder.emitAll(records);
-		return this;
-	}
+    /**
+     * Adds a collection of elements to the input
+     *
+     * @param records
+     */
+    public SourceBuilder<T> emitAll(Collection<T> records) {
+        builder.emitAll(records);
+        return this;
+    }
 }

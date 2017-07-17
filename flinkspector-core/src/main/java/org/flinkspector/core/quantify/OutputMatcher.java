@@ -26,6 +26,6 @@ import org.hamcrest.TypeSafeMatcher;
  */
 public abstract class OutputMatcher<T> extends TypeSafeMatcher<Iterable<T>> {
 
-	@Override
-	protected abstract boolean matchesSafely(Iterable<T> item);
+    @Override
+    protected abstract boolean matchesSafely(Iterable<T> item);
 }

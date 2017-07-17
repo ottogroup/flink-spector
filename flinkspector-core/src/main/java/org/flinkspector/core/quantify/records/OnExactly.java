@@ -29,42 +29,42 @@ import org.hamcrest.Matcher;
  */
 public class OnExactly<T> extends WhileList<T> {
 
-	private final int n;
+    private final int n;
 
-	/**
-	 * Default constructor
-	 *
-	 * @param matcher to apply to the {@link Iterable}
-	 * @param n       number of expected positive matches
-	 */
-	public OnExactly(Matcher<T> matcher, int n) {
-		super(matcher);
-		this.n = n;
-	}
+    /**
+     * Default constructor
+     *
+     * @param matcher to apply to the {@link Iterable}
+     * @param n       number of expected positive matches
+     */
+    public OnExactly(Matcher<T> matcher, int n) {
+        super(matcher);
+        this.n = n;
+    }
 
-	@Override
-	protected Description describeCondition(Description description) {
-		return description.appendText("exactly ").appendValue(n);
-	}
+    @Factory
+    public static <T> OnExactly<T> exactly(Matcher<T> matcher, int n) {
+        return new OnExactly<T>(matcher, n);
+    }
 
-	@Override
-	public String prefix() {
-		return "exactly " + n + " records";
-	}
+    @Override
+    protected Description describeCondition(Description description) {
+        return description.appendText("exactly ").appendValue(n);
+    }
 
-	@Override
-	public boolean validWhile(int matches, int mismatches) {
-		return matches <= n;
-	}
+    @Override
+    public String prefix() {
+        return "exactly " + n + " records";
+    }
 
-	@Override
-	public boolean validAfter(int numMatches) {
-		return numMatches == n;
-	}
+    @Override
+    public boolean validWhile(int matches, int mismatches) {
+        return matches <= n;
+    }
 
-	@Factory
-	public static <T> OnExactly<T> exactly(Matcher<T> matcher, int n) {
-		return new OnExactly<T>(matcher, n);
-	}
+    @Override
+    public boolean validAfter(int numMatches) {
+        return numMatches == n;
+    }
 }
 

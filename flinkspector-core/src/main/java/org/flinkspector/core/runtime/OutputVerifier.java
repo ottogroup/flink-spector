@@ -25,34 +25,34 @@ package org.flinkspector.core.runtime;
  */
 public interface OutputVerifier<T> {
 
-	/**
-	 * This method is called when the {@link OutputHandler} has
-	 * been successfully initialized
-	 */
-	void init();
+    /**
+     * This method is called when the {@link OutputHandler} has
+     * been successfully initialized
+     */
+    void init();
 
-	/**
-	 * This method is called when a record has arrived
-	 * at the test sink.
-	 * <p>
-	 * The method must throw a {@link FlinkTestFailedException},
-	 * which wraps the actual exception, if the test has failed.
-	 *
-	 * @param record that is received by the test sink
-	 * @throws Exception
-	 */
-	void receive(T record) throws Exception;
+    /**
+     * This method is called when a record has arrived
+     * at the test sink.
+     * <p>
+     * The method must throw a {@link FlinkTestFailedException},
+     * which wraps the actual exception, if the test has failed.
+     *
+     * @param record that is received by the test sink
+     * @throws Exception
+     */
+    void receive(T record) throws Exception;
 
-	/**
-	 * This method is called by the {@link OutputHandler}
-	 * when the test is finished and the last record has
-	 * been received.
-	 * <p>
-	 * The method must throw a {@link FlinkTestFailedException},
-	 * which wraps the actual exception, if the test has failed.
-	 *
-	 * @throws Exception
-	 */
-	void finish() throws Exception;
+    /**
+     * This method is called by the {@link OutputHandler}
+     * when the test is finished and the last record has
+     * been received.
+     * <p>
+     * The method must throw a {@link FlinkTestFailedException},
+     * which wraps the actual exception, if the test has failed.
+     *
+     * @throws Exception
+     */
+    void finish() throws Exception;
 
 }

@@ -28,31 +28,31 @@ import org.hamcrest.Matcher;
  */
 public class OnEach<T> extends WhileList<T> {
 
-	/**
-	 * Default Constructor
-	 *
-	 * @param matcher to apply to {@link Iterable}.
-	 */
-	public OnEach(Matcher<T> matcher) {
-		super(matcher);
-	}
+    /**
+     * Default Constructor
+     *
+     * @param matcher to apply to {@link Iterable}.
+     */
+    public OnEach(Matcher<T> matcher) {
+        super(matcher);
+    }
 
-	@Override
-	protected Description describeCondition(Description description) {
-		return description.appendText("<all>");
-	}
+    public static <T> OnEach<T> each(Matcher<T> matcher) {
+        return new OnEach<>(matcher);
+    }
 
-	@Override
-	public boolean validWhile(int numMatches, int numMismatches) {
-		return numMismatches <= 0;
-	}
+    @Override
+    protected Description describeCondition(Description description) {
+        return description.appendText("<all>");
+    }
 
-	@Override
-	public String prefix() {
-		return "each record";
-	}
+    @Override
+    public boolean validWhile(int numMatches, int numMismatches) {
+        return numMismatches <= 0;
+    }
 
-	public static <T> OnEach<T> each(Matcher<T> matcher) {
-		return new OnEach<>(matcher);
-	}
+    @Override
+    public String prefix() {
+        return "each record";
+    }
 }

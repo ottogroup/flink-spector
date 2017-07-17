@@ -26,48 +26,48 @@ import java.util.List;
 
 public abstract class UntilCombineMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
 
-	private final Iterable<Matcher<? super T>> matchers;
+    private final Iterable<Matcher<? super T>> matchers;
 
-	public UntilCombineMatcher(Iterable<Matcher<? super T>> matchers) {
-		this.matchers = matchers;
-	}
+    public UntilCombineMatcher(Iterable<Matcher<? super T>> matchers) {
+        this.matchers = matchers;
+    }
 
-	@Override
-	public boolean matchesSafely(T object, Description mismatch) {
-		int matches = 0;
-		int possibleMatches = Iterables.size(matchers);
+    @Override
+    public boolean matchesSafely(T object, Description mismatch) {
+        int matches = 0;
+        int possibleMatches = Iterables.size(matchers);
 
-		for (Matcher<? super T> matcher : matchers) {
-			if (!matcher.matches(object)) {
-				if (!mismatch.toString().endsWith("but: ")) {
-					mismatch.appendText("\n          ");
-				}
-				matcher.describeMismatch(object, mismatch);
-			} else {
-				matches++;
-				if (validWhen(matches, possibleMatches)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+        for (Matcher<? super T> matcher : matchers) {
+            if (!matcher.matches(object)) {
+                if (!mismatch.toString().endsWith("but: ")) {
+                    mismatch.appendText("\n          ");
+                }
+                matcher.describeMismatch(object, mismatch);
+            } else {
+                matches++;
+                if (validWhen(matches, possibleMatches)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-	@Override
-	public void describeTo(Description description) {
-		List<Matcher> matchers = new ArrayList<>();
-		description.appendText(prefix());
-		description.appendText(" ( ");
-		for (Matcher m : this.matchers) {
-			if (!description.toString().endsWith("( ")) {
-				description.appendText("; ");
-			}
-			description.appendDescriptionOf(m);
-		}
-		description.appendText(") ");
-	}
+    @Override
+    public void describeTo(Description description) {
+        List<Matcher> matchers = new ArrayList<>();
+        description.appendText(prefix());
+        description.appendText(" ( ");
+        for (Matcher m : this.matchers) {
+            if (!description.toString().endsWith("( ")) {
+                description.appendText("; ");
+            }
+            description.appendDescriptionOf(m);
+        }
+        description.appendText(") ");
+    }
 
-	public abstract String prefix();
+    public abstract String prefix();
 
-	public abstract boolean validWhen(int matches, int possibleMatches);
+    public abstract boolean validWhen(int matches, int possibleMatches);
 }

@@ -32,20 +32,20 @@ import java.util.List;
  */
 public abstract class InputTranslator<IN, OUT> implements Input<OUT> {
 
-	private Input<IN> input;
+    private Input<IN> input;
 
-	public InputTranslator(Input<IN> input) {
-		this.input = input;
-	}
+    public InputTranslator(Input<IN> input) {
+        this.input = input;
+    }
 
-	protected abstract OUT translate(IN elem);
+    protected abstract OUT translate(IN elem);
 
-	@Override
-	public List<OUT> getInput() {
-		List<OUT> out = new ArrayList<OUT>();
-		for (IN elem : input.getInput()) {
-			out.add(translate(elem));
-		}
-		return out;
-	}
+    @Override
+    public List<OUT> getInput() {
+        List<OUT> out = new ArrayList<OUT>();
+        for (IN elem : input.getInput()) {
+            out.add(translate(elem));
+        }
+        return out;
+    }
 }

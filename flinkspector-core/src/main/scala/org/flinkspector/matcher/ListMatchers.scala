@@ -135,6 +135,14 @@ object ListMatchers extends Matchers {
     }
   }
 
+  private def describeOutput[T](list: Seq[T], description: Description) = {
+    val builder = StringBuilder.newBuilder
+    builder.append("<[")
+    builder.append(list.mkString(", "))
+    builder.append("]>")
+    description.appendText(builder.toString())
+  }
+
   /**
     * Provides a [[ListMatcher]] to tests whether a list contains
     * an element with the same number of occurrences.
@@ -157,24 +165,6 @@ object ListMatchers extends Matchers {
         description.appendText("same frequency")
       }
     }
-  }
-
-  private def describeOutput[T](list: Seq[T], description: Description) = {
-    val builder = StringBuilder.newBuilder
-    builder.append("<[")
-    builder.append(list.mkString(", "))
-    builder.append("]>")
-    description.appendText(builder.toString())
-  }
-
-  /**
-    * Helper function to split a list into a [[Tuple3]].
-    *
-    * @param list to split
-    * @return (first element, second element, rest of elements)
-    */
-  private def splitTo(list: List[Any]): (Any, Any, List[Any]) = {
-    (list.head, list.tail.head, list.tail.tail)
   }
 
   /**
@@ -203,5 +193,15 @@ object ListMatchers extends Matchers {
         }
     }
     true
+  }
+
+  /**
+    * Helper function to split a list into a [[Tuple3]].
+    *
+    * @param list to split
+    * @return (first element, second element, rest of elements)
+    */
+  private def splitTo(list: List[Any]): (Any, Any, List[Any]) = {
+    (list.head, list.tail.head, list.tail.tail)
   }
 }

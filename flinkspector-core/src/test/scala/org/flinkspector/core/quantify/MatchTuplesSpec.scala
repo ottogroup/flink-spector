@@ -85,6 +85,11 @@ class MatchTuplesSpec extends CoreSpec {
       .matchesSafely(mkFluple(0, 0, 0, 1)) shouldBe false
   }
 
+  def mkFluple(v1: Int, v2: Int, v3: Int, v4: Int)
+  : List[Fluple4[Int, Int, Int, Int]] = {
+    List(Fluple4.of(v1, v2, v3, v4))
+  }
+
   trait AssertBlockCase {
     val matcher = Is.is(1)
     val block =
@@ -93,10 +98,5 @@ class MatchTuplesSpec extends CoreSpec {
     block.assertThat("2", matcher)
     block.assertThat("3", matcher)
     block.assertThat("4", matcher)
-  }
-
-  def mkFluple(v1: Int, v2: Int, v3: Int, v4: Int)
-  : List[Fluple4[Int, Int, Int, Int]] = {
-    List(Fluple4.of(v1, v2, v3, v4))
   }
 }

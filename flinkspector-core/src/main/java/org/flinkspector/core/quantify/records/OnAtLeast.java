@@ -28,37 +28,37 @@ import org.hamcrest.Matcher;
  */
 public class OnAtLeast<T> extends UntilList<T> {
 
-	private final int n;
+    private final int n;
 
-	/**
-	 * Default Constructor
-	 *
-	 * @param matcher to apply to the {@link Iterable}
-	 * @param n       number of expected positive matches
-	 */
-	public OnAtLeast(Matcher<T> matcher, int n) {
-		super(matcher);
-		this.n = n;
-	}
+    /**
+     * Default Constructor
+     *
+     * @param matcher to apply to the {@link Iterable}
+     * @param n       number of expected positive matches
+     */
+    public OnAtLeast(Matcher<T> matcher, int n) {
+        super(matcher);
+        this.n = n;
+    }
 
-	@Override
-	protected Description describeCondition(Description description) {
-		return description.appendText("at least ").appendValue(n);
-	}
+    @Factory
+    public static <T> OnAtLeast<T> atLeast(Matcher<T> matcher, int n) {
+        return new OnAtLeast<>(matcher, n);
+    }
 
-	@Override
-	protected boolean validWhen(int numMatches, int possibleMatches) {
-		return numMatches == n;
-	}
+    @Override
+    protected Description describeCondition(Description description) {
+        return description.appendText("at least ").appendValue(n);
+    }
 
-	@Override
-	public String prefix() {
-		return "at least" + n + " records";
-	}
+    @Override
+    protected boolean validWhen(int numMatches, int possibleMatches) {
+        return numMatches == n;
+    }
 
-	@Factory
-	public static <T> OnAtLeast<T> atLeast(Matcher<T> matcher, int n) {
-		return new OnAtLeast<>(matcher, n);
-	}
+    @Override
+    public String prefix() {
+        return "at least" + n + " records";
+    }
 
 }

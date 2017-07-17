@@ -16,7 +16,6 @@
 
 package org.flinkspector.core.runtime
 
-import java.net.ServerSocket
 import java.util.concurrent.Executors
 
 import com.google.common.primitives.Bytes
@@ -60,7 +59,7 @@ class OutputHandlerSpec extends CoreSpec {
   }
 
   it should "handle output from multiple sinks" in new OutputListenerCase {
-    val listener = new OutputHandler[String](subscriber,disruptor, verifier, trigger)
+    val listener = new OutputHandler[String](subscriber, disruptor, verifier, trigger)
     disruptor.start()
 
     val ser = (x: String) =>
@@ -122,9 +121,9 @@ class OutputHandlerSpec extends CoreSpec {
   trait OutputListenerCase {
     val executor = Executors.newCachedThreadPool
 
-    val factory = new ByteEventFactory
+    val factory = new OutputEventFactory
 
-    val disruptor = new Disruptor[ByteEvent](factory, bufferSize, executor)
+    val disruptor = new Disruptor[OutputEvent](factory, bufferSize, executor)
 
     val verifier = mock[OutputVerifier[String]]
     val trigger = new VerifyFinishedTrigger[String] {
@@ -145,7 +144,7 @@ class OutputHandlerSpec extends CoreSpec {
     val subscriber = 1
 
     def close(): Unit = {
-//      subscriber.close()
+      //      subscriber.close()
       publisher.close()
     }
   }

@@ -22,23 +22,23 @@ import java.util.concurrent.TimeUnit;
  * Helper for defining a time span between to StreamRecords
  */
 public class After extends TimeSpan {
-	private long timeSpan;
+    private long timeSpan;
 
-	public static After period(long time, TimeUnit timeUnit) {
-		return new After(time, timeUnit);
-	}
+    private After(long time, TimeUnit timeUnit) {
+        this.timeSpan = timeUnit.toMillis(time);
+    }
 
-	private After(long time, TimeUnit timeUnit) {
-		this.timeSpan = timeUnit.toMillis(time);
-	}
+    public static After period(long time, TimeUnit timeUnit) {
+        return new After(time, timeUnit);
+    }
 
-	/**
-	 * Getter for defined time span
-	 *
-	 * @return time span in milliseconds
-	 */
-	@Override
-	public long getTimeSpan() {
-		return timeSpan;
-	}
+    /**
+     * Getter for defined time span
+     *
+     * @return time span in milliseconds
+     */
+    @Override
+    public long getTimeSpan() {
+        return timeSpan;
+    }
 }

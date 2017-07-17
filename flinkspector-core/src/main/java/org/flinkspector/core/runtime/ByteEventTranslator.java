@@ -19,23 +19,25 @@ package org.flinkspector.core.runtime;
 import com.lmax.disruptor.EventTranslatorOneArg;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 
-public class ByteEventTranslator implements EventTranslatorOneArg<ByteEvent, ByteBuffer> {
-
-    public void translateTo(ByteEvent event, long sequence, ByteBuffer bb) {
-        int address = bb.getInt(0);
-        bb.position(4);
-        byte[] msg = new byte[bb.remaining()];
-        bb.get(msg);
-        event.set(address, msg);
-    }
+/**
+ * Used by the disruptor to convert serialize and deserialize {@link OutputEvent}s
+ */
+public class ByteEventTranslator implements EventTranslatorOneArg<OutputEvent, ByteBuffer> {
 
     public static ByteBuffer translateToBuffer(int address, byte[] msg) {
         ByteBuffer bb = ByteBuffer.allocate(msg.length + 4);
         bb.putInt(address);
         bb.put(msg);
         return bb;
+    }
+
+    public void translateTo(OutputEvent event, long sequence, ByteBuffer bb) {
+        int address = bb.getInt(0);
+        bb.position(4);
+        byte[] msg = new byte[bb.remaining()];
+        bb.get(msg);
+        event.set(address, msg);
     }
 }
 

@@ -34,32 +34,32 @@ import java.util.List;
  */
 public abstract class EventTimeInputTranslator<IN, OUT> implements EventTimeInput<OUT> {
 
-	private final EventTimeInput<IN> input;
+    private final EventTimeInput<IN> input;
 
-	protected EventTimeInputTranslator(EventTimeInput<IN> input) {
-		this.input = input;
-	}
+    protected EventTimeInputTranslator(EventTimeInput<IN> input) {
+        this.input = input;
+    }
 
-	protected abstract OUT translate(IN elem);
+    protected abstract OUT translate(IN elem);
 
-	@Override
-	public List<StreamRecord<OUT>> getInput() {
-		return translateInput(input);
-	}
+    @Override
+    public List<StreamRecord<OUT>> getInput() {
+        return translateInput(input);
+    }
 
-	@Override
-	public Boolean getFlushWindowsSetting() {
-		return input.getFlushWindowsSetting();
-	}
+    @Override
+    public Boolean getFlushWindowsSetting() {
+        return input.getFlushWindowsSetting();
+    }
 
-	private List<StreamRecord<OUT>> translateInput(final EventTimeInput<IN> input) {
-		List<StreamRecord<OUT>> out = new ArrayList<>();
-		for (StreamRecord<IN> elem : input.getInput()) {
-			out.add(new StreamRecord<OUT>(
-					translate(elem.getValue()),
-					elem.getTimestamp())
-			);
-		}
-		return out;
-	}
+    private List<StreamRecord<OUT>> translateInput(final EventTimeInput<IN> input) {
+        List<StreamRecord<OUT>> out = new ArrayList<>();
+        for (StreamRecord<IN> elem : input.getInput()) {
+            out.add(new StreamRecord<OUT>(
+                    translate(elem.getValue()),
+                    elem.getTimestamp())
+            );
+        }
+        return out;
+    }
 }
