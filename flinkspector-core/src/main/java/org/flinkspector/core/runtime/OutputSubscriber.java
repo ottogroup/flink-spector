@@ -50,11 +50,15 @@ public class OutputSubscriber {
         return getNextMessage();
     }
 
-    public byte[] getNextMessage() throws Exception {
-        return queue.poll(1, TimeUnit.MINUTES);
+    public byte[] getNextMessage()  {
+        try {
+            return queue.poll(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            //Thread interrupted stop waiting and signal it to the subscriber
+            return new byte[0];
+        }
     }
-
-
 
     public String recvStr() throws Exception {
         return new String(getNextMessage(), StandardCharsets.UTF_8);

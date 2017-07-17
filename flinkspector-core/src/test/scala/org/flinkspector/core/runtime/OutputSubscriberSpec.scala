@@ -59,10 +59,11 @@ class OutputSubscriberSpec extends CoreSpec {
 
     var out = List.empty[String]
     for(i <- 1 to 10) {
-      println(i)
       out = listener.recvStr() :: out
     }
     out should have length(10)
+
+    out shouldBe List("hello10", "hello9", "hello8", "hello7", "hello6", "hello5", "hello4", "hello3", "hello2", "hello1")
 
     listener.close()
     close()

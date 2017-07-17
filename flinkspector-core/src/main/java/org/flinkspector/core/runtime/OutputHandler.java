@@ -19,6 +19,7 @@ package org.flinkspector.core.runtime;
 import com.lmax.disruptor.dsl.Disruptor;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.streaming.api.transformations.SourceTransformation;
+import org.apache.hadoop.yarn.webapp.hamlet.Hamlet;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.flinkspector.core.util.SerializeUtil;
 
@@ -87,7 +88,6 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 	}
 
 	public void close() {
-		System.out.println("klappe zu");
 		subscriber.close();
 	}
 
@@ -177,6 +177,11 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 	private Action processMessage(byte[] bytes)
 			throws IOException, FlinkTestFailedException {
 
+		if(bytes.length == 0) {
+			//the subscriber has been cancelled from outside quietly finish the process
+			return Action.FINISH;
+		}
+
 		if(bytes == null) {
 			System.out.println("Waited too long for message from sink");
 			return Action.FINISH;
@@ -189,7 +194,6 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 
 		switch (type) {
 			case OPEN:
-				System.out.println("OPEN");
 				//Received a open message one of the sink instances
 				//--> Memorize the index and the parallelism.
 				if (participatingSinks.isEmpty()) {
@@ -209,7 +213,6 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 
 				break;
 			case REC:
-				System.out.println("REC");
 				//Received a record message from the sink.
 				//--> call the verifier and the finishing trigger.
 				out = type.getPayload(bytes);
@@ -220,7 +223,6 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
 				}
 				break;
 			case CLOSE:
-				System.out.println("CLOSE");
 				//Received a close message
 				//--> register the index of the closed sink instance.
 				msg = new String(bytes, "UTF-8");

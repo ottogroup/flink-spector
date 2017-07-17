@@ -32,6 +32,7 @@ import scala.concurrent.duration.FiniteDuration;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.sql.Time;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -120,8 +121,6 @@ public abstract class Runner {
                 stopExecution();
             }
         };
-
-
     }
 
     protected abstract void executeEnvironment() throws JobTimeoutException, Throwable;
@@ -164,8 +163,9 @@ public abstract class Runner {
         if (failed.get()) {
             return;
         }
-        //run is not finished and has to be stopped forcefully
+
         if (!finished.get()) {
+            //run is not finished and has to be stopped forcefully
             cleanUp();
             try {
                 shutdownLocalCluster();
@@ -175,19 +175,20 @@ public abstract class Runner {
         }
     }
 
+    private void cancelListener() {
+        for (ListenableFuture<ResultState> f: listenerFutures) {
+            f.cancel(true);
+        }
+    }
+
     private synchronized void cleanUp() {
         if (!finished.get()) {
-            System.out.println("closing everything!");
-            for (ServerSocket s : sockets) {
-                try {
-                    s.close();
-                } catch (IOException ignore) {
-                }
-            }
+            disruptor.shutdown();
+            cancelListener();
             finished.set(true);
-            stopTimer.cancel();
-            stopTimer.purge();
         }
+        stopTimer.cancel();
+        stopTimer.purge();
     }
 
 
@@ -208,7 +209,12 @@ public abstract class Runner {
         //====================
         for (ListenableFuture future : listenerFutures) {
             try {
-                future.get();
+                future.get(timeout, TimeUnit.MILLISECONDS);
+            } catch (TimeoutException e) {
+                //timeout for future expired
+                cleanUp();
+                cancelListener();
+                return;
             } catch (ExecutionException e) {
                 //check if it is a FlinkTestFailedException
                 if (e.getCause() instanceof FlinkTestFailedException) {
@@ -290,7 +296,6 @@ public abstract class Runner {
 
             @Override
             public void onSuccess(ResultState state) {
-                System.out.println("state = " + state);
                 if (state != ResultState.SUCCESS) {
                     if (runningListeners.decrementAndGet() == 0) {
                         stopExecution();

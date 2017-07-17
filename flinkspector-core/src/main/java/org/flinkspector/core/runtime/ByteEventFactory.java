@@ -18,10 +18,10 @@ package org.flinkspector.core.runtime;
 
 import com.lmax.disruptor.EventFactory;
 
-public class ByteEventFactory implements EventFactory<ByteEvent>{
+public class ByteEventFactory implements EventFactory<ByteEvent> {
 
-        public ByteEvent newInstance()
-        {
-            return new ByteEvent();
-        }
+    public ByteEvent newInstance() {
+        return new ByteEvent();
+    }
+
 }
