@@ -27,11 +27,7 @@ import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.flinkspector.datastream.util.InputUtil;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -46,188 +42,188 @@ import java.util.List;
  * @param <T> The type of elements returned by this function.
  */
 public class ParallelFromStreamRecordsFunction<T> extends RichParallelSourceFunction<T>
-		implements CheckpointedAsynchronously<Integer> {
+        implements CheckpointedAsynchronously<Integer> {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * The (de)serializer to be used for the data elements
-	 */
-	private final TypeSerializer<StreamRecord<T>> serializer;
+    /**
+     * The (de)serializer to be used for the data elements
+     */
+    private final TypeSerializer<StreamRecord<T>> serializer;
 
-	/**
-	 * The actual data elements, in serialized form
-	 */
-	private final byte[] elementsSerialized;
+    /**
+     * The actual data elements, in serialized form
+     */
+    private final byte[] elementsSerialized;
 
-	/**
-	 * The number of serialized elements
-	 */
-	private final int numElements;
+    /**
+     * The number of serialized elements
+     */
+    private final int numElements;
 
-	/**
-	 * The number of elements emitted already
-	 */
-	private volatile int numElementsEmitted;
+    /**
+     * The number of elements emitted already
+     */
+    private volatile int numElementsEmitted;
 
-	/**
-	 * The number of elements to skip initially
-	 */
-	private volatile int numElementsToSkip;
+    /**
+     * The number of elements to skip initially
+     */
+    private volatile int numElementsToSkip;
 
-	/**
-	 * Flag to make the source cancelable
-	 */
-	private volatile boolean isRunning = true;
+    /**
+     * Flag to make the source cancelable
+     */
+    private volatile boolean isRunning = true;
 
-	/**
-	 * flushOpenWindowsOnTermination
-	 */
-	private Boolean flushOpenWindows = false;
+    /**
+     * flushOpenWindowsOnTermination
+     */
+    private Boolean flushOpenWindows = false;
 
-	public ParallelFromStreamRecordsFunction(TypeSerializer<StreamRecord<T>> serializer,
-											 Iterable<StreamRecord<T>> input) throws IOException {
-		this.serializer = serializer;
-		elementsSerialized = serializeOutput(input, serializer).toByteArray();
-		numElements = Iterables.size(input);
-	}
+    public ParallelFromStreamRecordsFunction(TypeSerializer<StreamRecord<T>> serializer,
+                                             Iterable<StreamRecord<T>> input) throws IOException {
+        this.serializer = serializer;
+        elementsSerialized = serializeOutput(input, serializer).toByteArray();
+        numElements = Iterables.size(input);
+    }
 
-	public ParallelFromStreamRecordsFunction(TypeSerializer<StreamRecord<T>> serializer,
-											 Iterable<StreamRecord<T>> input,
-											 Boolean flushOpenWindows
-	) throws IOException {
-		this(serializer, input);
-		this.flushOpenWindows = flushOpenWindows;
-	}
+    public ParallelFromStreamRecordsFunction(TypeSerializer<StreamRecord<T>> serializer,
+                                             Iterable<StreamRecord<T>> input,
+                                             Boolean flushOpenWindows
+    ) throws IOException {
+        this(serializer, input);
+        this.flushOpenWindows = flushOpenWindows;
+    }
 
-	@Override
-	public void run(SourceContext<T> ctx) throws Exception {
+    public static <OUT> void checkCollection(Iterable<OUT> elements, Class<OUT> viewedAs) {
+        Iterator i$ = elements.iterator();
 
-		List<Long> watermarks;
-		List<StreamRecord<T>> outputSplit;
+        Object elem;
+        do {
+            if (!i$.hasNext()) {
+                return;
+            }
 
-		//-----------------------------------------------------------------
-		// Split input and calculate watermarks
-		//-----------------------------------------------------------------
+            elem = i$.next();
+            if (elem == null) {
+                throw new IllegalArgumentException("The collection contains a null element");
+            }
+        } while (viewedAs.isAssignableFrom(elem.getClass()));
 
-		int numberOfSubTasks = getRuntimeContext().getNumberOfParallelSubtasks();
-		int indexOfThisSubTask = getRuntimeContext().getIndexOfThisSubtask();
+        throw new IllegalArgumentException("The elements in the collection are not all subclasses of "
+                + viewedAs.getCanonicalName());
+    }
 
-		ByteArrayInputStream bais = new ByteArrayInputStream(elementsSerialized);
-		final DataInputView input = new DataInputViewStreamWrapper(new DataInputStream(bais));
+    private static <T> ByteArrayOutputStream serializeOutput(Iterable<StreamRecord<T>> elements,
+                                                             TypeSerializer<StreamRecord<T>> serializer) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        DataOutputViewStreamWrapper wrapper = new DataOutputViewStreamWrapper(new DataOutputStream(baos));
 
-		List<StreamRecord<T>> output = new ArrayList<>();
-		//materialize input
-		for (int i = 0; i < numElements; i++) {
-			output.add(serializer.deserialize(input));
-		}
+        try {
+            for (StreamRecord<T> element : elements) {
+                serializer.serialize(element, wrapper);
+            }
+        } catch (Exception e) {
+            throw new IOException("Serializing the source elements failed: " + e.getMessage(), e);
+        }
+        return baos;
+    }
 
-		//split output if parallelism is greater than 1
-		if (numberOfSubTasks > 1) {
-			if (numberOfSubTasks > output.size()) {
-				throw new IllegalStateException("Parallelism of source is higher than the" +
-						" maximum number of parallel sources");
-			}
+    @Override
+    public void run(SourceContext<T> ctx) throws Exception {
 
-			outputSplit = InputUtil.splitList(output,
-					indexOfThisSubTask,
-					numberOfSubTasks);
-		} else {
-			outputSplit = output;
-		}
-		//calculate watermarks
-		watermarks = InputUtil.calculateWatermarks(outputSplit, flushOpenWindows);
-		// if we restored from a checkpoint and need to skip elements, skip them now.
-		this.numElementsEmitted = this.numElementsToSkip;
+        List<Long> watermarks;
+        List<StreamRecord<T>> outputSplit;
 
-		//-----------------------------------------------------------------
-		// Emit elements
-		//-----------------------------------------------------------------
+        //-----------------------------------------------------------------
+        // Split input and calculate watermarks
+        //-----------------------------------------------------------------
 
-		final Object lock = ctx.getCheckpointLock();
+        int numberOfSubTasks = getRuntimeContext().getNumberOfParallelSubtasks();
+        int indexOfThisSubTask = getRuntimeContext().getIndexOfThisSubtask();
 
-		while (isRunning && numElementsEmitted < outputSplit.size()) {
-			StreamRecord<T> next = outputSplit.get(numElementsEmitted);
-			synchronized (lock) {
-				//logic where to put?
-				ctx.collectWithTimestamp(next.getValue(), next.getTimestamp());
-				Long watermark = watermarks.get(numElementsEmitted);
-				if (watermark > 0) {
-					ctx.emitWatermark(new Watermark(watermark));
-				}
-				numElementsEmitted++;
-			}
-		}
-	}
+        ByteArrayInputStream bais = new ByteArrayInputStream(elementsSerialized);
+        final DataInputView input = new DataInputViewStreamWrapper(new DataInputStream(bais));
 
-	@Override
-	public void cancel() {
-		isRunning = false;
-	}
+        List<StreamRecord<T>> output = new ArrayList<>();
+        //materialize input
+        for (int i = 0; i < numElements; i++) {
+            output.add(serializer.deserialize(input));
+        }
 
-	/**
-	 * Gets the number of elements produced in total by this function.
-	 *
-	 * @return The number of elements produced in total.
-	 */
-	public int getNumElements() {
-		return numElements;
-	}
+        //split output if parallelism is greater than 1
+        if (numberOfSubTasks > 1) {
+            if (numberOfSubTasks > output.size()) {
+                throw new IllegalStateException("Parallelism of source is higher than the" +
+                        " maximum number of parallel sources");
+            }
 
-	/**
-	 * Gets the number of elements emitted so far.
-	 *
-	 * @return The number of elements emitted so far.
-	 */
-	public int getNumElementsEmitted() {
-		return numElementsEmitted;
-	}
+            outputSplit = InputUtil.splitList(output,
+                    indexOfThisSubTask,
+                    numberOfSubTasks);
+        } else {
+            outputSplit = output;
+        }
+        //calculate watermarks
+        watermarks = InputUtil.calculateWatermarks(outputSplit, flushOpenWindows);
+        // if we restored from a checkpoint and need to skip elements, skip them now.
+        this.numElementsEmitted = this.numElementsToSkip;
 
-	// ------------------------------------------------------------------------
-	//  Checkpointing
-	// ------------------------------------------------------------------------
+        //-----------------------------------------------------------------
+        // Emit elements
+        //-----------------------------------------------------------------
 
-	@Override
-	public Integer snapshotState(long checkpointId, long checkpointTimestamp) {
-		return this.numElementsEmitted;
-	}
+        final Object lock = ctx.getCheckpointLock();
 
-	@Override
-	public void restoreState(Integer state) {
-		this.numElementsToSkip = state;
-	}
+        while (isRunning && numElementsEmitted < outputSplit.size()) {
+            StreamRecord<T> next = outputSplit.get(numElementsEmitted);
+            synchronized (lock) {
+                //logic where to put?
+                ctx.collectWithTimestamp(next.getValue(), next.getTimestamp());
+                Long watermark = watermarks.get(numElementsEmitted);
+                if (watermark > 0) {
+                    ctx.emitWatermark(new Watermark(watermark));
+                }
+                numElementsEmitted++;
+            }
+        }
+    }
 
-	public static <OUT> void checkCollection(Iterable<OUT> elements, Class<OUT> viewedAs) {
-		Iterator i$ = elements.iterator();
+    @Override
+    public void cancel() {
+        isRunning = false;
+    }
 
-		Object elem;
-		do {
-			if (!i$.hasNext()) {
-				return;
-			}
+    // ------------------------------------------------------------------------
+    //  Checkpointing
+    // ------------------------------------------------------------------------
 
-			elem = i$.next();
-			if (elem == null) {
-				throw new IllegalArgumentException("The collection contains a null element");
-			}
-		} while (viewedAs.isAssignableFrom(elem.getClass()));
+    /**
+     * Gets the number of elements produced in total by this function.
+     *
+     * @return The number of elements produced in total.
+     */
+    public int getNumElements() {
+        return numElements;
+    }
 
-		throw new IllegalArgumentException("The elements in the collection are not all subclasses of "
-				+ viewedAs.getCanonicalName());
-	}
+    /**
+     * Gets the number of elements emitted so far.
+     *
+     * @return The number of elements emitted so far.
+     */
+    public int getNumElementsEmitted() {
+        return numElementsEmitted;
+    }
 
-	private static <T> ByteArrayOutputStream serializeOutput(Iterable<StreamRecord<T>> elements,
-															 TypeSerializer<StreamRecord<T>> serializer) throws IOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		DataOutputViewStreamWrapper wrapper = new DataOutputViewStreamWrapper(new DataOutputStream(baos));
+    @Override
+    public Integer snapshotState(long checkpointId, long checkpointTimestamp) {
+        return this.numElementsEmitted;
+    }
 
-		try {
-			for (StreamRecord<T> element : elements) {
-				serializer.serialize(element, wrapper);
-			}
-		} catch (Exception e) {
-			throw new IOException("Serializing the source elements failed: " + e.getMessage(), e);
-		}
-		return baos;
-	}
+    @Override
+    public void restoreState(Integer state) {
+        this.numElementsToSkip = state;
+    }
 }

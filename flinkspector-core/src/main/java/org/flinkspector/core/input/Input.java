@@ -24,5 +24,5 @@ import java.util.List;
  * @param <T>
  */
 public interface Input<T> {
-	List<T> getInput();
+    List<T> getInput();
 }

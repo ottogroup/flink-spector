@@ -30,76 +30,76 @@ import java.util.Collection;
  */
 public class DataSetBuilder<T> {
 
-	private final InputBuilder<T> builder = new InputBuilder<>();
-	private final DataSetTestEnvironment env;
+    private final InputBuilder<T> builder = new InputBuilder<>();
+    private final DataSetTestEnvironment env;
 
-	public DataSetBuilder(DataSetTestEnvironment env) {
-		this.env = env;
-	}
+    public DataSetBuilder(DataSetTestEnvironment env) {
+        this.env = env;
+    }
 
-	/**
-	 * Factory method used to dynamically type the {@link DataSetBuilder}
-	 * using the type of the provided input object.
-	 *
-	 * @param record first record to emit
-	 * @param env    to work on.
-	 * @param <T>
-	 * @return created {@link DataSetBuilder}
-	 */
-	public static <T> DataSetBuilder<T> createBuilder(T record,
-													  DataSetTestEnvironment env) {
-		DataSetBuilder<T> sourceBuilder = new DataSetBuilder<>(env);
-		return sourceBuilder.emit(record);
-	}
+    /**
+     * Factory method used to dynamically type the {@link DataSetBuilder}
+     * using the type of the provided input object.
+     *
+     * @param record first record to emit
+     * @param env    to work on.
+     * @param <T>
+     * @return created {@link DataSetBuilder}
+     */
+    public static <T> DataSetBuilder<T> createBuilder(T record,
+                                                      DataSetTestEnvironment env) {
+        DataSetBuilder<T> sourceBuilder = new DataSetBuilder<>(env);
+        return sourceBuilder.emit(record);
+    }
 
-	/**
-	 * Produces a {@link DataSet} with the predefined input.
-	 *
-	 * @return {@link DataSet}
-	 */
-	public DataSet<T> close() {
-		return env.fromCollection(builder.getInput());
-	}
+    /**
+     * Produces a {@link DataSet} with the predefined input.
+     *
+     * @return {@link DataSet}
+     */
+    public DataSet<T> close() {
+        return env.fromCollection(builder.getInput());
+    }
 
-	/**
-	 * Adds a new element to the input
-	 *
-	 * @param record
-	 */
-	public DataSetBuilder<T> emit(T record) {
-		builder.emit(record);
-		return this;
-	}
+    /**
+     * Adds a new element to the input
+     *
+     * @param record
+     */
+    public DataSetBuilder<T> emit(T record) {
+        builder.emit(record);
+        return this;
+    }
 
 
-	/**
-	 * Repeat the current input list
-	 *
-	 * @param times number of times the input list will be repeated
-	 */
-	public DataSetBuilder<T> repeatAll(int times) {
-		builder.repeatAll(times);
-		return this;
-	}
+    /**
+     * Repeat the current input list
+     *
+     * @param times number of times the input list will be repeated
+     */
+    public DataSetBuilder<T> repeatAll(int times) {
+        builder.repeatAll(times);
+        return this;
+    }
 
-	/**
-	 * Adds a new element to the input multiple times
-	 *
-	 * @param record
-	 * @param times
-	 */
-	public DataSetBuilder<T> emit(T record, int times) {
-		builder.emit(record, times);
-		return this;
-	}
+    /**
+     * Adds a new element to the input multiple times
+     *
+     * @param record
+     * @param times
+     */
+    public DataSetBuilder<T> emit(T record, int times) {
+        builder.emit(record, times);
+        return this;
+    }
 
-	/**
-	 * Adds a collection of elements to the input
-	 *
-	 * @param records
-	 */
-	public DataSetBuilder<T> emitAll(Collection<T> records) {
-		builder.emitAll(records);
-		return this;
-	}
+    /**
+     * Adds a collection of elements to the input
+     *
+     * @param records
+     */
+    public DataSetBuilder<T> emitAll(Collection<T> records) {
+        builder.emitAll(records);
+        return this;
+    }
 }

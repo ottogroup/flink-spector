@@ -22,34 +22,34 @@ package org.flinkspector.core.trigger;
  */
 public class FinishAtCount implements VerifyFinishedTrigger {
 
-	final long maxCount;
+    final long maxCount;
 
-	/**
-	 * Default constructor.
-	 *
-	 * @param maxCount of records to trigger on.
-	 */
-	public FinishAtCount(long maxCount) {
-		this.maxCount = maxCount;
-	}
+    /**
+     * Default constructor.
+     *
+     * @param maxCount of records to trigger on.
+     */
+    public FinishAtCount(long maxCount) {
+        this.maxCount = maxCount;
+    }
 
-	@Override
-	public boolean onRecord(Object record) {
-		return false;
-	}
+    /**
+     * Factory method.
+     *
+     * @param maxCount of records to trigger on.
+     * @return new instance of {@link FinishAtCount}.
+     */
+    public static FinishAtCount of(long maxCount) {
+        return new FinishAtCount(maxCount);
+    }
 
-	@Override
-	public boolean onRecordCount(long count) {
-		return count >= maxCount;
-	}
+    @Override
+    public boolean onRecord(Object record) {
+        return false;
+    }
 
-	/**
-	 * Factory method.
-	 *
-	 * @param maxCount of records to trigger on.
-	 * @return new instance of {@link FinishAtCount}.
-	 */
-	public static FinishAtCount of(long maxCount) {
-		return new FinishAtCount(maxCount);
-	}
+    @Override
+    public boolean onRecordCount(long count) {
+        return count >= maxCount;
+    }
 }

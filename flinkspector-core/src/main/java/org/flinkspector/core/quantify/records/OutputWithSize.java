@@ -30,33 +30,33 @@ import org.hamcrest.core.IsEqual;
  */
 public class OutputWithSize<T> extends TypeSafeDiagnosingMatcher<Iterable<T>> {
 
-	Matcher<? super Integer> sizeMatcher;
+    Matcher<? super Integer> sizeMatcher;
 
-	public OutputWithSize(Matcher<? super Integer> sizeMatcher) {
-		this.sizeMatcher = sizeMatcher;
-	}
+    public OutputWithSize(Matcher<? super Integer> sizeMatcher) {
+        this.sizeMatcher = sizeMatcher;
+    }
 
-	@Override
-	protected boolean matchesSafely(Iterable<T> item, Description mismatchDescription) {
-		int size = Iterables.size(item);
-		boolean matches = sizeMatcher.matches(size);
-		if (!matches) {
-			sizeMatcher.describeMismatch(size, mismatchDescription);
-		}
-		return matches;
-	}
+    public static <T> OutputWithSize<T> outputWithSize(Matcher<? super Integer> sizeMatcher) {
+        return new OutputWithSize<T>(sizeMatcher);
+    }
 
-	@Override
-	public void describeTo(Description description) {
-		description.appendText("output with size: ");
-		sizeMatcher.describeTo(description);
-	}
+    public static <T> OutputWithSize<T> outputWithSize(int size) {
+        return OutputWithSize.<T>outputWithSize(IsEqual.equalTo(size));
+    }
 
-	public static <T> OutputWithSize<T> outputWithSize(Matcher<? super Integer> sizeMatcher) {
-		return new OutputWithSize<T>(sizeMatcher);
-	}
+    @Override
+    protected boolean matchesSafely(Iterable<T> item, Description mismatchDescription) {
+        int size = Iterables.size(item);
+        boolean matches = sizeMatcher.matches(size);
+        if (!matches) {
+            sizeMatcher.describeMismatch(size, mismatchDescription);
+        }
+        return matches;
+    }
 
-	public static <T> OutputWithSize<T> outputWithSize(int size) {
-		return OutputWithSize.<T>outputWithSize(IsEqual.equalTo(size));
-	}
+    @Override
+    public void describeTo(Description description) {
+        description.appendText("output with size: ");
+        sizeMatcher.describeTo(description);
+    }
 }

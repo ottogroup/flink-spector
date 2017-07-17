@@ -27,72 +27,72 @@ import java.util.List;
  */
 public class InputBuilder<T> implements Input<T> {
 
-	/**
-	 * List of input
-	 */
-	List<T> input = new ArrayList<T>();
+    /**
+     * List of input
+     */
+    List<T> input = new ArrayList<T>();
 
-	public static <T> InputBuilder<T> startWith(T record) {
-		InputBuilder<T> builder = new InputBuilder<T>();
-		builder.emit(record);
-		return builder;
-	}
+    public static <T> InputBuilder<T> startWith(T record) {
+        InputBuilder<T> builder = new InputBuilder<T>();
+        builder.emit(record);
+        return builder;
+    }
 
-	/**
-	 * Adds a new element to the input
-	 *
-	 * @param record
-	 */
-	public InputBuilder<T> emit(T record) {
-		if (record == null) {
-			throw new IllegalArgumentException("Record has too be not null!");
-		}
-		input.add(record);
-		return this;
-	}
+    /**
+     * Adds a new element to the input
+     *
+     * @param record
+     */
+    public InputBuilder<T> emit(T record) {
+        if (record == null) {
+            throw new IllegalArgumentException("Record has too be not null!");
+        }
+        input.add(record);
+        return this;
+    }
 
-	/**
-	 * Adds a new element to the input multiple times
-	 *
-	 * @param record
-	 * @param times  to repeat
-	 */
-	public InputBuilder<T> emit(T record, int times) {
-		if (times < 1) {
-			throw new IllegalArgumentException("Times has to be greater than 1.");
-		}
-		for (int i = 0; i < times; i++) {
-			emit(record);
-		}
-		return this;
-	}
+    /**
+     * Adds a new element to the input multiple times
+     *
+     * @param record
+     * @param times  to repeat
+     */
+    public InputBuilder<T> emit(T record, int times) {
+        if (times < 1) {
+            throw new IllegalArgumentException("Times has to be greater than 1.");
+        }
+        for (int i = 0; i < times; i++) {
+            emit(record);
+        }
+        return this;
+    }
 
-	/**
-	 * Repeat the current input list
-	 *
-	 * @param times number of times the input ist will be repeated
-	 */
-	public InputBuilder<T> repeatAll(int times) {
-		List<T> toAppend = new ArrayList<>();
-		for (int i = 0; i < times; i++) {
-			toAppend.addAll(input);
-		}
-		input.addAll(toAppend);
-		return this;
-	}
+    /**
+     * Repeat the current input list
+     *
+     * @param times number of times the input ist will be repeated
+     */
+    public InputBuilder<T> repeatAll(int times) {
+        List<T> toAppend = new ArrayList<>();
+        for (int i = 0; i < times; i++) {
+            toAppend.addAll(input);
+        }
+        input.addAll(toAppend);
+        return this;
+    }
 
-	/**
-	 * Adds a collection of elements to the input
-	 *
-	 * @param records times to repeat
-	 */
-	public InputBuilder<T> emitAll(Collection<T> records) {
-		input.addAll(records);
-		return this;
-	}
+    /**
+     * Adds a collection of elements to the input
+     *
+     * @param records times to repeat
+     */
+    public InputBuilder<T> emitAll(Collection<T> records) {
+        input.addAll(records);
+        return this;
+    }
 
-	@Override
-	public List<T> getInput() {
-		return input;
-	}
+    @Override
+    public List<T> getInput() {
+        return input;
+    }
 }

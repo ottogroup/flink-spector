@@ -21,8 +21,8 @@ import org.hamcrest.Matcher;
 
 abstract public class MatcherTranslator<IN, OUT> extends VerifierTranslator<IN, OUT> {
 
-	public MatcherTranslator(Matcher<Iterable<OUT>> matcher) {
-		super(new HamcrestVerifier<OUT>(matcher));
-	}
+    public MatcherTranslator(Matcher<Iterable<OUT>> matcher) {
+        super(new HamcrestVerifier<OUT>(matcher));
+    }
 
 }

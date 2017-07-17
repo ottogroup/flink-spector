@@ -23,23 +23,23 @@ import java.util.concurrent.TimeUnit;
  */
 public class InWindow extends Moment {
 
-	private final long timeSpan;
+    private final long timeSpan;
 
-	public static InWindow to(long time, TimeUnit timeUnit) {
-		return new InWindow(time, timeUnit);
-	}
+    private InWindow(long time, TimeUnit timeUnit) {
+        this.timeSpan = timeUnit.toMillis(time);
+    }
 
-	private InWindow(long time, TimeUnit timeUnit) {
-		this.timeSpan = timeUnit.toMillis(time);
-	}
+    public static InWindow to(long time, TimeUnit timeUnit) {
+        return new InWindow(time, timeUnit);
+    }
 
-	@Override
-	public long getTimestamp(long currentTimestamp) {
-		return timeSpan - 1;
-	}
+    @Override
+    public long getTimestamp(long currentTimestamp) {
+        return timeSpan - 1;
+    }
 
-	@Override
-	public long getShift() {
-		return 1;
-	}
+    @Override
+    public long getShift() {
+        return 1;
+    }
 }

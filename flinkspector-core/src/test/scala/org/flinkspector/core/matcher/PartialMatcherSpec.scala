@@ -30,7 +30,6 @@ class PartialMatcherSpec extends CoreSpec {
   trait PartialMatcherCase {
     val listMatcher = mock[ListMatcher[Int]]
     when(listMatcher.matchesSafely(List())).thenReturn(true)
-    var selectedList: List[Int] = _
     //the list that gets produced by the partial matcher
     val right = List(1, 2, 3, 4, 5, 6)
     val matcher = new PartialMatcher[Int](ArrayBuffer.empty[ListMatcher[Int]], right) {
@@ -40,6 +39,7 @@ class PartialMatcherSpec extends CoreSpec {
         listMatcher
       }
     }
+    var selectedList: List[Int] = _
   }
 
   /*

@@ -26,27 +26,27 @@ import org.hamcrest.Matcher;
  */
 public class Any<T> extends UntilCombineMatcher<T> {
 
-	/**
-	 * Default constructor
-	 *
-	 * @param matchers {@link Iterable} of {@link Matcher}
-	 */
-	public Any(Iterable<Matcher<? super T>> matchers) {
-		super(matchers);
-	}
+    /**
+     * Default constructor
+     *
+     * @param matchers {@link Iterable} of {@link Matcher}
+     */
+    public Any(Iterable<Matcher<? super T>> matchers) {
+        super(matchers);
+    }
 
-	@Override
-	public String prefix() {
-		return "any of";
-	}
+    @Factory
+    public static <T> Any<T> any(Iterable<Matcher<? super T>> matchers) {
+        return new Any<T>(matchers);
+    }
 
-	@Override
-	public boolean validWhen(int matches, int possibleMatches) {
-		return matches == 1;
-	}
+    @Override
+    public String prefix() {
+        return "any of";
+    }
 
-	@Factory
-	public static <T> Any<T> any(Iterable<Matcher<? super T>> matchers) {
-		return new Any<T>(matchers);
-	}
+    @Override
+    public boolean validWhen(int matches, int possibleMatches) {
+        return matches == 1;
+    }
 }

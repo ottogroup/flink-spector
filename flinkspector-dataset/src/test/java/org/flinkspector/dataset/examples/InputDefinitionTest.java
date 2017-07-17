@@ -28,62 +28,61 @@ import static java.util.Arrays.asList;
 
 public class InputDefinitionTest extends DataSetTestBase {
 
-	private DataSet<Tuple2<String, Integer>> swap(DataSet<Tuple2<String, Integer>> set) {
-		return set.map(new MapFunction<Tuple2<String, Integer>, Tuple2<String, Integer>>() {
-			@Override
-			public Tuple2<String, Integer> map(Tuple2<String, Integer> value) throws Exception {
-				return value;
-			}
-		});
-	}
+    private DataSet<Tuple2<String, Integer>> swap(DataSet<Tuple2<String, Integer>> set) {
+        return set.map(new MapFunction<Tuple2<String, Integer>, Tuple2<String, Integer>>() {
+            @Override
+            public Tuple2<String, Integer> map(Tuple2<String, Integer> value) throws Exception {
+                return value;
+            }
+        });
+    }
 
-	private class TupleToJsonString
-			extends InputTranslator<Tuple2<String, Integer>, String> {
+    public void myTest() {
 
-		public TupleToJsonString(Input<Tuple2<String, Integer>> input) {
-			super(input);
-		}
-
-		@Override
-		protected String translate(Tuple2<String, Integer> elem) {
-			return "{ \"name\":\"" +
-					elem.f0 +
-					"\", \"age\":" +
-					elem.f1 +
-					", \"ts\":12, \"id\":\"joto12345\"}";
-		}
-	}
+        Input<String> stringInput = InputBuilder
+                .startWith("{ \"name\":\"hans\", \"age\":65, \"ts\":12, \"id\":\"joto12345\"}")
+                .emit("{ \"name\":\"fritz\", \"age\":\"12\", \"ts\":12, \"id\":\"joto12345\"}")
+                .emit("{ \"name\":\"rose\", \"age\":\"21\", \"ts\":12, \"id\":\"joto12345\"}")
+                .emit("{ \"name\":\"samanta\", \"age\":\"45\", \"ts\":12, \"id\":\"joto12345\"}");
 
 
-	public void myTest() {
+        DataSet<String> dataSet1 = createTestDataSet(asList("fritz", "peter", "hans"));
 
-		Input<String> stringInput = InputBuilder
-				.startWith("{ \"name\":\"hans\", \"age\":65, \"ts\":12, \"id\":\"joto12345\"}")
-				.emit("{ \"name\":\"fritz\", \"age\":\"12\", \"ts\":12, \"id\":\"joto12345\"}")
-				.emit("{ \"name\":\"rose\", \"age\":\"21\", \"ts\":12, \"id\":\"joto12345\"}")
-				.emit("{ \"name\":\"samanta\", \"age\":\"45\", \"ts\":12, \"id\":\"joto12345\"}");
+        Input<Tuple2<String, Integer>> input = InputBuilder
+                .startWith(Tuple2.of("one", 1))
+                .emit(Tuple2.of("two", 2))
+                .emit(Tuple2.of("three", 3))
+                .repeatAll(times(2))
+                .emit(Tuple2.of("four", 3), times(3));
 
+        Input<String> translatedInput = new TupleToJsonString(input);
 
-		DataSet<String> dataSet1 = createTestDataSet(asList("fritz", "peter", "hans"));
+        DataSet<Tuple2<String, Integer>> dataSet2 = createTestDataSet(input);
 
-		Input<Tuple2<String, Integer>> input = InputBuilder
-				.startWith(Tuple2.of("one", 1))
-				.emit(Tuple2.of("two", 2))
-				.emit(Tuple2.of("three", 3))
-				.repeatAll(times(2))
-				.emit(Tuple2.of("four", 3), times(3));
+        DataSet<Tuple2<String, Integer>> dataSet3 = createTestDataSetWith(Tuple2.of("one", 1))
+                .emit(Tuple2.of("two", 2))
+                .emit(Tuple2.of("three", 3))
+                .repeatAll(times(2))
+                .emit(Tuple2.of("four", 3), times(3))
+                .close();
 
-		Input<String> translatedInput = new TupleToJsonString(input);
+    }
 
-		DataSet<Tuple2<String, Integer>> dataSet2 = createTestDataSet(input);
+    private class TupleToJsonString
+            extends InputTranslator<Tuple2<String, Integer>, String> {
 
-		DataSet<Tuple2<String, Integer>> dataSet3 = createTestDataSetWith(Tuple2.of("one", 1))
-				.emit(Tuple2.of("two", 2))
-				.emit(Tuple2.of("three", 3))
-				.repeatAll(times(2))
-				.emit(Tuple2.of("four", 3), times(3))
-				.close();
+        public TupleToJsonString(Input<Tuple2<String, Integer>> input) {
+            super(input);
+        }
 
-	}
+        @Override
+        protected String translate(Tuple2<String, Integer> elem) {
+            return "{ \"name\":\"" +
+                    elem.f0 +
+                    "\", \"age\":" +
+                    elem.f1 +
+                    ", \"ts\":12, \"id\":\"joto12345\"}";
+        }
+    }
 
 }

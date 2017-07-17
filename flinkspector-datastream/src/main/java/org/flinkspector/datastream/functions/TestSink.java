@@ -16,17 +16,20 @@
 
 package org.flinkspector.datastream.functions;
 
+import com.lmax.disruptor.RingBuffer;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+import org.flinkspector.core.runtime.OutputEvent;
 import org.flinkspector.core.runtime.OutputPublisher;
 import org.flinkspector.core.util.SerializeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 /**
  * Provides a sink that sends all incoming records using a 0MQ connection.
@@ -37,74 +40,77 @@ import java.io.IOException;
  */
 public class TestSink<IN> extends RichSinkFunction<IN> {
 
-	private Logger LOG = LoggerFactory.getLogger(RichSinkFunction.class);
+    /*
+     * RingBuffer not serializable
+     */
+    private static RingBuffer<OutputEvent> buffer;
+    private final int instance;
+    private Logger LOG = LoggerFactory.getLogger(RichSinkFunction.class);
+    private OutputPublisher handler;
+    private TypeSerializer<IN> serializer;
 
-	private OutputPublisher handler;
-	private TypeSerializer<IN> serializer;
-	private int port;
-
-	public TestSink(int port) {
-		this.port = port;
-	}
-
-
-	@Override
-	public void open(Configuration configuration) {
-		String jobManagerAddress = configuration
-				.getString("jobmanager.rpc.address", "localhost");
-		//open a socket to push data
-		handler = new OutputPublisher(jobManagerAddress, port);
-
-	}
-
-	/**
-	 * Called when new data arrives at the sink.
-	 * Forwards the records via the 0MQ publisher.
-	 *
-	 * @param next incoming records
-	 */
-	@Override
-	public void invoke(IN next) {
-
-		int numberOfSubTasks = getRuntimeContext().getNumberOfParallelSubtasks();
-		int indexofThisSubTask = getRuntimeContext().getIndexOfThisSubtask();
-		byte[] msg;
-
-		if (serializer == null) {
-
-			//startWith serializer
-			TypeInformation<IN> typeInfo = TypeExtractor.getForObject(next);
-			serializer = typeInfo.createSerializer(getRuntimeContext().getExecutionConfig());
-			//push serializer to output receiver
-			try {
-				handler.sendOpen(indexofThisSubTask,
-						numberOfSubTasks,
-						SerializeUtil.serialize(serializer));
-
-			} catch (IOException e) {
-				LOG.error("Could not serialize TypeSerializer", e);
-				return;
-			}
-		}
+    public TestSink(int instance, RingBuffer<OutputEvent> buffer) {
+        this.instance = instance;
+        TestSink.buffer = buffer;
+    }
 
 
-		//serialize input and push to output
-		byte[] bytes;
-		try {
-			bytes = SerializeUtil.serialize(next, serializer);
-		} catch (IOException e) {
-			LOG.error("Could not serialize input", e);
-			return;
-		}
-		handler.sendRecord(bytes);
-	}
+    @Override
+    public void open(Configuration configuration) throws UnknownHostException {
+        String jobManagerAddress = configuration
+                .getString("jobmanager.rpc.address", "localhost");
+        //open a socket to push data
+        handler = new OutputPublisher(instance, buffer);
+    }
 
-	@Override
-	public void close() {
-		//signal close to output receiver
-		handler.sendClose(
-				getRuntimeContext().getIndexOfThisSubtask());
+    /**
+     * Called when new data arrives at the sink.
+     * Forwards the records via the 0MQ publisher.
+     *
+     * @param next incoming records
+     */
+    @Override
+    public void invoke(IN next) {
 
-	}
+        int numberOfSubTasks = getRuntimeContext().getNumberOfParallelSubtasks();
+        int indexofThisSubTask = getRuntimeContext().getIndexOfThisSubtask();
+        byte[] msg;
+
+        if (serializer == null) {
+
+            //startWith serializer
+            TypeInformation<IN> typeInfo = TypeExtractor.getForObject(next);
+            serializer = typeInfo.createSerializer(getRuntimeContext().getExecutionConfig());
+            //push serializer to output receiver
+            try {
+                handler.sendOpen(indexofThisSubTask,
+                        numberOfSubTasks,
+                        SerializeUtil.serialize(serializer));
+
+            } catch (IOException e) {
+                LOG.error("Could not serialize TypeSerializer", e);
+                return;
+            }
+        }
+
+
+        //serialize input and push to output
+        byte[] bytes;
+        try {
+            bytes = SerializeUtil.serialize(next, serializer);
+        } catch (IOException e) {
+            LOG.error("Could not serialize input", e);
+            return;
+        }
+        handler.sendRecord(bytes);
+    }
+
+    @Override
+    public void close() {
+        //signal close to output receiver
+        handler.sendClose(
+                getRuntimeContext().getIndexOfThisSubtask());
+
+    }
 
 }

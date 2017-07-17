@@ -18,9 +18,9 @@ package org.flinkspector.datastream.input.time;
 
 public class Instant extends TimeSpan {
 
-	@Override
-	public long getTimeSpan() {
-		return 0;
-	}
+    @Override
+    public long getTimeSpan() {
+        return 0;
+    }
 
 }

@@ -29,106 +29,106 @@ import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 public class DataSetTestEnvironment extends TestEnvironment {
 
 
-	private final Runner runner;
+    private final Runner runner;
 
-	public DataSetTestEnvironment(LocalFlinkMiniCluster executor, int parallelism) {
-		super(executor, parallelism, false);
-		runner = new Runner(executor) {
-			@Override
-			protected void executeEnvironment() throws Throwable {
-				execute();
-			}
-		};
-	}
+    public DataSetTestEnvironment(LocalFlinkMiniCluster executor, int parallelism) {
+        super(executor, parallelism, false);
+        runner = new Runner(executor) {
+            @Override
+            protected void executeEnvironment() throws Throwable {
+                execute();
+            }
+        };
+    }
 
-	/**
-	 * Factory method to startWith a new instance, providing a
-	 * new instance of {@link LocalFlinkMiniCluster}
-	 *
-	 * @param parallelism global setting for parallel execution.
-	 * @return new instance of {@link DataSetTestEnvironment}
-	 * @throws Exception
-	 */
-	public static DataSetTestEnvironment createTestEnvironment(int parallelism) throws Exception {
-		int taskSlots = Runtime.getRuntime().availableProcessors();
-		LocalFlinkMiniCluster cluster =
-				TestBaseUtils.startCluster(
-						1,
-						taskSlots,
-						false,
-						false,
-						true
-				);
-		return new DataSetTestEnvironment(cluster, parallelism);
-	}
+    /**
+     * Factory method to startWith a new instance, providing a
+     * new instance of {@link LocalFlinkMiniCluster}
+     *
+     * @param parallelism global setting for parallel execution.
+     * @return new instance of {@link DataSetTestEnvironment}
+     * @throws Exception
+     */
+    public static DataSetTestEnvironment createTestEnvironment(int parallelism) throws Exception {
+        int taskSlots = Runtime.getRuntime().availableProcessors();
+        LocalFlinkMiniCluster cluster =
+                TestBaseUtils.startCluster(
+                        1,
+                        taskSlots,
+                        false,
+                        false,
+                        true
+                );
+        return new DataSetTestEnvironment(cluster, parallelism);
+    }
 
-	public <T> DataSet<T> createTestSet(Input<T> input) {
-		return super.fromCollection(input.getInput());
-	}
+    public <T> DataSet<T> createTestSet(Input<T> input) {
+        return super.fromCollection(input.getInput());
+    }
 
-	/**
-	 * Creates a TestOutputFormat to verify the output.
-	 * Using a {@link OutputVerifier}
-	 *
-	 * @param verifier {@link OutputVerifier} which will be
-	 *                 used to verify the received records.
-	 * @param <IN>     type of the input
-	 * @return the created {@link TestOutputFormat}.
-	 */
-	public <IN> TestOutputFormat<IN> createTestOutputFormat(OutputVerifier<IN> verifier) {
-		VerifyFinishedTrigger trigger = new DefaultTestTrigger();
-		int port = runner.registerListener(verifier, trigger);
-		TestOutputFormat<IN> format = new TestOutputFormat<>(port);
-		return format;
-	}
+    /**
+     * Creates a TestOutputFormat to verify the output.
+     * Using a {@link OutputVerifier}
+     *
+     * @param verifier {@link OutputVerifier} which will be
+     *                 used to verify the received records.
+     * @param <IN>     type of the input
+     * @return the created {@link TestOutputFormat}.
+     */
+    public <IN> TestOutputFormat<IN> createTestOutputFormat(OutputVerifier<IN> verifier) {
+        VerifyFinishedTrigger trigger = new DefaultTestTrigger();
+        int instance = runner.registerListener(verifier, trigger);
+        TestOutputFormat<IN> format = new TestOutputFormat<IN>(instance, runner.getRingBuffer());
+        return format;
+    }
 
-	/**
-	 * Creates a TestOutputFormat to verify the output.
-	 * The environment will register a port
-	 *
-	 * @param verifier which will be used to verify the received records
-	 * @param <IN>     type of the input
-	 * @return the created sink.
-	 */
-	public <IN> TestOutputFormat<IN> createTestOutputFormat(OutputVerifier<IN> verifier,
-															VerifyFinishedTrigger trigger) {
-		int port = runner.registerListener(verifier, trigger);
-		TestOutputFormat<IN> format = new TestOutputFormat<IN>(port);
-		return format;
-	}
+    /**
+     * Creates a TestOutputFormat to verify the output.
+     * The environment will register a port
+     *
+     * @param verifier which will be used to verify the received records
+     * @param <IN>     type of the input
+     * @return the created sink.
+     */
+    public <IN> TestOutputFormat<IN> createTestOutputFormat(OutputVerifier<IN> verifier,
+                                                            VerifyFinishedTrigger trigger) {
+        int instance = runner.registerListener(verifier, trigger);
+        TestOutputFormat<IN> format = new TestOutputFormat<IN>(instance, runner.getRingBuffer());
+        return format;
+    }
 
-	/**
-	 * This method can be used to check if the environment has been
-	 * stopped prematurely by e.g. a timeout.
-	 *
-	 * @return true if has been stopped forcefully.
-	 */
-	public Boolean hasBeenStopped() {
-		return runner.hasBeenStopped();
-	}
+    /**
+     * This method can be used to check if the environment has been
+     * stopped prematurely by e.g. a timeout.
+     *
+     * @return true if has been stopped forcefully.
+     */
+    public Boolean hasBeenStopped() {
+        return runner.hasBeenStopped();
+    }
 
-	/**
-	 * Getter for the timeout interval
-	 * after the test execution gets stopped.
-	 *
-	 * @return timeout in milliseconds
-	 */
-	public Long getTimeoutInterval() {
-		return runner.getTimeoutInterval();
-	}
+    /**
+     * Getter for the timeout interval
+     * after the test execution gets stopped.
+     *
+     * @return timeout in milliseconds
+     */
+    public Long getTimeoutInterval() {
+        return runner.getTimeoutInterval();
+    }
 
-	/**
-	 * Setter for the timeout interval
-	 * after the test execution gets stopped.
-	 *
-	 * @param interval in milliseconds.
-	 */
-	public void setTimeoutInterval(long interval) {
-		runner.setTimeoutInterval(interval);
-	}
+    /**
+     * Setter for the timeout interval
+     * after the test execution gets stopped.
+     *
+     * @param interval in milliseconds.
+     */
+    public void setTimeoutInterval(long interval) {
+        runner.setTimeoutInterval(interval);
+    }
 
-	public void executeTest() throws Throwable {
-		runner.executeTest();
-	}
+    public void executeTest() throws Throwable {
+        runner.executeTest();
+    }
 
 }

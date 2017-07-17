@@ -28,32 +28,32 @@ import java.util.Arrays;
  * @param <T>
  */
 public class TupleMask<T extends Tuple> {
-	private String[] keys;
+    private String[] keys;
 
-	public TupleMask(String key, String... keys) {
-		this.keys = Util.prepend(key, keys);
-	}
+    public TupleMask(String key, String... keys) {
+        this.keys = Util.prepend(key, keys);
+    }
 
-	/**
-	 * Converts a {@link Tuple} into a {@link TupleMap}
-	 * using the mask as keys.
-	 *
-	 * @param tuple {@link Tuple} to convert.
-	 * @return {@link TupleMap} with applied keys.
-	 */
-	public TupleMap<T> apply(T tuple) {
-		return new TupleMap<T>(tuple, keys);
-	}
+    /**
+     * Factory method.
+     *
+     * @param cols list of Strings.
+     * @param <T>  {@link TupleMask} type.
+     * @return new instance of this class.
+     */
+    public static <T extends Tuple> TupleMask<T> create(String... cols) {
+        return new TupleMask<>(cols[0], Arrays.copyOfRange(cols, 1, cols.length - 1));
+    }
 
-	/**
-	 * Factory method.
-	 *
-	 * @param cols list of Strings.
-	 * @param <T>  {@link TupleMask} type.
-	 * @return new instance of this class.
-	 */
-	public static <T extends Tuple> TupleMask<T> create(String... cols) {
-		return new TupleMask<>(cols[0], Arrays.copyOfRange(cols, 1, cols.length - 1));
-	}
+    /**
+     * Converts a {@link Tuple} into a {@link TupleMap}
+     * using the mask as keys.
+     *
+     * @param tuple {@link Tuple} to convert.
+     * @return {@link TupleMap} with applied keys.
+     */
+    public TupleMap<T> apply(T tuple) {
+        return new TupleMap<T>(tuple, keys);
+    }
 
 }

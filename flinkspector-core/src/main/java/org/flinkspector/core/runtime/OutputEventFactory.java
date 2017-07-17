@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package org.flinkspector.dataset;
+package org.flinkspector.core.runtime;
 
-public class DataSetExtendedBase extends DataSetTestBase {
+import com.lmax.disruptor.EventFactory;
 
-    public DataSetTestEnvironment environment = testEnv;
+/**
+ * Used by the disruptor to initialize a new {@link OutputEvent}
+ */
+public class OutputEventFactory implements EventFactory<OutputEvent> {
+
+    public OutputEvent newInstance() {
+        return new OutputEvent();
+    }
 
 }

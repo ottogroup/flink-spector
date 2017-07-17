@@ -42,61 +42,61 @@ import org.hamcrest.Matcher;
  */
 public class MatchTuples<T extends Tuple> extends MatchRecords<T> {
 
-	/**
-	 * {@link TupleMask} used to map the keys to the inspected tuples.
-	 */
-	private final TupleMask<T> mask;
+    /**
+     * {@link TupleMask} used to map the keys to the inspected tuples.
+     */
+    private final TupleMask<T> mask;
 
-	/**
-	 * Factory method accessing the default constructor.
-	 *
-	 * @param mask {@link TupleMask} to use.
-	 * @param <T>  type of output
-	 * @return new instance of {@link MatchTuples}
-	 */
-	public static <T extends Tuple> MatchTuples<T> fromMask(TupleMask<T> mask) {
-		return new MatchTuples<T>(mask);
-	}
+    /**
+     * Default Constructor.
+     *
+     * @param mask {@link TupleMask} to use.
+     */
+    public MatchTuples(TupleMask<T> mask) {
+        super();
+        this.mask = mask;
+    }
 
-	/**
-	 * Default Constructor.
-	 *
-	 * @param mask {@link TupleMask} to use.
-	 */
-	public MatchTuples(TupleMask<T> mask) {
-		super();
-		this.mask = mask;
-	}
+    /**
+     * Constructor that provides a {@link TupleMask}
+     * from a set of string keys.
+     *
+     * @param first key
+     * @param rest  of keys
+     */
+    public MatchTuples(String first, String... rest) {
+        this(new TupleMask<T>(first, rest));
+    }
 
-	/**
-	 * Constructor that provides a {@link TupleMask}
-	 * from a set of string keys.
-	 *
-	 * @param first key
-	 * @param rest  of keys
-	 */
-	public MatchTuples(String first, String... rest) {
-		this(new TupleMask<T>(first, rest));
-	}
+    /**
+     * Factory method accessing the default constructor.
+     *
+     * @param mask {@link TupleMask} to use.
+     * @param <T>  type of output
+     * @return new instance of {@link MatchTuples}
+     */
+    public static <T extends Tuple> MatchTuples<T> fromMask(TupleMask<T> mask) {
+        return new MatchTuples<T>(mask);
+    }
 
-	/**
-	 * Add a new assertion based on tuple to the list.
-	 *
-	 * @param key     of the field
-	 * @param matcher matcher to use on the field
-	 */
-	public MatchTuples<T> assertThat(String key, Matcher matcher) {
-		assertThat(new TupleMatcher<T>(key, matcher, mask));
-		return this;
-	}
+    /**
+     * Add a new assertion based on tuple to the list.
+     *
+     * @param key     of the field
+     * @param matcher matcher to use on the field
+     */
+    public MatchTuples<T> assertThat(String key, Matcher matcher) {
+        assertThat(new TupleMatcher<T>(key, matcher, mask));
+        return this;
+    }
 
-	/**
-	 * Add a {@link Matcher} to the list of assertions to verify.
-	 *
-	 * @param matcher testing the output records
-	 */
-	public MatchTuples<T> assertThatRecord(Matcher<? super T> matcher) {
-		super.assertThat(matcher);
-		return this;
-	}
+    /**
+     * Add a {@link Matcher} to the list of assertions to verify.
+     *
+     * @param matcher testing the output records
+     */
+    public MatchTuples<T> assertThatRecord(Matcher<? super T> matcher) {
+        super.assertThat(matcher);
+        return this;
+    }
 }

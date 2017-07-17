@@ -26,32 +26,32 @@ import org.hamcrest.Matcher;
  */
 public class OutputMatcherFactory<T> {
 
-	/**
-	 * Wraps a {@link Matcher} working with {@link Iterable} to provide an
-	 * {@link OutputMatcher}
-	 *
-	 * @param matcher to wrap
-	 * @param <T>
-	 * @return {@link OutputMatcher}
-	 */
-	public static <T> OutputMatcher<T> create(final Matcher<? super Iterable<T>> matcher) {
-		return new OutputMatcher<T>() {
+    /**
+     * Wraps a {@link Matcher} working with {@link Iterable} to provide an
+     * {@link OutputMatcher}
+     *
+     * @param matcher to wrap
+     * @param <T>
+     * @return {@link OutputMatcher}
+     */
+    public static <T> OutputMatcher<T> create(final Matcher<? super Iterable<T>> matcher) {
+        return new OutputMatcher<T>() {
 
-			@Override
-			protected boolean matchesSafely(Iterable<T> item) {
-				return matcher.matches(item);
-			}
+            @Override
+            protected boolean matchesSafely(Iterable<T> item) {
+                return matcher.matches(item);
+            }
 
-			@Override
-			public void describeMismatchSafely(Iterable<T> output,
-											   Description mismatchDescription) {
-				matcher.describeMismatch(output, mismatchDescription);
-			}
+            @Override
+            public void describeMismatchSafely(Iterable<T> output,
+                                               Description mismatchDescription) {
+                matcher.describeMismatch(output, mismatchDescription);
+            }
 
-			@Override
-			public void describeTo(Description description) {
-				matcher.describeTo(description);
-			}
-		};
-	}
+            @Override
+            public void describeTo(Description description) {
+                matcher.describeTo(description);
+            }
+        };
+    }
 }

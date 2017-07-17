@@ -22,75 +22,75 @@ import org.hamcrest.StringDescription;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 abstract public class WhileCombineMatcher<T> extends TypeSafeDiagnosingMatcher<T> {
-	//TODO play with description
+    //TODO play with description
 
-	private final Iterable<Matcher<? super T>> matchers;
+    private final Iterable<Matcher<? super T>> matchers;
 
-	public WhileCombineMatcher(Iterable<Matcher<? super T>> matchers) {
-		this.matchers = matchers;
-	}
+    public WhileCombineMatcher(Iterable<Matcher<? super T>> matchers) {
+        this.matchers = matchers;
+    }
 
-	@Override
-	public boolean matchesSafely(T item, Description mismatch) {
-		int matches = 0;
-		Description mismatches = new StringDescription();
-		mismatch.appendText("\n          ");
-		for (Matcher<? super T> matcher : matchers) {
-			if (!matcher.matches(item)) {
-				matcher.describeMismatch(item, mismatches);
-				mismatches.appendText("; ");
-			} else {
-				matches++;
-				// Check exit condition if not valid exit matcher.
-				if (!validWhile(matches)) {
-					describeMismatch(matches, true, mismatch, mismatches);
-					return false;
-				}
-			}
-		}
-		describeMismatch(matches, false, mismatch, mismatches);
-		return validAfter(matches);
-	}
+    @Override
+    public boolean matchesSafely(T item, Description mismatch) {
+        int matches = 0;
+        Description mismatches = new StringDescription();
+        mismatch.appendText("\n          ");
+        for (Matcher<? super T> matcher : matchers) {
+            if (!matcher.matches(item)) {
+                matcher.describeMismatch(item, mismatches);
+                mismatches.appendText("; ");
+            } else {
+                matches++;
+                // Check exit condition if not valid exit matcher.
+                if (!validWhile(matches)) {
+                    describeMismatch(matches, true, mismatch, mismatches);
+                    return false;
+                }
+            }
+        }
+        describeMismatch(matches, false, mismatch, mismatches);
+        return validAfter(matches);
+    }
 
-	private void describeMismatch(int numMatches,
-								  Boolean tooMany,
-								  Description mismatch,
-								  Description mismatches) {
+    private void describeMismatch(int numMatches,
+                                  Boolean tooMany,
+                                  Description mismatch,
+                                  Description mismatches) {
 
 
-		if (tooMany) {
-			mismatch.appendText("expected matches in block ");
-			describeCondition(mismatch);
-			mismatch.appendText(", was ")
-					.appendValue(numMatches)
-					.appendText(" ");
-		} else {
-			mismatch.appendText(mismatches.toString());
-		}
+        if (tooMany) {
+            mismatch.appendText("expected matches in block ");
+            describeCondition(mismatch);
+            mismatch.appendText(", was ")
+                    .appendValue(numMatches)
+                    .appendText(" ");
+        } else {
+            mismatch.appendText(mismatches.toString());
+        }
 
-	}
+    }
 
-	@Override
-	public void describeTo(Description description) {
-		description.appendText(prefix());
-		description.appendText("(");
-		for (Matcher m : this.matchers) {
-			if (!description.toString().endsWith("(")) {
-				description.appendText("; ");
-			}
-			description.appendDescriptionOf(m);
-		}
-		description.appendText(")");
-	}
+    @Override
+    public void describeTo(Description description) {
+        description.appendText(prefix());
+        description.appendText("(");
+        for (Matcher m : this.matchers) {
+            if (!description.toString().endsWith("(")) {
+                description.appendText("; ");
+            }
+            description.appendDescriptionOf(m);
+        }
+        description.appendText(")");
+    }
 
-	protected abstract Description describeCondition(Description description);
+    protected abstract Description describeCondition(Description description);
 
-	public abstract boolean validWhile(int matches);
+    public abstract boolean validWhile(int matches);
 
-	public abstract String prefix();
+    public abstract String prefix();
 
-	public boolean validAfter(int matches) {
-		return true;
-	}
+    public boolean validAfter(int matches) {
+        return true;
+    }
 
 }

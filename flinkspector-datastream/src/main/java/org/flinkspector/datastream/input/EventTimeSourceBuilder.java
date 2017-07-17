@@ -31,119 +31,119 @@ import org.flinkspector.datastream.input.time.TimeSpan;
  */
 public class EventTimeSourceBuilder<T> {
 
-	private final EventTimeInputBuilder<T> builder;
-	private final DataStreamTestEnvironment env;
+    private final EventTimeInputBuilder<T> builder;
+    private final DataStreamTestEnvironment env;
 
-	public EventTimeSourceBuilder(DataStreamTestEnvironment env, T record) {
-		this.env = env;
-		this.builder = EventTimeInputBuilder.startWith(record);
-	}
+    public EventTimeSourceBuilder(DataStreamTestEnvironment env, T record) {
+        this.env = env;
+        this.builder = EventTimeInputBuilder.startWith(record);
+    }
 
-	/**
-	 * Factory method used to dynamically type the {@link EventTimeSourceBuilder}
-	 * using the type of the provided input object.
-	 *
-	 * @param record first record to emit.
-	 * @param env    to work on.
-	 * @param <T>
-	 * @return created {@link SourceBuilder}
-	 */
-	public static <T> EventTimeSourceBuilder<T> createBuilder(T record,
-															  DataStreamTestEnvironment env) {
-		return new EventTimeSourceBuilder<>(env, record);
-	}
+    /**
+     * Factory method used to dynamically type the {@link EventTimeSourceBuilder}
+     * using the type of the provided input object.
+     *
+     * @param record first record to emit.
+     * @param env    to work on.
+     * @param <T>
+     * @return created {@link SourceBuilder}
+     */
+    public static <T> EventTimeSourceBuilder<T> createBuilder(T record,
+                                                              DataStreamTestEnvironment env) {
+        return new EventTimeSourceBuilder<>(env, record);
+    }
 
-	/**
-	 * Produces a {@link DataStreamSource} with the predefined input.
-	 *
-	 * @return {@link DataStreamSource}
-	 */
-	public DataStreamSource<T> close() {
-		return env.fromInput(builder);
-	}
+    /**
+     * Produces a {@link DataStreamSource} with the predefined input.
+     *
+     * @return {@link DataStreamSource}
+     */
+    public DataStreamSource<T> close() {
+        return env.fromInput(builder);
+    }
 
-	/**
-	 * Produces a {@link DataStreamSource} with the predefined input
-	 * and flushes open windows on termination.
-	 *
-	 * @return {@link DataStreamSource}
-	 */
-	public DataStreamSource<T> closeAndFlush() {
-		builder.flushOpenWindowsOnTermination();
-		return env.fromInput(builder);
-	}
+    /**
+     * Produces a {@link DataStreamSource} with the predefined input
+     * and flushes open windows on termination.
+     *
+     * @return {@link DataStreamSource}
+     */
+    public DataStreamSource<T> closeAndFlush() {
+        builder.flushOpenWindowsOnTermination();
+        return env.fromInput(builder);
+    }
 
-	/**
-	 * Add an element with timestamp to the input.
-	 *
-	 * @param elem
-	 * @param timeStamp
-	 * @return
-	 */
-	public EventTimeSourceBuilder<T> emit(T elem, long timeStamp) {
-		builder.emit(elem, timeStamp);
-		return this;
-	}
+    /**
+     * Add an element with timestamp to the input.
+     *
+     * @param elem
+     * @param timeStamp
+     * @return
+     */
+    public EventTimeSourceBuilder<T> emit(T elem, long timeStamp) {
+        builder.emit(new StreamRecord(elem, timeStamp));
+        return this;
+    }
 
-	/**
-	 * Add an element with an {@link TimeSpan} object,
-	 * defining the time between the previous and the new record.
-	 *
-	 * @param elem
-	 * @param timeSpan {@link TimeSpan}
-	 * @return
-	 */
-	public EventTimeSourceBuilder<T> emit(T elem, Moment timeSpan) {
-		builder.emit(elem, timeSpan);
-		return this;
-	}
+    /**
+     * Add an element with an {@link TimeSpan} object,
+     * defining the time between the previous and the new record.
+     *
+     * @param elem
+     * @param timeSpan {@link TimeSpan}
+     * @return
+     */
+    public EventTimeSourceBuilder<T> emit(T elem, Moment timeSpan) {
+        builder.emit(elem, timeSpan);
+        return this;
+    }
 
-	/**
-	 * Add an element with object,
-	 * defining the time between the previous and the new record.
-	 *
-	 * @param elem
-	 * @return
-	 */
-	public EventTimeSourceBuilder<T> emit(T elem) {
-		builder.emit(elem);
-		return this;
-	}
+    /**
+     * Add an element with object,
+     * defining the time between the previous and the new record.
+     *
+     * @param elem
+     * @return
+     */
+    public EventTimeSourceBuilder<T> emit(T elem) {
+        builder.emit(elem);
+        return this;
+    }
 
-	/**
-	 * Add a {@link StreamRecord} to the list of input.
-	 *
-	 * @param streamRecord
-	 * @return
-	 */
-	public EventTimeSourceBuilder<T> emit(StreamRecord<T> streamRecord) {
-		builder.emit(streamRecord);
-		return this;
-	}
+    /**
+     * Add a {@link StreamRecord} to the list of input.
+     *
+     * @param streamRecord
+     * @return
+     */
+    public EventTimeSourceBuilder<T> emit(StreamRecord<T> streamRecord) {
+        builder.emit(streamRecord);
+        return this;
+    }
 
-	/**
-	 * Repeats the record.
-	 *
-	 * @param times number of times the input ist will be repeated.
-	 */
-	public EventTimeSourceBuilder<T> emit(T elem, Moment timeInterval, int times) {
-		builder.emit(elem, timeInterval, times);
-		return this;
-	}
+    /**
+     * Repeats the record.
+     *
+     * @param times number of times the input ist will be repeated.
+     */
+    public EventTimeSourceBuilder<T> emit(T elem, Moment timeInterval, int times) {
+        builder.emit(elem, timeInterval, times);
+        return this;
+    }
 
 
-	/**
-	 * Repeat the current input list, after the defined span.
-	 * The time span between records in your already defined list will
-	 * be kept.
-	 *
-	 * @param timeSpan defining the time before and between repeating.
-	 * @param times    number of times the input ist will be repeated.
-	 */
-	public EventTimeSourceBuilder<T> repeatAll(TimeSpan timeSpan, int times) {
-		builder.repeatAll(timeSpan, times);
-		return this;
-	}
+    /**
+     * Repeat the current input list, after the defined span.
+     * The time span between records in your already defined list will
+     * be kept.
+     *
+     * @param timeSpan defining the time before and between repeating.
+     * @param times    number of times the input ist will be repeated.
+     */
+    public EventTimeSourceBuilder<T> repeatAll(TimeSpan timeSpan, int times) {
+        builder.repeatAll(timeSpan, times);
+        return this;
+    }
 
 
 }

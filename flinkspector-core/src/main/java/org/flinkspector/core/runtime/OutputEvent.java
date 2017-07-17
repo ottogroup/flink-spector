@@ -14,10 +14,34 @@
  * limitations under the License.
  */
 
-package org.flinkspector.dataset;
+package org.flinkspector.core.runtime;
 
-public class DataSetExtendedBase extends DataSetTestBase {
+/**
+ * Used to wrap output from the sinks to the listeners during test runs
+ */
+public class OutputEvent {
 
-    public DataSetTestEnvironment environment = testEnv;
+    /**
+     * serialized output event
+     */
+    private byte[] bytes;
+
+    /**
+     * id of the sink sending the event
+     */
+    private int sender;
+
+    public void set(int sender, byte[] bytes) {
+        this.sender = sender;
+        this.bytes = bytes;
+    }
+
+    public byte[] getMsg() {
+        return bytes;
+    }
+
+    public int getSender() {
+        return sender;
+    }
 
 }

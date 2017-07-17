@@ -23,9 +23,7 @@ import org.flinkspector.core.quantify.OutputMatcher;
 import org.flinkspector.datastream.DataStreamTestBase;
 import org.flinkspector.datastream.input.time.InWindow;
 
-import static org.hamcrest.Matchers.either;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 //import to use the dsl of hamcrest:
 
@@ -38,24 +36,24 @@ import static org.hamcrest.Matchers.is;
  */
 public class WindowingTest extends DataStreamTestBase {
 
-	/**
-	 * Transformation to test.
-	 * Builds 20 second windows and sums up the integer values.
-	 *
-	 * @param stream input {@link DataStream}
-	 * @return {@link DataStream}
-	 */
-	public static DataStream<Tuple2<Integer, String>> window(DataStream<Tuple2<Integer, String>> stream) {
-		return stream.timeWindowAll(Time.of(20, seconds)).sum(0);
-	}
+    /**
+     * Transformation to test.
+     * Builds 20 second windows and sums up the integer values.
+     *
+     * @param stream input {@link DataStream}
+     * @return {@link DataStream}
+     */
+    public static DataStream<Tuple2<Integer, String>> window(DataStream<Tuple2<Integer, String>> stream) {
+        return stream.timeWindowAll(Time.of(20, seconds)).sum(0);
+    }
 
-	@org.junit.Test
-	public void testWindowing() {
+    @org.junit.Test
+    public void testWindowing() {
 
-		setParallelism(2);
+        setParallelism(2);
 
 		/*
-		 * Define the input DataStream:
+         * Define the input DataStream:
 		 * Get a EventTimeSourceBuilder with, .createTimedTestStreamWith(record).
 		 * Add data records to it and retrieve a DataStreamSource
 		 * by calling .close().
@@ -63,14 +61,14 @@ public class WindowingTest extends DataStreamTestBase {
 		 * Note: The before and after keywords define the time span !between! the previous
 		 * record and the current record.
 		 */
-		DataStream<Tuple2<Integer, String>> testStream =
-				createTimedTestStreamWith(Tuple2.of(1, "fritz"))
-						.emit(Tuple2.of(2, "fritz"))
-						//it's possible to generate unsorted input
-						.emit(Tuple2.of(2, "fritz"))
-						//emit the tuple multiple times, with the time span between:
-						.emit(Tuple2.of(1, "peter"), InWindow.to(20, seconds), times(2))
-						.close();
+        DataStream<Tuple2<Integer, String>> testStream =
+                createTimedTestStreamWith(Tuple2.of(1, "fritz"))
+                        .emit(Tuple2.of(2, "fritz"))
+                        //it's possible to generate unsorted input
+                        .emit(Tuple2.of(2, "fritz"))
+                        //emit the tuple multiple times, with the time span between:
+                        .emit(Tuple2.of(1, "peter"), InWindow.to(20, seconds), times(2))
+                        .close();
 
 		/*
 		 * Creates an OutputMatcher using MatchTuples.
@@ -78,16 +76,16 @@ public class WindowingTest extends DataStreamTestBase {
 		 * You assign String identifiers to your Tuple,
 		 * and add hamcrest matchers testing the values.
 		 */
-		OutputMatcher<Tuple2<Integer, String>> matcher =
-				//name the values in your tuple with keys:
-				new MatchTuples<Tuple2<Integer, String>>("value", "name")
-						//add an assertion using a value and hamcrest matchers
-						.assertThat("value", greaterThan(2))
-						.assertThat("name", either(is("fritz")).or(is("peter")))
-						//express how many matchers must return true for your test to pass:
-						.anyOfThem()
-						//define how many records need to fulfill the
-						.onEachRecord();
+        OutputMatcher<Tuple2<Integer, String>> matcher =
+                //name the values in your tuple with keys:
+                new MatchTuples<Tuple2<Integer, String>>("value", "name")
+                        //add an assertion using a value and hamcrest matchers
+                        .assertThat("value", greaterThan(2))
+                        .assertThat("name", either(is("fritz")).or(is("peter")))
+                        //express how many matchers must return true for your test to pass:
+                        .anyOfThem()
+                        //define how many records need to fulfill the
+                        .onEachRecord();
 
 		/*
 		 * Use assertStream to map DataStream to an OutputMatcher.
@@ -96,8 +94,8 @@ public class WindowingTest extends DataStreamTestBase {
 		 * assertStream(swap(stream), and(matcher, outputWithSize(greaterThan(4))
 		 * would additionally assert that the number of produced records is exactly 3.
 		 */
-		assertStream(window(testStream), matcher);
+        assertStream(window(testStream), matcher);
 
-	}
+    }
 
 }

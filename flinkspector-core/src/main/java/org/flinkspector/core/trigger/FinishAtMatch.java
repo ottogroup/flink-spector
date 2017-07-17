@@ -28,31 +28,31 @@ import org.hamcrest.Matcher;
  */
 public class FinishAtMatch<OUT> implements VerifyFinishedTrigger<OUT> {
 
-	/**
-	 * {@link Matcher} used internally.
-	 */
-	private final Matcher<OUT> matcher;
+    /**
+     * {@link Matcher} used internally.
+     */
+    private final Matcher<OUT> matcher;
 
-	/**
-	 * Default constructor
-	 *
-	 * @param matcher used for triggering.
-	 */
-	public FinishAtMatch(Matcher<OUT> matcher) {
-		this.matcher = matcher;
-	}
+    /**
+     * Default constructor
+     *
+     * @param matcher used for triggering.
+     */
+    public FinishAtMatch(Matcher<OUT> matcher) {
+        this.matcher = matcher;
+    }
 
-	@Override
-	public boolean onRecord(OUT record) {
-		return matcher.matches(record);
-	}
+    public static <T> FinishAtMatch<T> of(Matcher<T> matcher) {
+        return new FinishAtMatch<T>(matcher);
+    }
 
-	@Override
-	public boolean onRecordCount(long count) {
-		return false;
-	}
+    @Override
+    public boolean onRecord(OUT record) {
+        return matcher.matches(record);
+    }
 
-	public static <T> FinishAtMatch<T> of(Matcher<T> matcher) {
-		return new FinishAtMatch<T>(matcher);
-	}
+    @Override
+    public boolean onRecordCount(long count) {
+        return false;
+    }
 }

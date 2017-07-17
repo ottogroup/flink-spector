@@ -28,43 +28,43 @@ import org.hamcrest.Matcher;
  */
 public class Exactly<T> extends WhileCombineMatcher<T> {
 
-	private final int n;
+    private final int n;
 
-	/**
-	 * Default constructor
-	 *
-	 * @param matchers {@link Iterable} of {@link Matcher}
-	 * @param n        number of expected matches
-	 */
-	public Exactly(Iterable<Matcher<? super T>> matchers, int n) {
-		super(matchers);
-		this.n = n;
-	}
+    /**
+     * Default constructor
+     *
+     * @param matchers {@link Iterable} of {@link Matcher}
+     * @param n        number of expected matches
+     */
+    public Exactly(Iterable<Matcher<? super T>> matchers, int n) {
+        super(matchers);
+        this.n = n;
+    }
 
-	protected Description describeCondition(Description description) {
-		return description.appendText("exactly ").appendValue(n);
-	}
+    @Factory
+    public static <T> Exactly<T> exactly(Iterable<Matcher<? super T>> matchers,
+                                         int n) {
+        return new Exactly<T>(matchers, n);
+    }
 
-	@Override
-	public String prefix() {
-		return "exactly ";
-	}
+    protected Description describeCondition(Description description) {
+        return description.appendText("exactly ").appendValue(n);
+    }
 
-	@Override
-	public boolean validWhile(int matches) {
-		return matches <= n;
-	}
+    @Override
+    public String prefix() {
+        return "exactly ";
+    }
 
-	@Override
-	public boolean validAfter(int matches) {
-		return matches == n;
-	}
+    @Override
+    public boolean validWhile(int matches) {
+        return matches <= n;
+    }
 
-	@Factory
-	public static <T> Exactly<T> exactly(Iterable<Matcher<? super T>> matchers,
-										 int n) {
-		return new Exactly<T>(matchers, n);
-	}
+    @Override
+    public boolean validAfter(int matches) {
+        return matches == n;
+    }
 }
 
 

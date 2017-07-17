@@ -28,36 +28,36 @@ import org.hamcrest.Matcher;
  */
 public class OnAtMost<T> extends WhileList<T> {
 
-	private final int n;
+    private final int n;
 
-	/**
-	 * Default constructor
-	 *
-	 * @param matcher to apply to the {@link Iterable}
-	 * @param n       number of expected matches
-	 */
-	public OnAtMost(Matcher<T> matcher, int n) {
-		super(matcher);
-		this.n = n;
-	}
+    /**
+     * Default constructor
+     *
+     * @param matcher to apply to the {@link Iterable}
+     * @param n       number of expected matches
+     */
+    public OnAtMost(Matcher<T> matcher, int n) {
+        super(matcher);
+        this.n = n;
+    }
 
-	@Override
-	protected Description describeCondition(Description description) {
-		return description.appendText("at most ").appendValue(n);
-	}
+    @Factory
+    public static <T> OnAtMost<T> atMost(Matcher<T> matcher, int n) {
+        return new OnAtMost<T>(matcher, n);
+    }
 
-	@Override
-	public String prefix() {
-		return "at most " + n + " records";
-	}
+    @Override
+    protected Description describeCondition(Description description) {
+        return description.appendText("at most ").appendValue(n);
+    }
 
-	@Override
-	public boolean validWhile(int numMatches, int numMismatches) {
-		return numMatches <= n;
-	}
+    @Override
+    public String prefix() {
+        return "at most " + n + " records";
+    }
 
-	@Factory
-	public static <T> OnAtMost<T> atMost(Matcher<T> matcher, int n) {
-		return new OnAtMost<T>(matcher, n);
-	}
+    @Override
+    public boolean validWhile(int numMatches, int numMismatches) {
+        return numMatches <= n;
+    }
 }

@@ -16,199 +16,101 @@
 
 package org.flinkspector.core.runtime;
 
-import org.apache.flink.api.common.typeutils.TypeSerializer;
-import org.flinkspector.core.trigger.VerifyFinishedTrigger;
-import org.flinkspector.core.util.SerializeUtil;
-import org.zeromq.ZMQ;
-import org.zeromq.ZMQException;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.Callable;
+import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.dsl.Disruptor;
+
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Opens a 0MQ context and listens for output coming from a {@link OutputPublisher}.
- * This sink can run in parallel with multiple instances.
- * Feeds the {@link OutputVerifier} with the output and signals the result.
- *
- * @param <OUT> input type of the sink
+ * Receives the incoming events from the sinks during the tests
+ * Receiving a message will block until a message is available or a timeout triggers.
  */
-public class OutputSubscriber<OUT> implements Callable<OutputSubscriber.ResultState> {
+public class OutputSubscriber {
 
-	/**
-	 * Verifier provided with output
-	 */
-	private final OutputVerifier<OUT> verifier;
-	/**
-	 * Number of parallel instances
-	 */
-	private int parallelism = -1;
-	/**
-	 * Set of parallel sink instances that have been started
-	 */
-	private final Set<Integer> participatingSinks = new HashSet<>();
-	/**
-	 * Set of finished parallel sink instances
-	 */
-	private final Set<Integer> closedSinks = new HashSet<>();
-	/**
-	 * Serializer to use for output
-	 */
-	TypeSerializer<OUT> typeSerializer = null;
-	/**
-	 * Number of records received
-	 */
-	private int numRecords = 0;
-	/**
-	 * Number of records reported
-	 */
-	private int expectedNumRecords = 0;
-	/**
-	 * Trigger
-	 */
-	private final VerifyFinishedTrigger<? super OUT> trigger;
+    /**
+     * timeout in minutes for receiving a message
+     */
+    private final long TIMEOUT = 1;
+    /**
+     * id of the sink instance this subscriber is paired with
+     */
+    private int instance;
+    /**
+     * queue for storing incoming events
+     */
+    private BlockingQueue<byte[]> queue = new LinkedBlockingQueue<byte[]>(1000);
 
-	private final ZMQ.Socket subscriber;
+    /**
+     * Constructor
+     *
+     * @param instance  id of paired sink
+     * @param disruptor disruptor transporting the messages
+     */
+    public OutputSubscriber(int instance, Disruptor<OutputEvent> disruptor) {
+        this.instance = instance;
+        disruptor.handleEventsWith(new ByteEventHandler());
+    }
 
-	public OutputSubscriber(ZMQ.Socket subscriber,
-							OutputVerifier<OUT> verifier,
-							VerifyFinishedTrigger<? super OUT> trigger) {
-		this.subscriber = subscriber;
-		this.verifier = verifier;
-		this.trigger = trigger;
+    /**
+     * Receives a byte array.
+     * Will block until data is available!
+     *
+     * @return received byte array.
+     */
+    public byte[] recv() {
+        return getNextMessage();
+    }
 
-	}
+    /**
+     * Get the next message.
+     * Will block until data is available!
+     *
+     * @return byte array with serialized message
+     */
+    public byte[] getNextMessage() {
+        try {
+            return queue.poll(TIMEOUT, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            //Thread interrupted stop waiting and signal it to the subscriber
+            return new byte[0];
+        }
+    }
 
-	/**
-	 * Listens for output from the test sink.
-	 *
-	 * @return {@link OutputSubscriber.ResultState}
-	 * @throws FlinkTestFailedException
-	 */
-	public ResultState call() throws FlinkTestFailedException {
-		Action nextStep = Action.STOP;
-		// receive output from sink until finished all sinks are finished
-		try {
-			nextStep = processMessage(subscriber.recv());
-			while (nextStep == Action.CONTINUE) {
-				nextStep = processMessage(subscriber.recv());
-			}
-		} catch (IOException e) {
-			throw new FlinkTestFailedException(e);
-		} catch (ZMQException e) {
-			//this means the socket was most likely closed forcefully by a timeout
-		}
-		// close the connection
-//		subscriber.close();
-		try {
-			verifier.finish();
-		} catch (Throwable e) {
-			throw new FlinkTestFailedException(e);
-		}
-		// determine the final state of the operation
-		if (nextStep == Action.FINISH) {
-			return ResultState.SUCCESS;
-		} else if (nextStep == Action.STOP) {
-			return ResultState.TRIGGERED;
-		} else {
-			return ResultState.FAILURE;
-		}
-	}
+    /**
+     * Receive the next message and encode into string.
+     * Will block until message is available!
+     * Used only for testing.
+     *
+     * @return string respresentation of the message
+     * @throws Exception
+     */
+    public String recvStr() throws Exception {
+        return new String(getNextMessage(), StandardCharsets.UTF_8);
+    }
 
-	/**
-	 * Signals the final state of the {@link OutputSubscriber}
-	 * SUCCESS if the verification process has been finished.
-	 * TRIGGERED if a trigger stopped the verification.
-	 * FAILURE if the verification protocol was interrupted.
-	 */
-	public enum ResultState {
-		TRIGGERED, SUCCESS, FAILURE
-	}
+    /**
+     * closes the subscriber
+     */
+    public void close() {
 
-	/**
-	 * Signals the next step after calling <pre>processMessage()</pre>.
-	 * CONTINUE if further messages are expected.
-	 * STOP if the a trigger has fired.
-	 * FINISH if all messages have been received.
-	 */
-	private enum Action {
-		CONTINUE, STOP, FINISH
-	}
+    }
 
-	/**
-	 * Receives a byte encoded message.
-	 * Determines the type of message, processes it
-	 * and returns the next step.
-	 *
-	 * @param bytes byte representation of the msg.
-	 * @return {@link Action} the next step.
-	 * @throws IOException              if deserialization failed.
-	 * @throws FlinkTestFailedException if the validation fails.
-	 */
-	private Action processMessage(byte[] bytes)
-			throws IOException, FlinkTestFailedException {
+    private class ByteEventHandler implements EventHandler<OutputEvent> {
 
-		MessageType type = MessageType.getMessageType(bytes);
-		String msg;
-		byte[] out;
+        public void onEvent(OutputEvent event, long sequence, boolean endOfBatch) {
+            if (instance == event.getSender()) {
+                try {
+                    queue.put(event.getMsg());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
-		switch (type) {
-			case OPEN:
-				//Received a open message one of the sink instances
-				//--> Memorize the index and the parallelism.
-				if (participatingSinks.isEmpty()) {
-					verifier.init();
-				}
-				msg = new String(bytes, "UTF-8");
-				String[] values = msg.split(" ");
-				participatingSinks.add(Integer.parseInt(values[1]));
-				parallelism = Integer.parseInt(values[2]);
-				if (typeSerializer == null) {
-					out = type.getPayload(bytes);
-					typeSerializer = SerializeUtil.deserialize(out);
-				}
-
-				break;
-			case REC:
-				//Received a record message from the sink.
-				//--> call the verifier and the finishing trigger.
-				out = type.getPayload(bytes);
-				OUT elem = SerializeUtil.deserialize(out, typeSerializer);
-				numRecords++;
-
-				try {
-					verifier.receive(elem);
-				} catch (Exception e) {
-					throw new FlinkTestFailedException(e);
-				}
-
-				if (trigger.onRecord(elem) ||
-						trigger.onRecordCount(numRecords)) {
-					return Action.STOP;
-				}
-				break;
-			case CLOSE:
-				//Received a close message
-				//--> register the index of the closed sink instance.
-				msg = new String(bytes, "UTF-8");
-				int sinkIndex = Integer.parseInt(msg.split(" ")[1]);
-				int countRecords = Integer.parseInt(msg.split(" ")[2]);
-				expectedNumRecords += countRecords;
-				closedSinks.add(sinkIndex);
-				break;
-		}
-		//check if all sink instances have been closed.
-		if (closedSinks.size() == parallelism &&
-				numRecords == expectedNumRecords) {
-			if (participatingSinks.size() < parallelism) {
-				throw new IOException("not all parallel sinks have been initialized");
-			}
-			//finish the listening process
-			return Action.FINISH;
-		}
-		return Action.CONTINUE;
-	}
 }
-
-

@@ -27,35 +27,35 @@ import org.hamcrest.Matcher;
  */
 public class AtLeast<T> extends UntilCombineMatcher<T> {
 
-	private final int n;
+    private final int n;
 
-	/**
-	 * Default constructor
-	 *
-	 * @param matchers {@link Iterable} of {@link Matcher}
-	 * @param n        number of expected matches
-	 */
-	public AtLeast(Iterable<Matcher<? super T>> matchers, int n) {
-		super(matchers);
-		this.n = n;
-	}
+    /**
+     * Default constructor
+     *
+     * @param matchers {@link Iterable} of {@link Matcher}
+     * @param n        number of expected matches
+     */
+    public AtLeast(Iterable<Matcher<? super T>> matchers, int n) {
+        super(matchers);
+        this.n = n;
+    }
 
-	public Description describeCondition(Description description) {
-		return description.appendText("at least ").appendValue(n);
-	}
+    @Factory
+    public static <T> AtLeast<T> atLeast(Iterable<Matcher<? super T>> matchers, int n) {
+        return new AtLeast<>(matchers, n);
+    }
 
-	@Override
-	public boolean validWhen(int matches, int possibleMatches) {
-		return matches == n;
-	}
+    public Description describeCondition(Description description) {
+        return description.appendText("at least ").appendValue(n);
+    }
 
-	@Override
-	public String prefix() {
-		return "at least ";
-	}
+    @Override
+    public boolean validWhen(int matches, int possibleMatches) {
+        return matches == n;
+    }
 
-	@Factory
-	public static <T> AtLeast<T> atLeast(Iterable<Matcher<? super T>> matchers, int n) {
-		return new AtLeast<>(matchers, n);
-	}
+    @Override
+    public String prefix() {
+        return "at least ";
+    }
 }

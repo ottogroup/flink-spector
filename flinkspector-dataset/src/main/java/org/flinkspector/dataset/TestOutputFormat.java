@@ -16,11 +16,13 @@
 
 package org.flinkspector.dataset;
 
+import com.lmax.disruptor.RingBuffer;
 import org.apache.flink.api.common.io.RichOutputFormat;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.configuration.Configuration;
+import org.flinkspector.core.runtime.OutputEvent;
 import org.flinkspector.core.runtime.OutputPublisher;
 import org.flinkspector.core.util.SerializeUtil;
 import org.slf4j.Logger;
@@ -30,69 +32,67 @@ import java.io.IOException;
 
 public class TestOutputFormat<IN> extends RichOutputFormat<IN> {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
+    private static RingBuffer<OutputEvent> ringBuffer;
+    private OutputPublisher handler;
+    private TypeSerializer<IN> serializer;
+    private int instance;
 
+    private int taskNumber;
+    private int numTasks;
 
-	private OutputPublisher handler;
-	private TypeSerializer<IN> serializer;
-	private final int port;
-	private String jobManagerAddress;
+    private Logger LOG = LoggerFactory.getLogger(RichOutputFormat.class);
 
-	private int taskNumber;
-	private int numTasks;
+    public TestOutputFormat(int instance, RingBuffer<OutputEvent> ringBuffer) {
+        this.ringBuffer = ringBuffer;
+        this.instance = instance;
+    }
 
-	private Logger LOG = LoggerFactory.getLogger(RichOutputFormat.class);
+    @Override
+    public void configure(Configuration configuration) {
 
-	public TestOutputFormat(int port) {
-		this.port = port;
-	}
+    }
 
-	@Override
-	public void configure(Configuration configuration) {
-		jobManagerAddress = configuration
-				.getString("jobmanager.rpc.address", "localhost");
-	}
+    @Override
+    public void open(int taskNumber, int numTasks) throws IOException {
+        this.taskNumber = taskNumber;
+        this.numTasks = numTasks;
+        //open a socket to push data
+        handler = new OutputPublisher(instance, ringBuffer);
+    }
 
-	@Override
-	public void open(int taskNumber, int numTasks) throws IOException {
-		this.taskNumber = taskNumber;
-		this.numTasks = numTasks;
-		//open a socket to push data
-		handler = new OutputPublisher(jobManagerAddress, port);
-	}
+    @Override
+    public void writeRecord(IN next) throws IOException {
+        byte[] msg;
+        if (serializer == null) {
+            //startWith serializer
+            TypeInformation<IN> typeInfo = TypeExtractor.getForObject(next);
+            serializer = typeInfo.createSerializer(getRuntimeContext().getExecutionConfig());
+            //push serializer to output receiver
+            try {
+                handler.sendOpen(taskNumber,
+                        numTasks,
+                        SerializeUtil.serialize(serializer));
+            } catch (IOException e) {
+                LOG.error("Could not serialize TypeSerializer", e);
+                return;
+            }
+        }
 
-	@Override
-	public void writeRecord(IN next) throws IOException {
-		byte[] msg;
-		if (serializer == null) {
-			//startWith serializer
-			TypeInformation<IN> typeInfo = TypeExtractor.getForObject(next);
-			serializer = typeInfo.createSerializer(getRuntimeContext().getExecutionConfig());
-			//push serializer to output receiver
-			try {
-				handler.sendOpen(taskNumber,
-						numTasks,
-						SerializeUtil.serialize(serializer));
-			} catch (IOException e) {
-				LOG.error("Could not serialize TypeSerializer", e);
-				return;
-			}
-		}
+        //serialize input and push to output
+        byte[] bytes;
+        try {
+            bytes = SerializeUtil.serialize(next, serializer);
+        } catch (IOException e) {
+            LOG.error("Could not serialize input", e);
+            return;
+        }
+        handler.sendRecord(bytes);
+    }
 
-		//serialize input and push to output
-		byte[] bytes;
-		try {
-			bytes = SerializeUtil.serialize(next, serializer);
-		} catch (IOException e) {
-			LOG.error("Could not serialize input", e);
-			return;
-		}
-		handler.sendRecord(bytes);
-	}
-
-	@Override
-	public void close() throws IOException {
-		//signal close to output receiver
-		handler.sendClose(taskNumber);
-	}
+    @Override
+    public void close() throws IOException {
+        //signal close to output receiver
+        handler.sendClose(taskNumber);
+    }
 }

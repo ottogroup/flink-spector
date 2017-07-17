@@ -31,34 +31,34 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
  */
 public class TupleMatcher<T extends Tuple> extends TypeSafeDiagnosingMatcher<T> {
 
-	private final String key;
-	private final Matcher matcher;
-	private final TupleMask<T> mask;
+    private final String key;
+    private final Matcher matcher;
+    private final TupleMask<T> mask;
 
-	public TupleMatcher(String key, Matcher matcher, TupleMask<T> mask) {
-		this.mask = mask;
-		this.key = key;
-		this.matcher = matcher;
-	}
+    public TupleMatcher(String key, Matcher matcher, TupleMask<T> mask) {
+        this.mask = mask;
+        this.key = key;
+        this.matcher = matcher;
+    }
 
-	@Override
-	protected boolean matchesSafely(T item, Description mismatchDescription) {
-		TupleMap tupleMap = mask.apply(item);
+    @Override
+    protected boolean matchesSafely(T item, Description mismatchDescription) {
+        TupleMap tupleMap = mask.apply(item);
 
-		if (!matcher.matches(tupleMap.get(key))) {
-			mismatchDescription
-					.appendText("[" + key + "] ")
-					.appendDescriptionOf(matcher)
-					.appendText(", ");
-			matcher.describeMismatch(tupleMap.get(key), mismatchDescription);
-			return false;
-		}
-		return true;
-	}
+        if (!matcher.matches(tupleMap.get(key))) {
+            mismatchDescription
+                    .appendText("[" + key + "] ")
+                    .appendDescriptionOf(matcher)
+                    .appendText(", ");
+            matcher.describeMismatch(tupleMap.get(key), mismatchDescription);
+            return false;
+        }
+        return true;
+    }
 
-	@Override
-	public void describeTo(Description description) {
-		description.appendText("[" + key + "] ");
-		description.appendDescriptionOf(matcher);
-	}
+    @Override
+    public void describeTo(Description description) {
+        description.appendText("[" + key + "] ");
+        description.appendDescriptionOf(matcher);
+    }
 }

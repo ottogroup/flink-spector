@@ -41,6 +41,11 @@ class StreamTestEnvironmentSpec extends CoreSpec {
     override def onRecordCount(count: Long): Boolean = count >= n
   }
 
+  class CountVerifier[T](cnt: Int) extends SimpleOutputVerifier[T] {
+    override def verify(output: JList[T]): Unit =
+      output should have length (cnt)
+  }
+
   "The stream environment" should "initialize" in {
     DataStreamTestEnvironment.createTestEnvironment(1)
   }
@@ -56,7 +61,7 @@ class StreamTestEnvironmentSpec extends CoreSpec {
   it should "stop with trigger and signal a success" in {
     val env = DataStreamTestEnvironment.createTestEnvironment(1)
     val source = env.fromElements(1, 2, 3, 4, 5)
-    val sink = env.createTestSink(new Verifier(List(1, 2)), new CountTrigger(2))
+    val sink = env.createTestSink(new CountVerifier[Int](2), new CountTrigger(2))
     source.addSink(sink)
     env.executeTest()
   }
@@ -154,7 +159,7 @@ class StreamTestEnvironmentSpec extends CoreSpec {
     val evenStream = env.fromElements(evenlist: _*)
     val oddStream = env.fromElements(oddlist: _*)
 
-    val evenSink = env.createTestSink(new Verifier[Integer](List(2, 4)), new CountTrigger(2))
+    val evenSink = env.createTestSink(new CountVerifier[Integer](2), new CountTrigger(2))
     val oddSink = env.createTestSink(new Verifier[Integer](List(1, 3, 5, 7)))
     evenStream.addSink(evenSink)
     oddStream.addSink(oddSink)
@@ -171,8 +176,8 @@ class StreamTestEnvironmentSpec extends CoreSpec {
     val oddStream = env.fromElements(oddlist: _*)
 
 
-    val evenSink = env.createTestSink(new Verifier[Integer](List(2, 4)), new CountTrigger(2))
-    val oddSink = env.createTestSink(new Verifier[Integer](List(1, 3)), new CountTrigger(2))
+    val evenSink = env.createTestSink(new CountVerifier[Integer](2), new CountTrigger(2))
+    val oddSink = env.createTestSink(new CountVerifier[Integer](2), new CountTrigger(2))
     evenStream.addSink(evenSink)
     oddStream.addSink(oddSink)
     env.executeTest()

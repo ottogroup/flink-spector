@@ -28,29 +28,29 @@ import java.util.List;
  */
 public abstract class SimpleOutputVerifier<T> implements OutputVerifier<T> {
 
-	private List<T> output = new ArrayList<>();
+    private List<T> output = new ArrayList<>();
 
-	/**
-	 * This method is called once all output has arrived in the endpoint.
-	 * to verify the output.
-	 *
-	 * @param output from the test run
-	 */
-	public abstract void verify(List<T> output) throws FlinkTestFailedException;
+    /**
+     * This method is called once all output has arrived in the endpoint.
+     * to verify the output.
+     *
+     * @param output from the test run
+     */
+    public abstract void verify(List<T> output) throws FlinkTestFailedException;
 
-	@Override
-	public void init() {
-		output = new ArrayList<>();
-	}
+    @Override
+    public void init() {
+        output = new ArrayList<>();
+    }
 
-	@Override
-	public void receive(T record) throws FlinkTestFailedException {
-		output.add(record);
-	}
+    @Override
+    public void receive(T record) throws FlinkTestFailedException {
+        output.add(record);
+    }
 
-	@Override
-	public void finish() throws FlinkTestFailedException {
-		verify(output);
-	}
+    @Override
+    public void finish() throws FlinkTestFailedException {
+        verify(output);
+    }
 
 }

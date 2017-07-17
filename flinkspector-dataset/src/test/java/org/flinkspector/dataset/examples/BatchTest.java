@@ -32,41 +32,41 @@ import static org.hamcrest.Matchers.lessThan;
 
 public class BatchTest extends DataSetTestBase {
 
-	private DataSet<Tuple2<String, Integer>> swap(DataSet<Tuple2<Integer, String>> set) {
-		return set.map(new MapFunction<Tuple2<Integer, String>, Tuple2<String, Integer>>() {
-			@Override
-			public Tuple2<String, Integer> map(Tuple2<Integer, String> value) throws Exception {
-				return value.swap();
-			}
-		});
-	}
+    private DataSet<Tuple2<String, Integer>> swap(DataSet<Tuple2<Integer, String>> set) {
+        return set.map(new MapFunction<Tuple2<Integer, String>, Tuple2<String, Integer>>() {
+            @Override
+            public Tuple2<String, Integer> map(Tuple2<Integer, String> value) throws Exception {
+                return value.swap();
+            }
+        });
+    }
 
 
-	@Test
-	public void testMap() throws Throwable {
-		/*
+    @Test
+    public void testMap() throws Throwable {
+        /*
 		 * Define the input DataSet:
 		 * Get a DataSetBuilder with .createTestStreamWith(record).
 		 * Add data records to it and retrieve a DataSet,
 		 * by calling .complete().
 		 */
-		DataSet<Tuple2<Integer, String>> testDataSet =
-				createTestDataSetWith(Tuple2.of(1, "test"))
-						.emit(Tuple2.of(2, "why"))
-						.emit(Tuple2.of(3, "not"))
-						.emit(Tuple2.of(4, "batch?"))
-						.close();
+        DataSet<Tuple2<Integer, String>> testDataSet =
+                createTestDataSetWith(Tuple2.of(1, "test"))
+                        .emit(Tuple2.of(2, "why"))
+                        .emit(Tuple2.of(3, "not"))
+                        .emit(Tuple2.of(4, "batch?"))
+                        .close();
 
 		/*
 		 * Define the output you expect from the the transformation under test.
 		 * Add the tuples you want to see with .expect(record).
 		 */
-		ExpectedRecords<Tuple2<String, Integer>> output = ExpectedRecords
-				.create(Tuple2.of("test", 1))
-				.expect(Tuple2.of("why", 2))
-				.expect(Tuple2.of("not", 3));
-		// refine your expectations by adding requirements
-		output.refine().only().inOrder(strict);
+        ExpectedRecords<Tuple2<String, Integer>> output = ExpectedRecords
+                .create(Tuple2.of("test", 1))
+                .expect(Tuple2.of("why", 2))
+                .expect(Tuple2.of("not", 3));
+        // refine your expectations by adding requirements
+        output.refine().only().inOrder(strict);
 
 		/*
 		 * Creates an OutputMatcher using AssertTuples.
@@ -74,16 +74,16 @@ public class BatchTest extends DataSetTestBase {
 		 * You assign String identifiers to your Tuple,
 		 * and add hamcrest matchers testing the values.
 		 */
-		OutputMatcher<Tuple2<String, Integer>> matcher =
-				//name the values in your tuple with keys:
-				new MatchTuples<Tuple2<String, Integer>>("name", "value")
-						//add an assertion using a value and hamcrest matchers
-						.assertThat("name", isA(String.class))
-						.assertThat("value", lessThan(5))
-						//express how many matchers must return true for your test to pass:
-						.anyOfThem()
-						//define how many records need to fulfill the
-						.onEachRecord();
+        OutputMatcher<Tuple2<String, Integer>> matcher =
+                //name the values in your tuple with keys:
+                new MatchTuples<Tuple2<String, Integer>>("name", "value")
+                        //add an assertion using a value and hamcrest matchers
+                        .assertThat("name", isA(String.class))
+                        .assertThat("value", lessThan(5))
+                        //express how many matchers must return true for your test to pass:
+                        .anyOfThem()
+                        //define how many records need to fulfill the
+                        .onEachRecord();
 
 		/*
 		 * Use assertDataSet to map DataSet to an OutputMatcher.
@@ -91,9 +91,9 @@ public class BatchTest extends DataSetTestBase {
 		 * Combine the created matchers with anyOf(), implicating that at least one of
 		 * the matchers must be positive.
 		 */
-		assertDataSet(swap(testDataSet), anyOf(output, matcher), FinishAtCount.of(3));
-	}
+        assertDataSet(swap(testDataSet), anyOf(output, matcher), FinishAtCount.of(3));
+    }
 
-	private class Person {
-	}
+    private class Person {
+    }
 }

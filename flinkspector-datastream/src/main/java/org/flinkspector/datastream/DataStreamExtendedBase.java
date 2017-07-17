@@ -34,6 +34,6 @@ package org.flinkspector.datastream;
 
 public class DataStreamExtendedBase extends DataStreamTestBase {
 
-	DataStreamTestEnvironment environment = testEnv;
+    DataStreamTestEnvironment environment = testEnv;
 
 }

@@ -40,6 +40,12 @@ class DataSetEnvironmentSpec extends CoreSpec {
       output should contain theSameElementsAs list
   }
 
+  class CountVerifier[T](cnt: Int) extends SimpleOutputVerifier[T] {
+
+    override def verify(output: JList[T]): Unit =
+      output should have length (cnt)
+  }
+
   "The batch environment" should "initialize" in {
     DataSetTestEnvironment.createTestEnvironment(1)
   }
@@ -63,7 +69,7 @@ class DataSetEnvironmentSpec extends CoreSpec {
   it should "stop with trigger and signal a success" in {
     val env = DataSetTestEnvironment.createTestEnvironment(1)
     val dataSet = env.fromElements(1, 2, 3, 4, 5)
-    val outputFormat = env.createTestOutputFormat(new Verifier(List(1, 2)), new CountTrigger(2))
+    val outputFormat = env.createTestOutputFormat(new CountVerifier[Int](2), new CountTrigger(2))
     dataSet.output(outputFormat)
     env.executeTest()
   }
@@ -149,7 +155,7 @@ class DataSetEnvironmentSpec extends CoreSpec {
     val evenDataSet = env.fromElements(evenlist: _*)
     val oddDataSet = env.fromElements(oddlist: _*)
 
-    val evenOutputFormat = env.createTestOutputFormat(new Verifier[Integer](List(2, 4)), new CountTrigger(2))
+    val evenOutputFormat = env.createTestOutputFormat(new CountVerifier[Integer](2), new CountTrigger(2))
     val oddOutputFormat = env.createTestOutputFormat(new Verifier[Integer](List(1, 3, 5, 7)))
     evenDataSet.output(evenOutputFormat)
     oddDataSet.output(oddOutputFormat)
@@ -164,8 +170,8 @@ class DataSetEnvironmentSpec extends CoreSpec {
     val oddDataSet = env.fromElements(oddlist: _*)
 
 
-    val evenOutputFormat = env.createTestOutputFormat(new Verifier[Integer](List(2, 4)), new CountTrigger(2))
-    val oddOutputFormat = env.createTestOutputFormat(new Verifier[Integer](List(1, 3)), new CountTrigger(2))
+    val evenOutputFormat = env.createTestOutputFormat(new CountVerifier[Integer](2), new CountTrigger(2))
+    val oddOutputFormat = env.createTestOutputFormat(new CountVerifier[Integer](2), new CountTrigger(2))
     evenDataSet.output(evenOutputFormat)
     oddDataSet.output(oddOutputFormat)
     env.executeTest()
