@@ -29,7 +29,7 @@ public class Each<T> extends UntilCombineMatcher<T> {
     /**
      * Default constructor
      *
-     * @param matchers {@link Iterable} of {@link Matcher<? super T>}
+     * @param matchers {@link Iterable} of {@link Matcher}
      */
     public Each(Iterable<Matcher<? super T>> matchers) {
         super(matchers);

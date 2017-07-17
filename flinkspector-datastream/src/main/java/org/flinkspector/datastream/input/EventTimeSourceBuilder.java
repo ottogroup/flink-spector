@@ -45,7 +45,7 @@ public class EventTimeSourceBuilder<T> {
      *
      * @param record first record to emit.
      * @param env    to work on.
-     * @param <T>
+     * @param <T> generic type of output
      * @return created {@link SourceBuilder}
      */
     public static <T> EventTimeSourceBuilder<T> createBuilder(T record,
@@ -78,7 +78,7 @@ public class EventTimeSourceBuilder<T> {
      *
      * @param elem
      * @param timeStamp
-     * @return
+     * @return this (used for fluent interface)
      */
     public EventTimeSourceBuilder<T> emit(T elem, long timeStamp) {
         builder.emit(new StreamRecord(elem, timeStamp));
@@ -91,7 +91,7 @@ public class EventTimeSourceBuilder<T> {
      *
      * @param elem
      * @param timeSpan {@link TimeSpan}
-     * @return
+     * @return this (used for fluent interface)
      */
     public EventTimeSourceBuilder<T> emit(T elem, Moment timeSpan) {
         builder.emit(elem, timeSpan);
@@ -103,7 +103,7 @@ public class EventTimeSourceBuilder<T> {
      * defining the time between the previous and the new record.
      *
      * @param elem
-     * @return
+     * @return this (used for fluent interface)
      */
     public EventTimeSourceBuilder<T> emit(T elem) {
         builder.emit(elem);
@@ -114,7 +114,7 @@ public class EventTimeSourceBuilder<T> {
      * Add a {@link StreamRecord} to the list of input.
      *
      * @param streamRecord
-     * @return
+     * @return this (used for fluent interface)
      */
     public EventTimeSourceBuilder<T> emit(StreamRecord<T> streamRecord) {
         builder.emit(streamRecord);

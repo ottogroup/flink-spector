@@ -32,7 +32,7 @@ public class MatcherCombiner {
      *
      * @param matchers {@link Iterable} of matchers
      * @param <T>
-     * @return
+     * @return new {@link Matcher}
      */
     public static <T> Matcher<T> any(Iterable<Matcher<? super T>> matchers) {
         return Any.any(matchers);
@@ -44,7 +44,7 @@ public class MatcherCombiner {
      *
      * @param matchers {@link Iterable} of matchers
      * @param <T>
-     * @return
+     * @return new {@link Matcher}
      */
     public static <T> Matcher<T> each(Iterable<Matcher<? super T>> matchers) {
         return Each.each(matchers);
@@ -56,7 +56,7 @@ public class MatcherCombiner {
      *
      * @param matchers {@link Iterable} of matchers
      * @param <T>
-     * @return
+     * @return new {@link Matcher}
      */
     public static <T> Matcher<T> one(Iterable<Matcher<? super T>> matchers) {
         return One.one(matchers);
@@ -69,7 +69,7 @@ public class MatcherCombiner {
      * @param matchers {@link Iterable} of matchers
      * @param n        number of matches
      * @param <T>
-     * @return
+     * @return new {@link Matcher}
      */
     public static <T> Matcher<T> exactly(Iterable<Matcher<? super T>> matchers,
                                          int n) {
@@ -83,7 +83,7 @@ public class MatcherCombiner {
      * @param matchers {@link Iterable} of matchers
      * @param n        number of matches
      * @param <T>
-     * @return
+     * @return new {@link Matcher}
      */
     public static <T> Matcher<T> atLeast(Iterable<Matcher<? super T>> matchers,
                                          int n) {
@@ -97,7 +97,7 @@ public class MatcherCombiner {
      * @param matchers {@link Iterable} of matchers
      * @param n        number of matches
      * @param <T>
-     * @return
+     * @return new {@link Matcher}
      */
     public static <T> Matcher<T> atMost(Iterable<Matcher<? super T>> matchers,
                                         int n) {

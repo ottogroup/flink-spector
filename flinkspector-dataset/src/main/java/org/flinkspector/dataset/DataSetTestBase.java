@@ -79,7 +79,7 @@ public class DataSetTestBase {
     /**
      * Creates a {@link TestOutputFormat} using {@link org.hamcrest.Matcher} to verify the output.
      *
-     * @param matcher of type Iterable<IN>
+     * @param matcher of type Iterable
      * @param <IN>
      * @return the created sink.
      */
@@ -91,7 +91,7 @@ public class DataSetTestBase {
     /**
      * Creates a {@link TestOutputFormat} using {@link org.hamcrest.Matcher} to verify the output.
      *
-     * @param matcher of type Iterable<IN>
+     * @param matcher of type Iterable
      * @param <IN>    generic type of the returned {@link TestOutputFormat}
      * @return the created data set from the given.
      */

@@ -39,7 +39,7 @@ public interface OutputVerifier<T> {
      * which wraps the actual exception, if the test has failed.
      *
      * @param record that is received by the test sink
-     * @throws Exception
+     * @throws Exception if test failed
      */
     void receive(T record) throws Exception;
 
@@ -51,7 +51,7 @@ public interface OutputVerifier<T> {
      * The method must throw a {@link FlinkTestFailedException},
      * which wraps the actual exception, if the test has failed.
      *
-     * @throws Exception
+     * @throws Exception if test failed
      */
     void finish() throws Exception;
 
