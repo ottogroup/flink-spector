@@ -27,7 +27,7 @@ import java.util.List;
  * This class is used to define expectations
  * for the output of a endpoint.
  *
- * @param <T>
+ * @param <T> Generic type of the expected records
  */
 public class ExpectedRecords<T> extends OutputMatcher<T> {
 
@@ -71,6 +71,7 @@ public class ExpectedRecords<T> extends OutputMatcher<T> {
      * Adds an record to the list of expected output
      *
      * @param record to add
+     * @return used for fluent interface
      */
     public ExpectedRecords<T> expect(T record) {
         expectedRecords.add(record);
@@ -81,6 +82,7 @@ public class ExpectedRecords<T> extends OutputMatcher<T> {
      * Adds a {@link Collection} of records to the expected output
      *
      * @param records to add
+     * @return used for fluent interface
      */
     public ExpectedRecords<T> expectAll(Collection<T> records) {
         expectedRecords.addAll(records);
@@ -91,6 +93,8 @@ public class ExpectedRecords<T> extends OutputMatcher<T> {
      * Adds an record to the collection of expected output
      *
      * @param record to add
+     * @param times how often is the record expected
+     * @return used for fluent interface
      */
     public ExpectedRecords<T> expect(T record, int times) {
         if (record == null) {
@@ -104,6 +108,7 @@ public class ExpectedRecords<T> extends OutputMatcher<T> {
      * Expect the current output a number of times
      *
      * @param times number of times the input ist will be repeated
+     * @return used for fluent interface
      */
     public ExpectedRecords<T> repeatAll(int times) {
         List<T> toAppend = new ArrayList<>();

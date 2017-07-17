@@ -31,6 +31,7 @@ import java.util.List;
  * 		.assertThat(greaterThan(21))
  * 		.assertThat(lessThan(11))
  * 		anyOfThem().onEachRecord();
+ * }
  * </pre>
  *
  * @param <T>

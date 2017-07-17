@@ -26,7 +26,7 @@ import org.hamcrest.core.IsEqual;
  * Provides a matcher for output that matches when the <code>size</code> of the output
  * satisfies the specified matcher.
  *
- * @param <T>
+ * @param <T> Generic type of the output
  */
 public class OutputWithSize<T> extends TypeSafeDiagnosingMatcher<Iterable<T>> {
 

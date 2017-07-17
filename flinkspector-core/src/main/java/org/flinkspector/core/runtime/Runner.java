@@ -141,10 +141,11 @@ public abstract class Runner {
 
     /**
      * Stops the execution of the test.
-     * <p/>
+     * <p>
      * Shutting the local cluster down will notify
      * the sockets when the sinks are closed.
      * Thus terminating the execution gracefully.
+     * </p>
      */
     public synchronized void stopExecution() {
         stopped = true;

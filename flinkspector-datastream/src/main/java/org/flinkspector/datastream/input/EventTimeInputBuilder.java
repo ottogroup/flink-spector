@@ -137,7 +137,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
      *
      * @param record
      * @param times
-     * @return
+     * @return used for fluent interface
      */
     public EventTimeInputBuilder<T> emit(T record, int times) {
         if (times < 0) {
@@ -154,7 +154,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
      * Add an element with the timestamp of the previous record to the input.
      *
      * @param record
-     * @return
+     * @return used for fluent interface
      */
     public EventTimeInputBuilder<T> emit(T record) {
         if (record == null) {
@@ -170,7 +170,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
      *
      * @param record
      * @param timeSpan {@link TimeSpan}
-     * @return
+     * @return used for fluent interface
      */
     public EventTimeInputBuilder<T> emit(T record, Moment timeSpan) {
         if (timeSpan == null) {
@@ -185,7 +185,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
      * Add a {@link StreamRecord} to the list of input.
      *
      * @param streamRecord
-     * @return
+     * @return used for fluent interface
      */
     public EventTimeInputBuilder<T> emit(StreamRecord<T> streamRecord) {
         if (streamRecord == null) {
@@ -262,7 +262,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
     /**
      * Print the input list.
      *
-     * @return
+     * @return string containing the list of output
      */
     public String toString() {
         StringBuilder builder = new StringBuilder();

@@ -40,6 +40,7 @@ public class MatcherBuilder<T> extends OutputMatcher<T> {
 
     /**
      * Tests whether the output contains only the expected records
+     * @return used for fluent interface
      */
     public MatcherBuilder<T> only() {
         builder.only();
@@ -49,6 +50,7 @@ public class MatcherBuilder<T> extends OutputMatcher<T> {
     /**
      * Tests whether the output has the same number of occurrences for each element
      * in the expected output
+     * @return used for fluent interface
      */
     public MatcherBuilder<T> sameFrequency() {
         builder.sameFrequency();
@@ -58,6 +60,7 @@ public class MatcherBuilder<T> extends OutputMatcher<T> {
     /**
      * Provides a {@link OrderMatcher} to verify the order of
      * elements in the output
+     * @return used for fluent interface
      */
     public FromListMatcher inOrder(Order order) {
         if (order == Order.STRICT) {

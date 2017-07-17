@@ -36,6 +36,7 @@ import org.hamcrest.Matcher;
  * 		.assertThat("age", greaterThan(21))
  * 		.assertThat("name", either(is("fritz")).or(is("peter")))
  * 		.anyOfThem().onEachRecord();
+ * }
  * </pre>
  *
  * @param <T>

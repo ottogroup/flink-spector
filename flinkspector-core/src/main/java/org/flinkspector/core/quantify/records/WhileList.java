@@ -24,7 +24,7 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 /**
  * Matches an {@link Iterable} while a certain condition is met.
  *
- * @param <T>
+ * @param <T> Generic type of the output
  */
 public abstract class WhileList<T> extends TypeSafeDiagnosingMatcher<Iterable<T>> {
 

@@ -208,7 +208,7 @@ public class DataStreamTestBase {
     /**
      * Creates a TestSink using {@link org.hamcrest.Matcher} to verify the output.
      *
-     * @param matcher of type Iterable<IN>
+     * @param matcher of type Iterable
      * @param <IN>
      * @return the created sink.
      */
@@ -243,7 +243,7 @@ public class DataStreamTestBase {
     /**
      * Creates a TestSink using {@link org.hamcrest.Matcher} to verify the output.
      *
-     * @param matcher of type Iterable<IN>
+     * @param matcher of type Iterable
      * @param <IN>
      * @return the created sink.
      */
