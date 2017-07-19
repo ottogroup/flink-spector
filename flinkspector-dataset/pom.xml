@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.flinkspector</groupId>
         <artifactId>flinkspector-parent_2.11</artifactId>
-        <version>0.8-SNAPSHOT</version>
+        <version>0.7.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -143,6 +143,7 @@
                     <junitxml>.</junitxml>
                     <filereports>WDF TestSuite.txt</filereports>
                     <argLine>-Xms2048m -Xmx2048m</argLine>
+                    <forkMode>once</forkMode>
                 </configuration>
                 <executions>
                     <execution>
