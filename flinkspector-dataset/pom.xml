@@ -143,6 +143,7 @@
                     <junitxml>.</junitxml>
                     <filereports>WDF TestSuite.txt</filereports>
                     <argLine>-Xms2048m -Xmx2048m</argLine>
+                    <forkMode>once</forkMode>
                 </configuration>
                 <executions>
                     <execution>

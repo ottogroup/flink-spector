@@ -122,6 +122,7 @@
                     <junitxml>.</junitxml>
                     <filereports>WDF TestSuite.txt</filereports>
                     <argLine>-Xms1024m -Xmx1024m</argLine>
+                    <forkMode>once</forkMode>
                 </configuration>
                 <executions>
                     <execution>
