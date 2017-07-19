@@ -72,8 +72,8 @@ public class WindowingTest extends DataStreamTestBase {
                         .close();
 
 		/*
-		 * Creates an OutputMatcher using MatchFields.
-		 * MatchFields builds an OutputMatcher working on Tuples.
+		 * Creates an OutputMatcher using MatchTuples.
+		 * MatchTuples builds an OutputMatcher working with Flink Tuples.
 		 * You assign String identifiers to your Tuple,
 		 * and add hamcrest matchers testing the values.
 		 */
