@@ -126,7 +126,7 @@ or for the Flink DataStream API:
 <dependency>
     <groupId>org.flinkspector</groupId>
     <artifactId>flinkspector-datastream</artifactId>
-    <version>0.8-SNAPSHOT</version>
+    <version>0.7.2-SNAPSHOT</version>
 </dependency>
 ```
 
