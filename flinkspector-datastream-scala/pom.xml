@@ -35,23 +35,24 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>flinkspector-parent</artifactId>
         <groupId>org.flinkspector</groupId>
-        <version>0.1-SNAPSHOT</version>
+        <artifactId>flinkspector-parent_2.11</artifactId>
+        <version>0.8-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>flinkspector-datastream-scala_${scala.binary.version}</artifactId>
+    <artifactId>flinkspector-datastream-scala_2.11</artifactId>
+    <name>flinkspector-datastream-scala</name>
 
     <dependencies>
         <dependency>
             <groupId>org.flinkspector</groupId>
-            <artifactId>flinkspector-core</artifactId>
+            <artifactId>flinkspector-core_${scala.binary.version}</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.flinkspector</groupId>
-            <artifactId>flinkspector-datastream</artifactId>
+            <artifactId>flinkspector-datastream_${scala.binary.version}</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -100,7 +101,7 @@
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>3.1.4</version>
+                <version>3.2.2</version>
                 <executions>
                     <!-- Run scala compiler in the process-resources phase, so that dependencies on
                         scala classes can be resolved later in the (Java) compile phase -->

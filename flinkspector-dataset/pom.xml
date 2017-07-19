@@ -38,7 +38,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-java_${scala.binary.version}</artifactId>
+            <artifactId>flink-java</artifactId>
             <version>${flink.version}</version>
         </dependency>
     </dependencies>

@@ -21,17 +21,20 @@ import java.util.concurrent.TimeUnit
 
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.streaming.api.TimeCharacteristic
+import org.apache.flink.streaming.api.datastream.DataStreamSource
 import org.apache.flink.streaming.api.scala.DataStream
-import org.flinkspector.core.collection.{MatcherBuilder, ExpectedRecords}
-import org.flinkspector.core.input.{InputBuilder, Input}
+import org.flinkspector.core.Order
+import org.flinkspector.core.collection.{ExpectedRecords, MatcherBuilder}
+import org.flinkspector.core.input.{Input, InputBuilder}
 import org.flinkspector.core.quantify.HamcrestVerifier
 import org.flinkspector.core.runtime.OutputVerifier
 import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.flinkspector.datastream.functions.TestSink
-import org.flinkspector.datastream.input.{EventTimeInputBuilder, EventTimeInput}
-import org.flinkspector.datastream.input.time.{Before, After}
+import org.flinkspector.datastream.input.{EventTimeInput, EventTimeInputBuilder}
+import org.flinkspector.datastream.input.time.{After, Before}
 import org.hamcrest.Matcher
 import org.scalatest.{BeforeAndAfterEach, Suite}
+import org.apache.flink.streaming.api.scala._
 
 import scala.reflect.ClassTag
 
@@ -68,7 +71,7 @@ trait FlinkDataStream extends BeforeAndAfterEach { this: Suite =>
    * @param input to emit.
    * @return a DataStreamSource generating the input.
    */
-  def createTestStream[OUT: ClassTag: TypeInformation](input: EventTimeInput[OUT]): DataStream[OUT] = {
+  def createTestStream[OUT: ClassTag: TypeInformation](input: EventTimeInput[OUT]): DataStreamSource[OUT] = {
     val typeInfo = implicitly[TypeInformation[OUT]]
     testEnv.fromInput(input)
   }
@@ -92,7 +95,7 @@ trait FlinkDataStream extends BeforeAndAfterEach { this: Suite =>
    * @return a DataStream generating the input.
    */
   def createTestStream[OUT: ClassTag: TypeInformation](input: Input[OUT]): DataStream[OUT] = {
-    testEnv.fromInput(input)
+     new DataStream(testEnv.fromInput(input))
   }
 
   /**
@@ -114,6 +117,26 @@ trait FlinkDataStream extends BeforeAndAfterEach { this: Suite =>
    */
   def createTestSink[IN](verifier: OutputVerifier[IN], trigger: VerifyFinishedTrigger[_]): TestSink[IN] = {
     testEnv.createTestSink(verifier, trigger)
+  }
+
+  /**
+    * Creates a TestSink using {@link org.hamcrest.Matcher} to verify the output.
+    *
+    * @param function of generic type IN
+    * @return the created sink.
+    */
+  def createTestSink[IN](function: Iterable[IN] => Any, trigger: VerifyFinishedTrigger[_]): TestSink[IN] = {
+    testEnv.createTestSink(new FunctionVerifier[IN](function), trigger)
+  }
+
+  /**
+    * Creates a TestSink using {@link org.hamcrest.Matcher} to verify the output.
+    *
+    * @param function of generic type IN
+    * @return the created sink.
+    */
+  def createTestSink[IN](function: Iterable[IN] => Any): TestSink[IN] = {
+    testEnv.createTestSink(new FunctionVerifier[IN](function))
   }
 
   /**
@@ -153,8 +176,8 @@ trait FlinkDataStream extends BeforeAndAfterEach { this: Suite =>
     testEnv.setParallelism(parallelism)
   }
 
-  def fulfill[T](matcher: Matcher[JIterable[T]]) : FulfillWord[T] = {
-    new FulfillWord[T](matcher)
+  def fulfill[T](function: Iterable[T] => Any) : FulfillWord[T] = {
+    new FulfillWord[T](function)
   }
 
   class StreamShouldWrapper[T](val stream: DataStream[T]){
@@ -195,7 +218,7 @@ trait FlinkDataStream extends BeforeAndAfterEach { this: Suite =>
   }
 
   def startWith[T](record: T): EventTimeInputBuilder[T] = {
-    return EventTimeInputBuilder.create(record)
+    return EventTimeInputBuilder.startWith(record)
   }
 
   def emit[T](elem: T): InputBuilder[T] = {
@@ -210,8 +233,8 @@ trait FlinkDataStream extends BeforeAndAfterEach { this: Suite =>
     return n
   }
 
-  val strict: MatcherBuilder.Order = MatcherBuilder.Order.STRICT
-  val notStrict: MatcherBuilder.Order = MatcherBuilder.Order.NONSTRICT
+  val strict: Order = Order.STRICT
+  val notStrict: Order = Order.NONSTRICT
   val seconds: TimeUnit = TimeUnit.SECONDS
   val minutes: TimeUnit = TimeUnit.MINUTES
   val hours: TimeUnit = TimeUnit.HOURS
@@ -220,7 +243,7 @@ trait FlinkDataStream extends BeforeAndAfterEach { this: Suite =>
 
 }
 
-final class FulfillWord[T](val matcher: Matcher[JIterable[T]]) {
+final class FulfillWord[T](val matcher: Iterable[T] => Any) {
 
   var trigger: Option[VerifyFinishedTrigger[_]] = None
 

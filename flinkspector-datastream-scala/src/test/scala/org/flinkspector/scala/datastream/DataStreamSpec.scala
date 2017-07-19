@@ -16,29 +16,25 @@ package org.flinkspector.scala.datastream
  * limitations under the License.
  */
 
-import org.apache.flink.api.scala._
+import org.apache.flink.streaming.api.scala._
 import org.flinkspector.core.collection.ExpectedRecords
 import org.flinkspector.core.input.InputBuilder
 
 //needs to be defined top level
 case class Output(key: String, value: Int)
 
-class DataStreamSpec extends CoreSpec with FlinkDataStream{
+class DataStreamSpec extends CoreSpec with FlinkDataStream {
 
   "basic test" should "work" in {
 
     //create a test stream
-    val stream = createTestStream(List(1, 2, 3, 4)).map(_ + 1)
+    val stream = createTestStream[Int](List(1, 2, 3, 4))
+      .map(_ + 1)
 
-    //build a matcher
-    val expected = ExpectedRecords
-      .create(2)
-      .expect(3)
-      .expect(4)
-      .expect(5)
-
-    //use the matcher on the datastream
-    stream should fulfill(expected)
+    //test the output
+    stream should fulfill {
+      _ should contain allOf(2, 3, 4, 5)
+    }
     executeTest()
 
   }
@@ -54,13 +50,7 @@ class DataStreamSpec extends CoreSpec with FlinkDataStream{
 
     val stream = createTestStream(input)
 
-    stream should fulfill {
-      //use a case class to map the tuple
-      new AssertBlock[(String,Int),Output] {
-        field(v.key shouldBe a[String])
-        field(v.value should be > 4)
-      }
-    }
+    stream should fulfill(_ should contain(("check", 5)))
     executeTest()
   }
 }

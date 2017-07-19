@@ -20,7 +20,6 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.flinkspector.core.collection.ExpectedRecords;
-import org.flinkspector.core.quantify.MatchFields;
 import org.flinkspector.core.quantify.MatchTuples;
 import org.flinkspector.core.quantify.OutputMatcher;
 import org.flinkspector.core.trigger.FinishAtCount;

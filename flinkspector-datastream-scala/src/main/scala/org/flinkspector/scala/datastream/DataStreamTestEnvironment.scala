@@ -17,11 +17,11 @@
 package org.flinkspector.scala.datastream
 
 import org.apache.flink.api.common.typeinfo.TypeInformation
-import org.apache.flink.runtime.StreamingMode
+import org.apache.flink.streaming.api.datastream.DataStreamSource
 import org.apache.flink.streaming.api.environment.{StreamExecutionEnvironment => JavaEnv}
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord
-import org.apache.flink.test.util.{ForkableFlinkMiniCluster, TestBaseUtils}
+import org.apache.flink.test.util.TestBaseUtils
 import org.flinkspector.core.input.Input
 import org.flinkspector.core.runtime.OutputVerifier
 import org.flinkspector.core.trigger.VerifyFinishedTrigger
@@ -78,9 +78,9 @@ class DataStreamTestEnvironment(testEnv: org.flinkspector.datastream.DataStreamT
    * @param data  The array of elements to startWith the data stream from.
    * @return The data stream representing the given array of elements
    */
-  @SafeVarargs def fromElementsWithTimeStamp[OUT: ClassTag: TypeInformation](data: StreamRecord[OUT]*): DataStream[OUT] = {
+  @SafeVarargs def fromElementsWithTimeStamp[OUT: ClassTag: TypeInformation](data: StreamRecord[OUT]*): DataStreamSource[OUT] = {
     val typeInfo = implicitly[TypeInformation[OUT]]
-    testEnv.fromCollectionWithTimestamp(data.asJava,typeInfo)
+    testEnv.fromCollectionWithTimestamp(data.asJava,typeInfo, false)
   }
 
   /**
@@ -89,9 +89,9 @@ class DataStreamTestEnvironment(testEnv: org.flinkspector.datastream.DataStreamT
    * @param input The { @link EventTimeInput} to startWith the data stream from.
    * @return The data stream representing the given input.
    */
-  def fromInput[OUT: ClassTag: TypeInformation](input: EventTimeInput[OUT]): DataStream[OUT] = {
+  def fromInput[OUT: ClassTag: TypeInformation](input: EventTimeInput[OUT]): DataStreamSource[OUT] = {
     val typeInfo = implicitly[TypeInformation[OUT]]
-    testEnv.fromInput(input,typeInfo)
+    testEnv.fromInput(input)
   }
 
   /**
@@ -100,9 +100,9 @@ class DataStreamTestEnvironment(testEnv: org.flinkspector.datastream.DataStreamT
    * @param input The { @link Input} to startWith the data stream from.
    * @return The data stream representing the given input.
    */
-  def fromInput[OUT: ClassTag: TypeInformation](input: Input[OUT]): DataStream[OUT] = {
+  def fromInput[OUT: ClassTag: TypeInformation](input: Input[OUT]): DataStreamSource[OUT] = {
     val typeInfo = implicitly[TypeInformation[OUT]]
-    testEnv.fromInput(input,typeInfo)
+    testEnv.fromInput(input)
   }
 
   /**
@@ -119,9 +119,9 @@ class DataStreamTestEnvironment(testEnv: org.flinkspector.datastream.DataStreamT
    * @param data  The collection of elements to startWith the data stream from.
    * @return The data stream representing the given collection
    */
-  def fromCollectionWithTimestamp[OUT: ClassTag: TypeInformation](data: Seq[StreamRecord[OUT]]): DataStream[OUT] = {
+  def fromCollectionWithTimestamp[OUT: ClassTag: TypeInformation](data: Seq[StreamRecord[OUT]]): DataStreamSource[OUT] = {
     val typeInfo = implicitly[TypeInformation[OUT]]
-    testEnv.fromCollectionWithTimestamp(data.asJava,typeInfo)
+    testEnv.fromCollectionWithTimestamp(data.asJava, false)
   }
 
   /**
@@ -155,7 +155,7 @@ class DataStreamTestEnvironment(testEnv: org.flinkspector.datastream.DataStreamT
   }
 
   def close(): Unit = {
-    testEnv.terminate()
+    //TODO: figure this out testEnv
   }
 }
 
@@ -171,7 +171,7 @@ object DataStreamTestEnvironment {
   @throws(classOf[Exception])
   def createTestEnvironment(parallelism: Int): DataStreamTestEnvironment = {
     val tasksSlots: Int = Runtime.getRuntime.availableProcessors
-    val cluster: ForkableFlinkMiniCluster = TestBaseUtils.startCluster(1, tasksSlots, StreamingMode.STREAMING, false, false, true)
+    val cluster = TestBaseUtils.startCluster(1, tasksSlots, false, false, true)
     val env = new org.flinkspector.datastream.DataStreamTestEnvironment(cluster, parallelism)
     new DataStreamTestEnvironment(env)
   }
