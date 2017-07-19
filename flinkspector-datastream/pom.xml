@@ -20,12 +20,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.flinkspector</groupId>
-        <artifactId>flinkspector-parent_2.10</artifactId>
-        <version>0.7.1</version>
+        <artifactId>flinkspector-parent_2.11</artifactId>
+        <version>0.7.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>flinkspector-datastream_2.10</artifactId>
+    <artifactId>flinkspector-datastream_2.11</artifactId>
     <name>flinkspector-datastream</name>
 
     <packaging>jar</packaging>
