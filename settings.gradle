@@ -1,0 +1,8 @@
+rootProject.name = 'flinkspector-parent_2.11'
+include ':flinkspector-core_2.11'
+include ':flinkspector-dataset_2.11'
+include ':flinkspector-datastream_2.11'
+
+project(':flinkspector-core_2.11').projectDir = "$rootDir/flinkspector-core" as File
+project(':flinkspector-dataset_2.11').projectDir = "$rootDir/flinkspector-dataset" as File
+project(':flinkspector-datastream_2.11').projectDir = "$rootDir/flinkspector-datastream" as File
