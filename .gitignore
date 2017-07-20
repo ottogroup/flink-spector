@@ -13,7 +13,6 @@ tmp
 *.class
 *.iml
 *.swp
-*.jar
 *.log
 .DS_Store
 _site
@@ -24,3 +23,12 @@ flink-runtime-web/web-dashboard/node_modules/
 flink-runtime-web/web-dashboard/bower_components/
 atlassian-ide-plugin.xml
 bin
+
+# Gradle
+# ------
+.gradle
+/build
+/buildSrc/build
+/flinkspector*/build
+/flinkspector*/docs/src/samples/*/*/build
+/flinkspector*/subprojects/internal-android-performance-testing/build-android-libs
