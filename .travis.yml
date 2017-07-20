@@ -4,4 +4,3 @@ jdk:
 before_script:
   - "echo $JAVA_OPTS"
   - "export JAVA_OPTS=-Xmx2048m"
-sudo: required
