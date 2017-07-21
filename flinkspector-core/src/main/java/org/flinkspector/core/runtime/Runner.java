@@ -157,11 +157,6 @@ public abstract class Runner {
         if (!finished.get()) {
             //run is not finished and has to be stopped forcefully
             cleanUp();
-            try {
-                shutdownLocalCluster();
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Local cluster won't shutdown!");
-            }
         }
     }
 
@@ -176,6 +171,11 @@ public abstract class Runner {
             disruptor.shutdown();
             cancelListener();
             finished.set(true);
+        }
+        try {
+            shutdownLocalCluster();
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Local cluster won't shutdown!");
         }
         stopTimer.cancel();
         stopTimer.purge();
