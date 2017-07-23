@@ -74,6 +74,7 @@ public class BatchTest extends DataSetTestBase {
 		 * You assign String identifiers to your Tuple,
 		 * and add hamcrest matchers testing the values.
 		 */
+
         OutputMatcher<Tuple2<String, Integer>> matcher =
                 //name the values in your tuple with keys:
                 new MatchTuples<Tuple2<String, Integer>>("name", "value")
@@ -84,6 +85,7 @@ public class BatchTest extends DataSetTestBase {
                         .anyOfThem()
                         //define how many records need to fulfill the
                         .onEachRecord();
+
 
 		/*
 		 * Use assertDataSet to map DataSet to an OutputMatcher.

@@ -181,6 +181,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
             throw new IllegalArgumentException("Collection must not contain null elements");
         }
 
+
         TypeInformation<OUT> typeInfo;
         try {
             typeInfo = TypeExtractor.getForObject(first.getValue());
@@ -191,6 +192,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
         }
         return fromCollectionWithTimestamp(data, typeInfo, flushWindows);
     }
+
 
     /**
      * Creates a data stream from the given non-empty collection.
@@ -266,6 +268,4 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
     public void setTimeoutInterval(long interval) {
         runner.setTimeoutInterval(interval);
     }
-
-
 }

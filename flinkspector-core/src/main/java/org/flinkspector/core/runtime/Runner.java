@@ -27,6 +27,7 @@ import org.flinkspector.core.runtime.OutputHandler.ResultState;
 import org.flinkspector.core.trigger.VerifyFinishedTrigger;
 import scala.concurrent.duration.FiniteDuration;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -34,14 +35,12 @@ import java.util.TimerTask;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import static org.mortbay.util.IO.bufferSize;
 
 /**
  * This class is responsible for orchestrating tests run with Flinkspector
  */
 public abstract class Runner {
-
 
     /**
      * {@link LocalFlinkMiniCluster} used for running the test.

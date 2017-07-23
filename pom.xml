@@ -54,6 +54,7 @@
         <module>flinkspector-core</module>
         <module>flinkspector-dataset</module>
         <module>flinkspector-datastream</module>
+        <module>flinkspector-datastream-scala</module>
     </modules>
 
     <properties>
@@ -88,7 +89,6 @@
             <artifactId>flink-test-utils_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
-        <!-- zeromq -->
 
         <!-- guava -->
         <dependency>
