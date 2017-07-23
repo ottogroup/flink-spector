@@ -18,8 +18,7 @@ package org.flinkspector.scala.datastream
 
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.streaming.api.datastream.DataStreamSource
-import org.apache.flink.streaming.api.environment.{StreamExecutionEnvironment => JavaEnv}
-import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
+import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord
 import org.apache.flink.test.util.TestBaseUtils
 import org.flinkspector.core.input.Input
@@ -61,6 +60,17 @@ class DataStreamTestEnvironment(testEnv: org.flinkspector.datastream.DataStreamT
    */
   def createTestSink[IN](verifier: OutputVerifier[IN], trigger: VerifyFinishedTrigger[_]): TestSink[IN] = {
     testEnv.createTestSink(verifier, trigger)
+  }
+
+  /**
+    * Creates a TestSink to verify the output of your stream.
+    * The environment will register a port
+    *
+    * @param function which will be used to verify the received records
+    * @return the created sink.
+    */
+  def createTestSink[IN](function: Iterable[IN] => Any, trigger: VerifyFinishedTrigger[_]): TestSink[IN] = {
+    testEnv.createTestSink(new FunctionVerifier[IN](function), trigger)
   }
 
 

@@ -31,11 +31,12 @@ import org.flinkspector.core.runtime.OutputVerifier
 import org.flinkspector.core.trigger.VerifyFinishedTrigger
 import org.flinkspector.datastream.functions.TestSink
 import org.flinkspector.datastream.input.{EventTimeInput, EventTimeInputBuilder}
-import org.flinkspector.datastream.input.time.{After, Before}
 import org.hamcrest.Matcher
 import org.scalatest.{BeforeAndAfterEach, Suite}
 import org.apache.flink.streaming.api.scala._
+import org.flinkspector.scala.datastream.input.time.{After, Before, InWindow}
 
+import scala.concurrent.duration.{Duration, span}
 import scala.reflect.ClassTag
 
 trait FlinkDataStream extends BeforeAndAfterEach { this: Suite =>
@@ -198,40 +199,35 @@ trait FlinkDataStream extends BeforeAndAfterEach { this: Suite =>
   /**
    * Creates an {@link After} object.
    *
-   * @param span length of span.
-   * @param unit of time.
+   * @param duration after
    * @return { @link After}
    */
-  def after(span: Long, unit: TimeUnit): After = {
-    return After.period(span, unit)
-  }
+  def after(duration: Duration) = After(duration)
+
 
   /**
    * Creates an {@link Before} object.
    *
-   * @param span length of span.
-   * @param unit of time.
+   * @param duration before
    * @return { @link Before}
    */
-  def before(span: Long, unit: TimeUnit): Before = {
-    return Before.period(span, unit)
-  }
+  def before(duration: Duration)= Before(duration)
+
 
   def startWith[T](record: T): EventTimeInputBuilder[T] = {
-    return EventTimeInputBuilder.startWith(record)
+    EventTimeInputBuilder.startWith(record)
   }
 
   def emit[T](elem: T): InputBuilder[T] = {
-    return InputBuilder.startWith(elem)
+    InputBuilder.startWith(elem)
   }
 
   def expectOutput[T](record: T): ExpectedRecords[T] = {
-    return ExpectedRecords.create(record)
+    ExpectedRecords.create(record)
   }
 
-  def times(n: Int): Int = {
-    return n
-  }
+  def times(n: Int) = n
+
 
   val strict: Order = Order.STRICT
   val notStrict: Order = Order.NONSTRICT

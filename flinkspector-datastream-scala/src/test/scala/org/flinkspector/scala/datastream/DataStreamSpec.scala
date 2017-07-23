@@ -32,11 +32,11 @@ class DataStreamSpec extends CoreSpec with FlinkDataStream {
       .map(_ + 1)
 
     //test the output
-    stream should fulfill {
-      _ should contain allOf(2, 3, 4, 5)
+    stream should fulfill { out =>
+      out should contain allOf(2, 3, 4, 5)
+      out should have size(4)
     }
     executeTest()
-
   }
 
 
