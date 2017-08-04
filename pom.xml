@@ -240,7 +240,7 @@
     <distributionManagement>
         <repository>
             <id>bintray-ottogroup-maven</id>
-            <url>https://api.bintray.com/maven/ottogroup/maven/flinkspector</url>
+            <url>https://api.bintray.com/maven/ottogroup/maven/flinkspector-io</url>
         </repository>
     </distributionManagement>
 
