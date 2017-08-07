@@ -98,11 +98,6 @@ If you want to use assertions you should also include hamcrest:
 
 ### Manual Build:
 1. Clone this repo: `git clone https://github.com/ottogroup/flink-spector`.
-
-> Note: The current build works with Flink versions 1.3.1 and later.
-> Release 0.3 works with Flink versions 1.0.*.
-> If you're using an older version, clone the matching branch.
-
 2. Build with maven: `maven install`.
 3. Include in your project's pom.xml: 
 ```xml
