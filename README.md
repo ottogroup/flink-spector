@@ -70,27 +70,19 @@ You can find more extensive examples here:
 
 Include in your project's pom.xml:
  ```xml
-<repositories>
-    <repository>
-        <id>otto-bintray</id>
-        <url>https://dl.bintray.com/ottogroup/maven</url>
-    </repository>
-</repositories>
-```
- ```xml
 <dependency>
-    <groupId>org.flinkspector</groupId>
+    <groupId>io.flinkspector</groupId>
     <artifactId>flinkspector-dataset_2.11</artifactId>
-    <version>0.7.1</version>
+    <version>0.8.0</version>
 </dependency>
 ```
 or for the Flink DataStream API:
 
 ```xml
 <dependency>
-    <groupId>org.flinkspector</groupId>
+    <groupId>io.flinkspector</groupId>
     <artifactId>flinkspector-datastream_2.11</artifactId>
-    <version>0.7.1</version>
+    <version>0.8.0</version>
 </dependency>
 ```
 If you want to use assertions you should also include hamcrest:
@@ -115,18 +107,18 @@ If you want to use assertions you should also include hamcrest:
 3. Include in your project's pom.xml: 
 ```xml
 <dependency>
-    <groupId>org.flinkspector</groupId>
+    <groupId>io.flinkspector</groupId>
     <artifactId>flinkspector-dataset</artifactId>
-    <version>0.7.2-SNAPSHOT</version>
+    <version>0.8.1-SNAPSHOT</version>
 </dependency>
 ```
 or for the Flink DataStream API:
     
 ```xml
 <dependency>
-    <groupId>org.flinkspector</groupId>
+    <groupId>io.flinkspector</groupId>
     <artifactId>flinkspector-datastream</artifactId>
-    <version>0.7.2-SNAPSHOT</version>
+    <version>0.8.1-SNAPSHOT</version>
 </dependency>
 ```
 
