@@ -59,8 +59,8 @@ public void testWindowing() {
 ```
 
 You can find more extensive examples here: 
-* [DataSet API test examples](flinkspector-dataset/src/test/java/org/flinkspector/dataset/examples).
-* [DataStream API test examples](flinkspector-datastream/src/test/java/org/flinkspector/datastream/examples).
+* [DataSet API test examples](flinkspector-dataset/src/test/java/io/flinkspector/dataset/examples).
+* [DataStream API test examples](flinkspector-datastream/src/test/java/io/flinkspector/datastream/examples).
 
 ## Getting started
 
