@@ -58,6 +58,20 @@ class OutputHandlerSpec extends CoreSpec {
     listener.close()
   }
 
+  it should "handle sinks which don't open" in new OutputListenerCase {
+    val listener = new OutputHandler[String](subscriber, disruptor, verifier, trigger)
+    disruptor.start()
+
+    publisher.send("CLOSE 0 0")
+
+    listener.call() shouldBe ResultState.SUCCESS
+
+    verify(verifier).init()
+    verify(verifier).finish()
+    close()
+    listener.close()
+  }
+
   it should "handle output from multiple sinks" in new OutputListenerCase {
     val listener = new OutputHandler[String](subscriber, disruptor, verifier, trigger)
     disruptor.start()
