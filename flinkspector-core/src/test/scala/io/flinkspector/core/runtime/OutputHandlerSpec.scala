@@ -66,7 +66,7 @@ class OutputHandlerSpec extends CoreSpec {
 
     listener.call() shouldBe ResultState.SUCCESS
 
-    verify(verifier)
+    verify(verifier).init()
     verify(verifier).finish()
     close()
     listener.close()
