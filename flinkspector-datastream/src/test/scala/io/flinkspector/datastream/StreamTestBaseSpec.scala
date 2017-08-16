@@ -18,6 +18,7 @@ package io.flinkspector.datastream
 
 import io.flinkspector.CoreSpec
 import io.flinkspector.core.collection.ExpectedRecords
+import org.apache.flink.api.common.functions.FilterFunction
 import org.apache.flink.streaming.api.datastream.DataStream
 
 import scala.collection.JavaConversions._
@@ -47,6 +48,21 @@ class StreamTestBaseSpec extends CoreSpec {
     base.assertStream(stream, matcher)
     an[AssertionError] shouldBe thrownBy(base.executeTest())
   }
+
+  it should "fail a test without output" in {
+    val base = new DataStreamTestBase
+    base.initialize()
+
+    val coll: java.util.Collection[Int] = List(1, 2, 3, 4)
+    val stream: DataStream[Int] = base.createTestStream(List(1))
+    val matcher = ExpectedRecords.create(coll)
+
+    base.assertStream(stream.filter(new FilterFunction[Int] {
+      override def filter(t: Int): Boolean = false
+    }), matcher)
+    an[AssertionError] shouldBe thrownBy(base.executeTest())
+  }
+
 
 
   it should "run a basic test with two sinks" in {

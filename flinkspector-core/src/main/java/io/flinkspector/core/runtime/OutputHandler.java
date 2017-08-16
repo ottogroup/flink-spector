@@ -209,11 +209,21 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
                 break;
         }
 
+
         //check if all sink instances have been closed.
-        if (closedSinks.size() == parallelism &&
-                numRecords == expectedNumRecords) {
-            //finish the listening process
-            return Action.FINISH;
+
+        if(numRecords == expectedNumRecords) {
+            if (closedSinks.size() == parallelism) {
+                //finish the listening process
+                return Action.FINISH;
+
+            } else if(closedSinks.size() >= parallelism
+                    && expectedNumRecords == 0) {
+                //stream with no output will not open the sink
+                //so verifier has to be opened manually
+                verifier.init();
+                return Action.FINISH;
+            }
         }
         return Action.CONTINUE;
     }
