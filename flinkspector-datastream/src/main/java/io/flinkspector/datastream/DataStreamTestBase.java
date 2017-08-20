@@ -32,6 +32,7 @@ import io.flinkspector.datastream.input.SourceBuilder;
 import io.flinkspector.datastream.input.time.After;
 import io.flinkspector.datastream.input.time.Before;
 import io.flinkspector.datastream.input.time.InWindow;
+import io.flinkspector.datastream.input.time.Moment;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -56,7 +57,7 @@ public class DataStreamTestBase {
     /**
      * Test Environment
      */
-    DataStreamTestEnvironment testEnv;
+    public DataStreamTestEnvironment testEnv;
 
     /**
      * Creates an {@link InWindow} object.
@@ -172,7 +173,7 @@ public class DataStreamTestBase {
     }
 
     /**
-     * Provides an {@link EventTimeSourceBuilder} to startWith an {@link DataStreamSource}
+     * Provides an {@link EventTimeSourceBuilder} to startWith a {@link DataStreamSource}
      *
      * @param record the first record to emit.
      * @param <OUT>  type of the stream.
@@ -180,6 +181,30 @@ public class DataStreamTestBase {
      */
     public <OUT> EventTimeSourceBuilder<OUT> createTimedTestStreamWith(OUT record) {
         return EventTimeSourceBuilder.createBuilder(record, testEnv);
+    }
+
+    /**
+     * Provides an {@link EventTimeSourceBuilder} to startWith a {@link DataStreamSource}
+     *
+     * @param record    the first record to emit.
+     * @param <OUT>     type of the stream.
+     * @param timestamp for the first record
+     * @return {@link EventTimeSourceBuilder} to work with.
+     */
+    public <OUT> EventTimeSourceBuilder<OUT> createTimedTestStreamWith(OUT record, Long timestamp) {
+        return EventTimeSourceBuilder.createBuilder(record, timestamp, testEnv);
+    }
+
+    /**
+     * Provides an {@link EventTimeSourceBuilder} to startWith a {@link DataStreamSource}
+     *
+     * @param record the first record to emit.
+     * @param moment for the first record
+     * @param <OUT>  type of the stream.
+     * @return {@link EventTimeSourceBuilder} to work with.
+     */
+    public <OUT> EventTimeSourceBuilder<OUT> createTimedTestStreamWith(OUT record, Moment moment) {
+        return EventTimeSourceBuilder.createBuilder(record, moment, testEnv);
     }
 
     /**

@@ -40,7 +40,7 @@ public class DataSetTestBase {
     /**
      * Test Environment
      */
-    DataSetTestEnvironment testEnv;
+    public DataSetTestEnvironment testEnv;
 
     public static int times(int n) {
         return n;
