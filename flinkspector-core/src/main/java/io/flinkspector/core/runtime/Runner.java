@@ -42,7 +42,6 @@ import static org.mortbay.util.IO.bufferSize;
  */
 public abstract class Runner {
 
-
     /**
      * {@link LocalFlinkMiniCluster} used for running the test.
      */
@@ -174,6 +173,8 @@ public abstract class Runner {
         }
         try {
             shutdownLocalCluster();
+        } catch (IllegalStateException e) {
+            //this can happen in some cases if Flink has some timers register wih akka.
         } catch (InterruptedException e) {
             throw new RuntimeException("Local cluster won't shutdown!");
         }
