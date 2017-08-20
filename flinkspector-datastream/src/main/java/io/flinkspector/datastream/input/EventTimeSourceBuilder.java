@@ -39,6 +39,16 @@ public class EventTimeSourceBuilder<T> {
         this.builder = EventTimeInputBuilder.startWith(record);
     }
 
+    public EventTimeSourceBuilder(DataStreamTestEnvironment env, T record, Long timestamp) {
+        this.env = env;
+        this.builder = EventTimeInputBuilder.startWith(record, timestamp);
+    }
+
+    public EventTimeSourceBuilder(DataStreamTestEnvironment env, T record, Moment moment) {
+        this.env = env;
+        this.builder = EventTimeInputBuilder.startWith(record, moment);
+    }
+
     /**
      * Factory method used to dynamically type the {@link EventTimeSourceBuilder}
      * using the type of the provided input object.
@@ -52,6 +62,38 @@ public class EventTimeSourceBuilder<T> {
                                                               DataStreamTestEnvironment env) {
         return new EventTimeSourceBuilder<>(env, record);
     }
+
+    /**
+     * Factory method used to dynamically type the {@link EventTimeSourceBuilder}
+     * using the type of the provided input object.
+     *
+     * @param record first record to emit.
+     * @param env    to work on.
+     * @param <T> generic type of output
+     * @return created {@link SourceBuilder}
+     */
+    public static <T> EventTimeSourceBuilder<T> createBuilder(T record,
+                                                              Long timestamp,
+                                                              DataStreamTestEnvironment env) {
+        return new EventTimeSourceBuilder<>(env, record, timestamp);
+    }
+
+    /**
+     * Factory method used to dynamically type the {@link EventTimeSourceBuilder}
+     * using the type of the provided input object.
+     *
+     * @param record first record to emit.
+     * @param env    to work on.
+     * @param <T> generic type of output
+     * @return created {@link SourceBuilder}
+     */
+    public static <T> EventTimeSourceBuilder<T> createBuilder(T record,
+                                                              Moment moment,
+                                                              DataStreamTestEnvironment env) {
+        return new EventTimeSourceBuilder<>(env, record, moment);
+    }
+
+
 
     /**
      * Produces a {@link DataStreamSource} with the predefined input.
