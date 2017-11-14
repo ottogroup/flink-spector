@@ -21,6 +21,7 @@ import org.hamcrest.Description;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -100,7 +101,7 @@ public class ExpectedRecords<T> extends OutputMatcher<T> {
         if (record == null) {
             throw new IllegalArgumentException("Record has too be not null!");
         }
-        expectedRecords.add(record);
+        expectedRecords.addAll(Collections.nCopies(times, record));
         return this;
     }
 
