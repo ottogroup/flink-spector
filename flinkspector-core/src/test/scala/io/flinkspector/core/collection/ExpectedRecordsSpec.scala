@@ -45,5 +45,14 @@ class ExpectedRecordsSpec extends CoreSpec {
     expectOutput.matchesSafely(List(1, 2, 3, 4, 5)) shouldBe false
   }
 
+  it should "support expect with times parameter" in {
+    val expectOutput = new ExpectedRecords[Int]
+    expectOutput.expect(14, 3)
+    expectOutput.refine().only().sameFrequency()
+
+    expectOutput.matchesSafely(List(14, 14, 14)) shouldBe true
+    expectOutput.matchesSafely(List(14)) shouldBe false
+    expectOutput.matchesSafely(List(14, 14, 14, 14)) shouldBe false
+  }
 
 }
