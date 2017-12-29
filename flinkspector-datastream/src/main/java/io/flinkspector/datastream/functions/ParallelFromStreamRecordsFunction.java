@@ -22,13 +22,14 @@ import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.core.memory.DataInputView;
 import org.apache.flink.core.memory.DataInputViewStreamWrapper;
 import org.apache.flink.core.memory.DataOutputViewStreamWrapper;
-import org.apache.flink.streaming.api.checkpoint.CheckpointedAsynchronously;
+import org.apache.flink.streaming.api.checkpoint.ListCheckpointed;
 import org.apache.flink.streaming.api.functions.source.RichParallelSourceFunction;
 import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,7 +43,7 @@ import java.util.List;
  * @param <T> The type of elements returned by this function.
  */
 public class ParallelFromStreamRecordsFunction<T> extends RichParallelSourceFunction<T>
-        implements CheckpointedAsynchronously<Integer> {
+        implements ListCheckpointed<Integer> {
 
     private static final long serialVersionUID = 1L;
 
@@ -218,12 +219,12 @@ public class ParallelFromStreamRecordsFunction<T> extends RichParallelSourceFunc
     }
 
     @Override
-    public Integer snapshotState(long checkpointId, long checkpointTimestamp) {
-        return this.numElementsEmitted;
+    public List<Integer> snapshotState(long checkpointId, long timestamp) throws Exception {
+        return Collections.singletonList(this.numElementsEmitted);
     }
 
     @Override
-    public void restoreState(Integer state) {
-        this.numElementsToSkip = state;
+    public void restoreState(List<Integer> state) throws Exception {
+        this.numElementsToSkip = state.isEmpty() ? 0 : state.get(0);
     }
 }

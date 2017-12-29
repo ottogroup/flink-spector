@@ -16,7 +16,7 @@
 
 package io.flinkspector.core.quantify;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.flink.api.java.tuple.Tuple;
 
 /**

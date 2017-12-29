@@ -16,10 +16,9 @@
 
 package io.flinkspector.core.runtime
 
-import java.util.concurrent.Executors
-
 import com.google.common.primitives.Bytes
 import com.lmax.disruptor.dsl.Disruptor
+import com.lmax.disruptor.util.DaemonThreadFactory
 import io.flinkspector.core.CoreSpec
 import io.flinkspector.core.runtime.OutputHandler.ResultState
 import io.flinkspector.core.trigger.VerifyFinishedTrigger
@@ -28,7 +27,6 @@ import org.apache.flink.api.common.ExecutionConfig
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.typeutils.TypeExtractor
 import org.mockito.Mockito._
-import org.mortbay.util.IO.bufferSize
 
 class OutputHandlerSpec extends CoreSpec {
 
@@ -133,11 +131,9 @@ class OutputHandlerSpec extends CoreSpec {
   }
 
   trait OutputListenerCase {
-    val executor = Executors.newCachedThreadPool
-
     val factory = new OutputEventFactory
 
-    val disruptor = new Disruptor[OutputEvent](factory, bufferSize, executor)
+    val disruptor = new Disruptor[OutputEvent](factory, bufferSize, DaemonThreadFactory.INSTANCE)
 
     val verifier = mock[OutputVerifier[String]]
     val trigger = new VerifyFinishedTrigger[String] {

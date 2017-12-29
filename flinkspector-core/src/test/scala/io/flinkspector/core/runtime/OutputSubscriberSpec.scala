@@ -16,14 +16,12 @@
 
 package io.flinkspector.core.runtime
 
-import java.util.concurrent.Executors
-
 import com.lmax.disruptor.dsl.Disruptor
+import com.lmax.disruptor.util.DaemonThreadFactory
 import io.flinkspector.core.CoreSpec
 import org.apache.flink.api.common.ExecutionConfig
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.typeutils.TypeExtractor
-import org.mortbay.util.IO.bufferSize
 
 class OutputSubscriberSpec extends CoreSpec {
 
@@ -70,12 +68,9 @@ class OutputSubscriberSpec extends CoreSpec {
   }
 
   trait OutputListenerCase {
-
-    val executor = Executors.newCachedThreadPool
-
     val factory = new OutputEventFactory
 
-    val disruptor = new Disruptor[OutputEvent](factory, bufferSize, executor)
+    val disruptor = new Disruptor[OutputEvent](factory, bufferSize, DaemonThreadFactory.INSTANCE)
 
     //open a socket to push data
     val publisher = new OutputPublisher(1, disruptor.getRingBuffer)
