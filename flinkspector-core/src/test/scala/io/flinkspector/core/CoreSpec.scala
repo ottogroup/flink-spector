@@ -31,8 +31,9 @@ abstract class CoreSpec
     with MockitoSugar
     with Timeouts {
 
+  val bufferSize = 16 * 1024
+
   class TestInput[T](input: List[T]) extends Input[T] {
     override def getInput: JList[T] = input
   }
-
 }

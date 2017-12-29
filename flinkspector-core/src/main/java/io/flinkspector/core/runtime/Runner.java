@@ -35,7 +35,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.mortbay.util.IO.bufferSize;
 
 /**
  * This class is responsible for orchestrating tests run with Flinkspector
@@ -80,6 +79,10 @@ public abstract class Runner {
      * Factory for disruptor
      */
     private OutputEventFactory factory = new OutputEventFactory();
+    /**
+     * Size of the ring buffer.
+     */
+    private final int bufferSize = 16 * 1024;
     /**
      * Disruptor for transfering output from sinks
      */
