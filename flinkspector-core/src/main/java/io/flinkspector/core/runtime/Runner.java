@@ -136,6 +136,8 @@ public abstract class Runner {
             TestBaseUtils.stopCluster(cluster, new FiniteDuration(1000, TimeUnit.SECONDS));
         } catch (InterruptedException e) {
             throw e;
+        } catch (IllegalStateException e) {
+            //this can happen in some cases if Flink has some timers register wih akka.
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -176,8 +178,6 @@ public abstract class Runner {
         }
         try {
             shutdownLocalCluster();
-        } catch (IllegalStateException e) {
-            //this can happen in some cases if Flink has some timers register wih akka.
         } catch (InterruptedException e) {
             throw new RuntimeException("Local cluster won't shutdown!");
         }
