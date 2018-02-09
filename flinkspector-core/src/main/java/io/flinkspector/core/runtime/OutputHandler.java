@@ -153,13 +153,13 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
     private Action processMessage(byte[] bytes)
             throws IOException, FlinkTestFailedException {
 
-        if (bytes.length == 0) {
-            //the subscriber has been cancelled from outside quietly finish the process
+        if (bytes == null) {
+            System.out.println("Waited too long for message from sink");
             return Action.FINISH;
         }
 
-        if (bytes == null) {
-            System.out.println("Waited too long for message from sink");
+        if (bytes.length == 0) {
+            //the subscriber has been cancelled from outside quietly finish the process
             return Action.FINISH;
         }
 
