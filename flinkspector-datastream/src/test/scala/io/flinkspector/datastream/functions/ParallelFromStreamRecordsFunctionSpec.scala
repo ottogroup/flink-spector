@@ -106,6 +106,7 @@ class ParallelFromStreamRecordsFunctionSpec extends CoreSpec {
     verify(ctx).emitWatermark(new Watermark(2000))
     verify(ctx).emitWatermark(new Watermark(3000))
     verify(ctx).emitWatermark(new Watermark(4000))
+    verify(ctx).emitWatermark(new Watermark(5000))
   }
 
   it should "emit continously rising watermarks with MaxValue" in {
