@@ -58,21 +58,4 @@ public class ParallelFromStreamRecordsTest extends DataStreamTestBase {
 
     }
 
-    @Test
-    public void should_not_fire_window_yet() {
-        DataStream<String> testStream = createTimedTestStreamWith("message1")
-                .emit("message2")
-                .close()
-                .process(new ProcessFunction<String, String>() {
-                    @Override
-                    public void processElement(String value, Context ctx, Collector<String> out) throws Exception {
-                        System.out.println(ctx.timestamp());;
-                        out.collect(value);
-                    }
-                })
-                .timeWindowAll(Time.days(1))
-                .reduce((a, b) -> a + b);
-
-        assertStream(testStream, emptyIterableOf(String.class));
-    }
 }
