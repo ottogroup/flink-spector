@@ -24,3 +24,4 @@ flink-runtime-web/web-dashboard/node_modules/
 flink-runtime-web/web-dashboard/bower_components/
 atlassian-ide-plugin.xml
 bin
+dependency-reduced-pom.xml

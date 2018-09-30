@@ -21,7 +21,7 @@
 
     <groupId>io.flinkspector</groupId>
     <artifactId>flinkspector-parent_2.11</artifactId>
-    <version>0.8.4-SNAPSHOT</version>
+    <version>0.8.5-SNAPSHOT</version>
 
 
     <name>Flinkspector</name>
@@ -57,7 +57,7 @@
     </modules>
 
     <properties>
-        <flink.version>1.4.0</flink.version>
+        <flink.version>1.5.0</flink.version>
         <log4j.configuration>log4j-test.properties</log4j.configuration>
         <slf4j.version>1.7.7</slf4j.version>
         <guava.version>18.0</guava.version>
@@ -65,6 +65,9 @@
         <scala.version>2.11.11</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <maven-shade-plugin.version>3.1.1</maven-shade-plugin.version>
+        <shade.guava-package>io.flinkspector.shade.com.google.common</shade.guava-package>
     </properties>
 
     <packaging>pom</packaging>
@@ -87,12 +90,6 @@
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-test-utils_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
-        </dependency>
-        <!-- guava -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
         </dependency>
 
         <!-- test -->
