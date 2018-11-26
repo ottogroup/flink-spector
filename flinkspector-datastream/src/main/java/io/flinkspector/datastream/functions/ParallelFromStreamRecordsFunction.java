@@ -80,20 +80,20 @@ public class ParallelFromStreamRecordsFunction<T> extends RichParallelSourceFunc
     /**
      * flushOpenWindowsOnTermination
      */
-    private Boolean flushOpenWindows = false;
+    private final Boolean flushOpenWindows;
 
     public ParallelFromStreamRecordsFunction(TypeSerializer<StreamRecord<T>> serializer,
                                              Iterable<StreamRecord<T>> input) throws IOException {
-        this.serializer = serializer;
-        elementsSerialized = serializeOutput(input, serializer).toByteArray();
-        numElements = Iterables.size(input);
+       this(serializer,input, false);
     }
 
     public ParallelFromStreamRecordsFunction(TypeSerializer<StreamRecord<T>> serializer,
                                              Iterable<StreamRecord<T>> input,
                                              Boolean flushOpenWindows
     ) throws IOException {
-        this(serializer, input);
+        this.serializer = serializer;
+        elementsSerialized = serializeOutput(input, serializer).toByteArray();
+        numElements = Iterables.size(input);
         this.flushOpenWindows = flushOpenWindows;
     }
 

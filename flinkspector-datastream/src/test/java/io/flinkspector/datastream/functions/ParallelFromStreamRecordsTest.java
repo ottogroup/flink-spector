@@ -20,11 +20,16 @@ import io.flinkspector.core.collection.ExpectedRecords;
 import io.flinkspector.datastream.DataStreamTestBase;
 import io.flinkspector.datastream.input.EventTimeInput;
 import io.flinkspector.datastream.input.EventTimeInputBuilder;
+import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.util.Collector;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
+
+import static org.hamcrest.Matchers.emptyIterableOf;
 
 public class ParallelFromStreamRecordsTest extends DataStreamTestBase {
 
@@ -52,4 +57,5 @@ public class ParallelFromStreamRecordsTest extends DataStreamTestBase {
         assertStream(result, expected);
 
     }
+
 }

@@ -33,6 +33,34 @@ class EventTimeInputBuilderSpec extends CoreSpec {
 
   }
 
+  it should "set timestamps for events" in {
+    val builder = EventTimeInputBuilder.startWith(1)
+      .emit(new StreamRecord[Int](2,2))
+      .emit(new StreamRecord[Int](3,3))
+      .emit(new StreamRecord[Int](4,4))
+
+    builder.getInput.toList shouldBe List(
+      new StreamRecord[Integer](1, 0),
+      new StreamRecord[Integer](2, 2),
+      new StreamRecord[Integer](3, 3),
+      new StreamRecord[Integer](4, 4)
+    )
+  }
+
+  it should "set timestamps for events via method" in {
+    val builder = EventTimeInputBuilder.startWith(1)
+      .emitWithTimestamp(2,2)
+      .emitWithTimestamp(3,3)
+      .emitWithTimestamp(4,4)
+
+    builder.getInput.toList shouldBe List(
+      new StreamRecord[Integer](1, 0),
+      new StreamRecord[Integer](2, 2),
+      new StreamRecord[Integer](3, 3),
+      new StreamRecord[Integer](4, 4)
+    )
+  }
+
   "the builder" should "repeat a input list one times" in
     new EventTimeInputBuilderCase {
       builder.repeatAll(After.period(2, TimeUnit.SECONDS), 1)

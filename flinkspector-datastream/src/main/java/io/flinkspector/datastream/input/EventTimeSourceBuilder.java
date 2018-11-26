@@ -93,8 +93,6 @@ public class EventTimeSourceBuilder<T> {
         return new EventTimeSourceBuilder<>(env, record, moment);
     }
 
-
-
     /**
      * Produces a {@link DataStreamSource} with the predefined input.
      *
@@ -112,7 +110,7 @@ public class EventTimeSourceBuilder<T> {
      */
     public DataStreamSource<T> closeAndFlush() {
         builder.flushOpenWindowsOnTermination();
-        return env.fromInput(builder);
+        return close();
     }
 
     /**
@@ -172,7 +170,6 @@ public class EventTimeSourceBuilder<T> {
         builder.emit(elem, timeInterval, times);
         return this;
     }
-
 
     /**
      * Repeat the current input list, after the defined span.

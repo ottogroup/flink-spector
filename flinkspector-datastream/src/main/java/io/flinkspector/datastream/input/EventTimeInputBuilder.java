@@ -74,7 +74,7 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
         if (record == null) {
             throw new IllegalArgumentException("Elem has to be not null!");
         }
-        return new EventTimeInputBuilder<T>(new StreamRecord<T>(record, timeStamp));
+        return new EventTimeInputBuilder<>(new StreamRecord<>(record, timeStamp));
     }
 
     /**
@@ -192,6 +192,21 @@ public class EventTimeInputBuilder<T> implements EventTimeInput<T> {
             throw new IllegalArgumentException("Record has to be not null!");
         }
         add(streamRecord);
+        return this;
+    }
+
+    /**
+     * Add an elment to the list of input.
+     *
+     * @param elem      element
+     * @param timestamp timestamp associated with the event
+     * @return used for fluent interface
+     */
+    public EventTimeInputBuilder<T> emitWithTimestamp(T elem, long timestamp) {
+        if (elem == null) {
+            throw new IllegalArgumentException("Record has to be not null!");
+        }
+        add(new StreamRecord<>(elem, timestamp));
         return this;
     }
 
