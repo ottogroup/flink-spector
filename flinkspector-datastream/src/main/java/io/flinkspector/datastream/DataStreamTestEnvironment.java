@@ -31,9 +31,10 @@ import io.flinkspector.datastream.functions.TestSink;
 import io.flinkspector.datastream.input.EventTimeInput;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.configuration.TaskManagerOptions;
 import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
-import org.apache.flink.runtime.minicluster.MiniCluster;
-import org.apache.flink.runtime.minicluster.MiniClusterConfiguration;
+import org.apache.flink.runtime.testingUtils.TestingCluster;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.functions.source.FromElementsFunction;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
@@ -44,12 +45,18 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 
 	private final Runner runner;
 
-	public DataStreamTestEnvironment(MiniCluster cluster, int parallelism) {
+	public DataStreamTestEnvironment(TestingCluster cluster, int parallelism) {
 		super(cluster, parallelism);
 		runner = new Runner(cluster) {
 			@Override
 			protected void executeEnvironment() throws Throwable {
-				execute();
+				TestStreamEnvironment.setAsContext(cluster, parallelism);
+				try {
+					execute();
+				}
+				finally {
+					TestStreamEnvironment.unsetAsContext();
+				}
 			}
 		};
 	}
@@ -64,12 +71,10 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	public static DataStreamTestEnvironment createTestEnvironment(int parallelism) {
 		int taskSlots = Runtime.getRuntime().availableProcessors();
 
-		MiniClusterConfiguration configuration = new MiniClusterConfiguration.Builder()
-				.setNumTaskManagers(1)
-				.setNumSlotsPerTaskManager(taskSlots)
-				.build();
+		final Configuration configuration = new Configuration();
+		configuration.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, taskSlots);
 
-		return new DataStreamTestEnvironment(new MiniCluster(configuration), parallelism);
+		return new DataStreamTestEnvironment(new TestingCluster(configuration), parallelism);
 	}
 
 	public void executeTest() throws Throwable {

@@ -24,11 +24,12 @@ import com.lmax.disruptor.dsl.Disruptor
 import io.flinkspector.core.CoreSpec
 import io.flinkspector.core.trigger.VerifyFinishedTrigger
 import io.flinkspector.core.util.SerializeUtil
-import org.apache.flink.api.common.ExecutionConfig
+import org.apache.flink.api.common.{ExecutionConfig, JobID}
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.typeutils.TypeExtractor
 import org.apache.flink.runtime.client.JobStatusMessage
 import org.apache.flink.runtime.minicluster.{LocalFlinkMiniCluster, MiniCluster}
+import org.apache.flink.runtime.testingUtils.TestingCluster
 import org.mockito.Mockito._
 import org.scalatest.time.SpanSugar._
 
@@ -253,13 +254,13 @@ class RunnerSpec extends CoreSpec {
 
   trait RunnerCase {
 
-    import collection.JavaConversions.asJavaCollection
+    import collection.JavaConversions._
 
     val verifier = mock[OutputVerifier[String]]
-    val cluster = mock[MiniCluster]
+    val cluster = mock[TestingCluster]
 
-    when(cluster.listJobs())
-      .thenReturn(CompletableFuture.completedFuture[java.util.Collection[JobStatusMessage]](List.empty[JobStatusMessage]))
+    when(cluster.getCurrentlyRunningJobsJava())
+      .thenReturn(List.empty[JobID])
 
     val trigger = new VerifyFinishedTrigger[String] {
       override def onRecord(record: String): Boolean = false

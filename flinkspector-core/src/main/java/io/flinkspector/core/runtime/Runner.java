@@ -30,9 +30,10 @@ import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.util.DaemonThreadFactory;
 import io.flinkspector.core.runtime.OutputHandler.ResultState;
 import io.flinkspector.core.trigger.VerifyFinishedTrigger;
-import org.apache.flink.runtime.client.JobStatusMessage;
 import org.apache.flink.runtime.client.JobTimeoutException;
-import org.apache.flink.runtime.minicluster.MiniCluster;
+import org.apache.flink.runtime.testingUtils.TestingCluster;
+import org.apache.flink.streaming.util.TestStreamEnvironment;
+import org.apache.flink.util.ExceptionUtils;
 
 /**
  * This class is responsible for orchestrating tests run with Flinkspector
@@ -40,9 +41,9 @@ import org.apache.flink.runtime.minicluster.MiniCluster;
 public abstract class Runner {
 
 	/**
-	 * {@link MiniCluster} used for running the test.
+	 * {@link TestingCluster} used for running the test.
 	 */
-	private final MiniCluster cluster;
+	private final TestingCluster cluster;
 	/**
 	 * {@link ListeningExecutorService} used for running the {@link OutputHandler}, in the background.
 	 */
@@ -99,7 +100,7 @@ public abstract class Runner {
 
 	private boolean stopped;
 
-	public Runner(MiniCluster executor) {
+	public Runner(TestingCluster executor) {
 		this.cluster = executor;
 		executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
 		currentInstance = 1;
@@ -129,21 +130,22 @@ public abstract class Runner {
 		}
 	}
 
-	private void shutdownLocalCluster() throws InterruptedException {
-		if (!cluster.isRunning()) {
+	private void shutdownLocalCluster() {
+		if(!cluster.running()) {
 			return;
 		}
 
 		try {
-			cluster.listJobs()
-					.thenAccept(jobStatusMessages -> jobStatusMessages.stream()
-							.map(JobStatusMessage::getJobId)
-							.forEach(cluster::stopJob))
-					.thenRun(() -> cluster.closeAsync())
-					.get(1000, TimeUnit.SECONDS);
-		}
-		catch(InterruptedException e) {
-			throw e;
+			cluster.getCurrentlyRunningJobsJava()
+					.forEach(jobID -> {
+						try {
+							cluster.cancelJob(jobID);
+						}
+						catch(Exception e) {
+							ExceptionUtils.rethrow(e);
+						}
+					});
+			cluster.stop();
 		}
 		catch(IllegalStateException e) {
 			//this can happen in some cases if Flink has some timers register wih akka.
@@ -184,12 +186,9 @@ public abstract class Runner {
 			cancelListener();
 			finished.set(true);
 		}
-		try {
-			shutdownLocalCluster();
-		}
-		catch(InterruptedException e) {
-			throw new RuntimeException("Local cluster won't shutdown!");
-		}
+
+		shutdownLocalCluster();
+
 		stopTimer.cancel();
 		stopTimer.purge();
 	}
