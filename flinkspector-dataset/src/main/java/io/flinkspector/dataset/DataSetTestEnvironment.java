@@ -23,6 +23,8 @@ import io.flinkspector.core.trigger.DefaultTestTrigger;
 import io.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
+import org.apache.flink.runtime.minicluster.MiniCluster;
+import org.apache.flink.runtime.minicluster.MiniClusterConfiguration;
 import org.apache.flink.test.util.TestBaseUtils;
 import org.apache.flink.test.util.TestEnvironment;
 
@@ -31,7 +33,7 @@ public class DataSetTestEnvironment extends TestEnvironment {
 
     private final Runner runner;
 
-    public DataSetTestEnvironment(LocalFlinkMiniCluster executor, int parallelism) {
+    public DataSetTestEnvironment(MiniCluster executor, int parallelism) {
         super(executor, parallelism, false);
         runner = new Runner(executor) {
             @Override
@@ -49,17 +51,15 @@ public class DataSetTestEnvironment extends TestEnvironment {
      * @return new instance of {@link DataSetTestEnvironment}
      * @throws Exception
      */
-    public static DataSetTestEnvironment createTestEnvironment(int parallelism) throws Exception {
+    public static DataSetTestEnvironment createTestEnvironment(int parallelism) {
         int taskSlots = Runtime.getRuntime().availableProcessors();
-        LocalFlinkMiniCluster cluster =
-                TestBaseUtils.startCluster(
-                        1,
-                        taskSlots,
-                        false,
-                        false,
-                        true
-                );
-        return new DataSetTestEnvironment(cluster, parallelism);
+
+        MiniClusterConfiguration configuration = new MiniClusterConfiguration.Builder()
+                .setNumTaskManagers(1)
+                .setNumSlotsPerTaskManager(taskSlots)
+                .build();
+
+        return new DataSetTestEnvironment(new MiniCluster(configuration), parallelism);
     }
 
     public <T> DataSet<T> createTestSet(Input<T> input) {
