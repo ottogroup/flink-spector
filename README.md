@@ -65,7 +65,7 @@ You can find more extensive examples here:
 ## Getting started
 
 ### Get the Latest Release:
-> Note: The current build works with Flink version 1.5.0.
+> Note: The current build works with Flink version 1.6.0.
 > There is no Flink 1.4.0 release for scala 2.10 so this has been dropped by flinkspector as well.
 
 Include in your project's pom.xml:
