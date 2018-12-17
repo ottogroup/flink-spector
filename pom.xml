@@ -21,7 +21,7 @@
 
     <groupId>io.flinkspector</groupId>
     <artifactId>flinkspector-parent_2.11</artifactId>
-    <version>0.8.5</version>
+    <version>0.8.6-SNAPSHOT</version>
 
 
     <name>Flinkspector</name>
