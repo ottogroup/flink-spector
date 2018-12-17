@@ -23,6 +23,7 @@ import io.flinkspector.core.quantify.OutputMatcherFactory;
 import io.flinkspector.core.runtime.OutputVerifier;
 import io.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.apache.flink.api.java.DataSet;
+import org.apache.flink.streaming.util.TestStreamEnvironment;
 import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
@@ -50,7 +51,7 @@ public class DataSetTestBase {
      * Creates a new {@link DataSetTestEnvironment}
      */
     @Before
-    public void initialize() throws Exception {
+    public void initialize() {
         testEnv = DataSetTestEnvironment.createTestEnvironment(1);
     }
 

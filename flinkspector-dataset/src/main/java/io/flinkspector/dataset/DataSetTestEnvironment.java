@@ -22,7 +22,13 @@ import io.flinkspector.core.runtime.Runner;
 import io.flinkspector.core.trigger.DefaultTestTrigger;
 import io.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.apache.flink.api.java.DataSet;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.configuration.TaskManagerOptions;
 import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
+import org.apache.flink.runtime.minicluster.MiniCluster;
+import org.apache.flink.runtime.minicluster.MiniClusterConfiguration;
+import org.apache.flink.runtime.testingUtils.TestingCluster;
+import org.apache.flink.streaming.util.TestStreamEnvironment;
 import org.apache.flink.test.util.TestBaseUtils;
 import org.apache.flink.test.util.TestEnvironment;
 
@@ -31,12 +37,17 @@ public class DataSetTestEnvironment extends TestEnvironment {
 
     private final Runner runner;
 
-    public DataSetTestEnvironment(LocalFlinkMiniCluster executor, int parallelism) {
+    public DataSetTestEnvironment(TestingCluster executor, int parallelism) {
         super(executor, parallelism, false);
         runner = new Runner(executor) {
             @Override
             protected void executeEnvironment() throws Throwable {
-                execute();
+                TestStreamEnvironment.setAsContext(executor, parallelism);
+                try {
+                    execute();
+                } finally {
+                    TestStreamEnvironment.unsetAsContext();
+                }
             }
         };
     }
@@ -49,17 +60,13 @@ public class DataSetTestEnvironment extends TestEnvironment {
      * @return new instance of {@link DataSetTestEnvironment}
      * @throws Exception
      */
-    public static DataSetTestEnvironment createTestEnvironment(int parallelism) throws Exception {
+    public static DataSetTestEnvironment createTestEnvironment(int parallelism) {
         int taskSlots = Runtime.getRuntime().availableProcessors();
-        LocalFlinkMiniCluster cluster =
-                TestBaseUtils.startCluster(
-                        1,
-                        taskSlots,
-                        false,
-                        false,
-                        true
-                );
-        return new DataSetTestEnvironment(cluster, parallelism);
+
+        final Configuration configuration = new Configuration();
+        configuration.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, taskSlots);
+
+        return new DataSetTestEnvironment(new TestingCluster(configuration), parallelism);
     }
 
     public <T> DataSet<T> createTestSet(Input<T> input) {
