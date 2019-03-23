@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.flinkspector</groupId>
-    <artifactId>flinkspector-parent_2.11</artifactId>
+    <artifactId>flinkspector-parent_${scala.binary.version}</artifactId>
     <version>0.9.3-SNAPSHOT</version>
 
     <name>Flinkspector</name>
