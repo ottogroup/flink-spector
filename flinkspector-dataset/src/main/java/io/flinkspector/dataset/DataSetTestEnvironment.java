@@ -24,12 +24,10 @@ import io.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.TaskManagerOptions;
-import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
 import org.apache.flink.runtime.minicluster.MiniCluster;
 import org.apache.flink.runtime.minicluster.MiniClusterConfiguration;
-import org.apache.flink.runtime.testingUtils.TestingCluster;
+import org.apache.flink.runtime.minicluster.RpcServiceSharing;
 import org.apache.flink.streaming.util.TestStreamEnvironment;
-import org.apache.flink.test.util.TestBaseUtils;
 import org.apache.flink.test.util.TestEnvironment;
 
 public class DataSetTestEnvironment extends TestEnvironment {
@@ -37,7 +35,7 @@ public class DataSetTestEnvironment extends TestEnvironment {
 
     private final Runner runner;
 
-    public DataSetTestEnvironment(TestingCluster executor, int parallelism) {
+    public DataSetTestEnvironment(MiniCluster executor, int parallelism) {
         super(executor, parallelism, false);
         runner = new Runner(executor) {
             @Override
@@ -54,7 +52,7 @@ public class DataSetTestEnvironment extends TestEnvironment {
 
     /**
      * Factory method to startWith a new instance, providing a
-     * new instance of {@link LocalFlinkMiniCluster}
+     * new instance of {@link MiniCluster}
      *
      * @param parallelism global setting for parallel execution.
      * @return new instance of {@link DataSetTestEnvironment}
@@ -66,7 +64,13 @@ public class DataSetTestEnvironment extends TestEnvironment {
         final Configuration configuration = new Configuration();
         configuration.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, taskSlots);
 
-        return new DataSetTestEnvironment(new TestingCluster(configuration), parallelism);
+        final MiniClusterConfiguration miniClusterConfiguration =
+                new MiniClusterConfiguration.Builder()
+                        .setConfiguration(configuration)
+                        .setRpcServiceSharing(RpcServiceSharing.SHARED)
+                        .build();
+
+        return new DataSetTestEnvironment(new MiniCluster(miniClusterConfiguration), parallelism);
     }
 
     public <T> DataSet<T> createTestSet(Input<T> input) {

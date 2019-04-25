@@ -68,7 +68,7 @@ public class WindowingTest extends DataStreamTestBase {
                         .emit(Tuple2.of(2, "fritz"))
                         //emit the tuple multiple times, with the time span between:
                         .emit(Tuple2.of(1, "peter"), InWindow.to(20, seconds), times(2))
-                        .close();
+                        .closeAndFlush();
 
 		/*
 		 * Creates an OutputMatcher using MatchTuples.

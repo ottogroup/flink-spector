@@ -29,12 +29,16 @@ import io.flinkspector.core.trigger.VerifyFinishedTrigger;
 import io.flinkspector.datastream.functions.ParallelFromStreamRecordsFunction;
 import io.flinkspector.datastream.functions.TestSink;
 import io.flinkspector.datastream.input.EventTimeInput;
+import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.TaskManagerOptions;
-import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
-import org.apache.flink.runtime.testingUtils.TestingCluster;
+import org.apache.flink.runtime.minicluster.MiniCluster;
+import org.apache.flink.runtime.minicluster.MiniClusterConfiguration;
+import org.apache.flink.runtime.minicluster.RpcServiceSharing;
+import org.apache.flink.runtime.testutils.MiniClusterResource;
+import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.functions.source.FromElementsFunction;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
@@ -45,7 +49,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 
 	private final Runner runner;
 
-	public DataStreamTestEnvironment(TestingCluster cluster, int parallelism) {
+	public DataStreamTestEnvironment(MiniCluster cluster, int parallelism) {
 		super(cluster, parallelism);
 		runner = new Runner(cluster) {
 			@Override
@@ -62,7 +66,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	}
 
 	/**
-	 * Factory method to startWith a new instance, providing a new instance of {@link LocalFlinkMiniCluster}
+	 * Factory method to startWith a new instance, providing a new instance of {@link MiniCluster}
 	 *
 	 * @param parallelism global setting for parallel execution.
 	 * @return new instance of {@link DataStreamTestEnvironment}
@@ -74,7 +78,15 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 		final Configuration configuration = new Configuration();
 		configuration.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, taskSlots);
 
-		return new DataStreamTestEnvironment(new TestingCluster(configuration), parallelism);
+		final MiniClusterConfiguration miniClusterConfiguration =
+				new MiniClusterConfiguration.Builder()
+				.setConfiguration(configuration)
+				.setRpcServiceSharing(RpcServiceSharing.SHARED)
+				.build();
+
+		return new DataStreamTestEnvironment(
+				new MiniCluster(miniClusterConfiguration),
+				parallelism);
 	}
 
 	public void executeTest() throws Throwable {

@@ -133,6 +133,7 @@ public class ParallelFromStreamRecordsFunction<T> extends RichParallelSourceFunc
 
     @Override
     public void run(SourceContext<T> ctx) throws Exception {
+        System.out.println("running!");
 
         List<Long> watermarks;
         List<StreamRecord<T>> outputSplit;
