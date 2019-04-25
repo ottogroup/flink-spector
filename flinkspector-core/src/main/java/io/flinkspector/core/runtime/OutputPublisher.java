@@ -19,7 +19,7 @@ public class OutputPublisher {
     private static final EventTranslatorOneArg<OutputEvent, ByteBuffer> TRANSLATOR =
             new ByteEventTranslator();
     private final RingBuffer<OutputEvent> ringBuffer;
-    private int instance;
+    private final int instance;
     private AtomicInteger msgCount = new AtomicInteger(0);
     private Set<Integer> closed = new HashSet<Integer>();
     public OutputPublisher(int instance, RingBuffer<OutputEvent> buffer) {
@@ -83,11 +83,11 @@ public class OutputPublisher {
      *
      * @param taskNumber index of the subtask.
      */
-    public void sendClose(int taskNumber) {
+    public void sendClose(int taskNumber, int numTasks) {
 //        System.out.println("close taskNumber = " + taskNumber);
         if (!closed.contains(taskNumber)) {
-            String close = String.format("CLOSE %d %d",
-                    taskNumber, msgCount.get());
+            String close = String.format("CLOSE %d %d %d",
+                    taskNumber, numTasks, msgCount.get());
 
             queueMessage(close.getBytes());
             closed.add(taskNumber);

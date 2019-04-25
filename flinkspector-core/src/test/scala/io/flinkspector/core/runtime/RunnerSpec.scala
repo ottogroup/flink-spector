@@ -57,7 +57,7 @@ class RunnerSpec extends CoreSpec {
         sendString(publisher, "1")
         sendString(publisher, "2")
         sendString(publisher, "3")
-        publisher.send("CLOSE 0 3")
+        publisher.send("CLOSE 0 1 3")
 
         publisher.close()
       }
@@ -87,11 +87,11 @@ class RunnerSpec extends CoreSpec {
         publisher.send(ser("OPEN 1 3 "))
         publisher.send(ser("OPEN 2 3 "))
         sendString(publisher, "1")
-        publisher.send("CLOSE 0 1")
+        publisher.send("CLOSE 0 3 1")
         sendString(publisher, "2")
-        publisher.send("CLOSE 1 1")
+        publisher.send("CLOSE 1 3 1")
         sendString(publisher, "3")
-        publisher.send("CLOSE 2 1")
+        publisher.send("CLOSE 2 3 1")
 
         publisher.close()
       }
@@ -120,11 +120,11 @@ class RunnerSpec extends CoreSpec {
         publisher.send(ser("OPEN 0 2 "))
         publisher.send(ser("OPEN 1 2 "))
         sendString(publisher, "1")
-        publisher.send("CLOSE 0 1")
+        publisher.send("CLOSE 0 3 1")
         sendString(publisher, "2")
-        publisher.send("CLOSE 1 1")
+        publisher.send("CLOSE 1 3 1")
         sendString(publisher, "3")
-        publisher.send("CLOSE 2 1")
+        publisher.send("CLOSE 2 3 1")
 
         publisher.close()
       }
@@ -150,7 +150,7 @@ class RunnerSpec extends CoreSpec {
         publisher.send(ser("OPEN 0 2 "))
         publisher.send(ser("OPEN 1 2 "))
         sendString(publisher, "1")
-        publisher.send("CLOSE 0 1")
+        publisher.send("CLOSE 0 2 1")
         sendString(publisher, "2")
         sendString(publisher, "3")
         Thread.sleep(1000)
@@ -181,7 +181,7 @@ class RunnerSpec extends CoreSpec {
           publisher.send(ser("OPEN 0 2 "))
           publisher.send(ser("OPEN 1 2 "))
           sendString(publisher, "1")
-          publisher.send("CLOSE 0 1")
+          publisher.send("CLOSE 0 2 1")
           sendString(publisher, "2")
           sendString(publisher, "3")
           Thread.sleep(2000)
@@ -220,7 +220,7 @@ class RunnerSpec extends CoreSpec {
           publisher.send(ser("OPEN 0 2 "))
           publisher.send(ser("OPEN 1 2 "))
           sendString(publisher, "1")
-          publisher.send("CLOSE 0 1")
+          publisher.send("CLOSE 0 2 1")
           sendString(publisher, "2")
           sendString(publisher, "3")
         }
