@@ -43,7 +43,7 @@ class OutputHandlerSpec extends CoreSpec {
     sendString(publisher, "1")
     sendString(publisher, "2")
     sendString(publisher, "3")
-    publisher.send("CLOSE 0 3")
+    publisher.send("CLOSE 0 1 3")
 
     listener.call() shouldBe ResultState.SUCCESS
 
@@ -60,7 +60,7 @@ class OutputHandlerSpec extends CoreSpec {
     val listener = new OutputHandler[String](subscriber, disruptor, verifier, trigger)
     disruptor.start()
 
-    publisher.send("CLOSE 0 0")
+    publisher.send("CLOSE 0 1 0")
 
     listener.call() shouldBe ResultState.SUCCESS
 
@@ -80,11 +80,11 @@ class OutputHandlerSpec extends CoreSpec {
     publisher.send(ser("OPEN 1 3 "))
     publisher.send(ser("OPEN 2 3 "))
     sendString(publisher, "1")
-    publisher.send("CLOSE 0 1")
+    publisher.send("CLOSE 0 3 1")
     sendString(publisher, "2")
-    publisher.send("CLOSE 1 1")
+    publisher.send("CLOSE 1 3 1")
     sendString(publisher, "3")
-    publisher.send("CLOSE 2 1")
+    publisher.send("CLOSE 2 3 1")
 
     listener.call() shouldBe ResultState.SUCCESS
 
@@ -107,11 +107,11 @@ class OutputHandlerSpec extends CoreSpec {
     publisher.send(ser("OPEN 0 3 "))
     publisher.send(ser("OPEN 2 3 "))
     sendString(publisher, "1")
-    publisher.send("CLOSE 0 1")
+    publisher.send("CLOSE 0 3 1")
     sendString(publisher, "2")
-    publisher.send("CLOSE 1 1")
+    publisher.send("CLOSE 1 3 1")
     sendString(publisher, "3")
-    publisher.send("CLOSE 2 1")
+    publisher.send("CLOSE 2 3 1")
 
     listener.call() shouldBe ResultState.TRIGGERED
 

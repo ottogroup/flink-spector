@@ -54,7 +54,7 @@ public class TestOutputFormat<IN> extends RichOutputFormat<IN> {
     }
 
     @Override
-    public void open(int taskNumber, int numTasks) throws IOException {
+    public void open(int taskNumber, int numTasks) {
         this.taskNumber = taskNumber;
         this.numTasks = numTasks;
         //open a socket to push data
@@ -62,7 +62,7 @@ public class TestOutputFormat<IN> extends RichOutputFormat<IN> {
     }
 
     @Override
-    public void writeRecord(IN next) throws IOException {
+    public void writeRecord(IN next) {
         byte[] msg;
         if (serializer == null) {
             //startWith serializer
@@ -93,6 +93,6 @@ public class TestOutputFormat<IN> extends RichOutputFormat<IN> {
     @Override
     public void close() throws IOException {
         //signal close to output receiver
-        handler.sendClose(taskNumber);
+        handler.sendClose(taskNumber, numTasks);
     }
 }

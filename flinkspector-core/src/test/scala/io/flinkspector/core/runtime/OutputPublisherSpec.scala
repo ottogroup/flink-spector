@@ -74,7 +74,7 @@ class OutputPublisherSpec extends CoreSpec {
   }
 
   it should "send a close message" in new OutputPublisherCase {
-    publisher.sendClose(2)
+    publisher.sendClose(2, 2)
     val record = subscriber.recv()
     MessageType.getMessageType(record) shouldBe MessageType.CLOSE
     close()

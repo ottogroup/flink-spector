@@ -25,11 +25,11 @@ import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 /**
  * Provides a sink that sends all incoming records using a 0MQ connection.
@@ -56,9 +56,7 @@ public class TestSink<IN> extends RichSinkFunction<IN> {
 
 
     @Override
-    public void open(Configuration configuration) throws UnknownHostException {
-        String jobManagerAddress = configuration
-                .getString("jobmanager.rpc.address", "localhost");
+    public void open(Configuration configuration) {
         //open a socket to push data
         handler = new OutputPublisher(instance, buffer);
     }
@@ -70,16 +68,15 @@ public class TestSink<IN> extends RichSinkFunction<IN> {
      * @param next incoming records
      */
     @Override
-    public void invoke(IN next) {
+    public void invoke(IN next, SinkFunction.Context context) {
 
-        int numberOfSubTasks = getRuntimeContext().getNumberOfParallelSubtasks();
-        int indexofThisSubTask = getRuntimeContext().getIndexOfThisSubtask();
-        byte[] msg;
+        final int numberOfSubTasks = getRuntimeContext().getNumberOfParallelSubtasks();
+        final int indexofThisSubTask = getRuntimeContext().getIndexOfThisSubtask();
 
         if (serializer == null) {
 
             //startWith serializer
-            TypeInformation<IN> typeInfo = TypeExtractor.getForObject(next);
+            final TypeInformation<IN> typeInfo = TypeExtractor.getForObject(next);
             serializer = typeInfo.createSerializer(getRuntimeContext().getExecutionConfig());
             //push serializer to output receiver
             try {
@@ -109,7 +106,8 @@ public class TestSink<IN> extends RichSinkFunction<IN> {
     public void close() {
         //signal close to output receiver
         handler.sendClose(
-                getRuntimeContext().getIndexOfThisSubtask());
+                getRuntimeContext().getIndexOfThisSubtask(),
+                getRuntimeContext().getNumberOfParallelSubtasks());
 
     }
 

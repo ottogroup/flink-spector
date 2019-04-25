@@ -203,7 +203,9 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
                 //--> register the index of the closed sink instance.
                 msg = new String(bytes, "UTF-8");
                 int sinkIndex = Integer.parseInt(msg.split(" ")[1]);
-                int countRecords = Integer.parseInt(msg.split(" ")[2]);
+                int numSubTasks = Integer.parseInt(msg.split(" ")[2]);
+                int countRecords = Integer.parseInt(msg.split(" ")[3]);
+                parallelism = numSubTasks;
                 expectedNumRecords += countRecords;
                 closedSinks.add(sinkIndex);
                 break;
@@ -213,16 +215,16 @@ public class OutputHandler<OUT> implements Callable<OutputHandler.ResultState> {
         //check if all sink instances have been closed.
 
         if(numRecords == expectedNumRecords) {
-            if (closedSinks.size() == parallelism) {
-                //finish the listening process
-                return Action.FINISH;
-
-            } else if(closedSinks.size() >= parallelism
+            if(closedSinks.size() == parallelism
                     && expectedNumRecords == 0) {
                 //stream with no output will not open the sink
                 //so verifier has to be opened manually
                 verifier.init();
                 return Action.FINISH;
+            } else if (closedSinks.size() == parallelism) {
+                //finish the listening process
+                return Action.FINISH;
+
             }
         }
         return Action.CONTINUE;
