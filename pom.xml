@@ -20,8 +20,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.flinkspector</groupId>
-    <artifactId>flinkspector-parent_${scala.binary.version}</artifactId>
-    <version>0.9.3-SNAPSHOT</version>
+    <artifactId>flinkspector-parent_2.11</artifactId>
+    <version>0.9.3</version>
 
     <name>Flinkspector</name>
     <description>Lightweight integration tests for Apache Flink</description>
