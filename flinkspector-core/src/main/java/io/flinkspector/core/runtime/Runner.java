@@ -31,7 +31,8 @@ import com.lmax.disruptor.util.DaemonThreadFactory;
 import io.flinkspector.core.runtime.OutputHandler.ResultState;
 import io.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.apache.flink.runtime.client.JobTimeoutException;
-import org.apache.flink.runtime.testingUtils.TestingCluster;
+import org.apache.flink.runtime.minicluster.MiniCluster;
+import org.apache.flink.runtime.testutils.MiniClusterResource;
 import org.apache.flink.streaming.util.TestStreamEnvironment;
 import org.apache.flink.util.ExceptionUtils;
 
@@ -41,9 +42,9 @@ import org.apache.flink.util.ExceptionUtils;
 public abstract class Runner {
 
 	/**
-	 * {@link TestingCluster} used for running the test.
+	 * {@link MiniCluster} used for running the test.
 	 */
-	private final TestingCluster cluster;
+	private final MiniCluster cluster;
 	/**
 	 * {@link ListeningExecutorService} used for running the {@link OutputHandler}, in the background.
 	 */
@@ -100,7 +101,7 @@ public abstract class Runner {
 
 	private boolean stopped;
 
-	public Runner(TestingCluster executor) {
+	public Runner(MiniCluster executor) {
 		this.cluster = executor;
 		executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(10));
 		currentInstance = 1;
@@ -131,21 +132,21 @@ public abstract class Runner {
 	}
 
 	private void shutdownLocalCluster() {
-		if(!cluster.running()) {
+		if(!cluster.isRunning()) {
 			return;
 		}
 
 		try {
-			cluster.getCurrentlyRunningJobsJava()
-					.forEach(jobID -> {
+			cluster.listJobs().get()
+					.forEach(jobStatusMessage -> {
 						try {
-							cluster.cancelJob(jobID);
+							cluster.cancelJob(jobStatusMessage.getJobId());
 						}
 						catch(Exception e) {
 							ExceptionUtils.rethrow(e);
 						}
 					});
-			cluster.stop();
+			cluster.close();
 		}
 		catch(IllegalStateException e) {
 			//this can happen in some cases if Flink has some timers register wih akka.

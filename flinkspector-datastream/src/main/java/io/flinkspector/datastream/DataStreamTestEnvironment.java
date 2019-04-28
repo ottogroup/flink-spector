@@ -16,10 +16,6 @@
 
 package io.flinkspector.datastream;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-
 import com.google.common.base.Preconditions;
 import io.flinkspector.core.input.Input;
 import io.flinkspector.core.runtime.OutputVerifier;
@@ -32,20 +28,25 @@ import io.flinkspector.datastream.input.EventTimeInput;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.configuration.RestOptions;
 import org.apache.flink.configuration.TaskManagerOptions;
-import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
-import org.apache.flink.runtime.testingUtils.TestingCluster;
+import org.apache.flink.runtime.minicluster.MiniCluster;
+import org.apache.flink.runtime.minicluster.MiniClusterConfiguration;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.functions.source.FromElementsFunction;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.streaming.util.TestStreamEnvironment;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+
 public class DataStreamTestEnvironment extends TestStreamEnvironment {
 
 	private final Runner runner;
 
-	public DataStreamTestEnvironment(TestingCluster cluster, int parallelism) {
+	public DataStreamTestEnvironment(MiniCluster cluster, int parallelism) {
 		super(cluster, parallelism);
 		runner = new Runner(cluster) {
 			@Override
@@ -62,7 +63,7 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	}
 
 	/**
-	 * Factory method to startWith a new instance, providing a new instance of {@link LocalFlinkMiniCluster}
+	 * Factory method to startWith a new instance, providing a new instance of {@link MiniCluster}
 	 *
 	 * @param parallelism global setting for parallel execution.
 	 * @return new instance of {@link DataStreamTestEnvironment}
@@ -71,10 +72,25 @@ public class DataStreamTestEnvironment extends TestStreamEnvironment {
 	public static DataStreamTestEnvironment createTestEnvironment(int parallelism) {
 		int taskSlots = Runtime.getRuntime().availableProcessors();
 
-		final Configuration configuration = new Configuration();
-		configuration.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, taskSlots);
+		Configuration configuration = new Configuration();
+		configuration.setString(TaskManagerOptions.MANAGED_MEMORY_SIZE, "0");
 
-		return new DataStreamTestEnvironment(new TestingCluster(configuration), parallelism);
+		if (!configuration.contains(RestOptions.BIND_PORT)) {
+			configuration.setString(RestOptions.BIND_PORT, "0");
+		}
+
+		int numSlotsPerTaskManager = configuration.getInteger(TaskManagerOptions.NUM_TASK_SLOTS, taskSlots);
+
+		MiniClusterConfiguration cfg = new MiniClusterConfiguration.Builder()
+				.setConfiguration(configuration)
+				.setNumSlotsPerTaskManager(numSlotsPerTaskManager)
+				.build();
+
+		MiniCluster miniCluster = new MiniCluster(cfg);
+
+		return new DataStreamTestEnvironment(
+				miniCluster,
+				parallelism);
 	}
 
 	public void executeTest() throws Throwable {

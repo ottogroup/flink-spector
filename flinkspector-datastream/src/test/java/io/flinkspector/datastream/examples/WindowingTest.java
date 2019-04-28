@@ -44,13 +44,13 @@ public class WindowingTest extends DataStreamTestBase {
      * @return {@link DataStream}
      */
     public static DataStream<Tuple2<Integer, String>> window(DataStream<Tuple2<Integer, String>> stream) {
-        return stream.timeWindowAll(Time.of(20, seconds)).sum(0);
+        return stream;
     }
 
     @org.junit.Test
     public void testWindowing() {
 
-        setParallelism(2);
+		setParallelism(2);
 
 		/*
          * Define the input DataStream:
@@ -62,12 +62,12 @@ public class WindowingTest extends DataStreamTestBase {
 		 * record and the current record.
 		 */
         DataStream<Tuple2<Integer, String>> testStream =
-                createTimedTestStreamWith(Tuple2.of(1, "fritz"))
+                createTestStreamWith(Tuple2.of(1, "fritz"))
                         .emit(Tuple2.of(2, "fritz"))
                         //it's possible to generate unsorted input
                         .emit(Tuple2.of(2, "fritz"))
                         //emit the tuple multiple times, with the time span between:
-                        .emit(Tuple2.of(1, "peter"), InWindow.to(20, seconds), times(2))
+                        .emit(Tuple2.of(1, "peter"))
                         .close();
 
 		/*

@@ -23,13 +23,12 @@ import io.flinkspector.core.trigger.DefaultTestTrigger;
 import io.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.configuration.RestOptions;
 import org.apache.flink.configuration.TaskManagerOptions;
-import org.apache.flink.runtime.minicluster.LocalFlinkMiniCluster;
 import org.apache.flink.runtime.minicluster.MiniCluster;
 import org.apache.flink.runtime.minicluster.MiniClusterConfiguration;
-import org.apache.flink.runtime.testingUtils.TestingCluster;
+import org.apache.flink.runtime.minicluster.RpcServiceSharing;
 import org.apache.flink.streaming.util.TestStreamEnvironment;
-import org.apache.flink.test.util.TestBaseUtils;
 import org.apache.flink.test.util.TestEnvironment;
 
 public class DataSetTestEnvironment extends TestEnvironment {
@@ -37,7 +36,7 @@ public class DataSetTestEnvironment extends TestEnvironment {
 
     private final Runner runner;
 
-    public DataSetTestEnvironment(TestingCluster executor, int parallelism) {
+    public DataSetTestEnvironment(MiniCluster executor, int parallelism) {
         super(executor, parallelism, false);
         runner = new Runner(executor) {
             @Override
@@ -54,19 +53,33 @@ public class DataSetTestEnvironment extends TestEnvironment {
 
     /**
      * Factory method to startWith a new instance, providing a
-     * new instance of {@link LocalFlinkMiniCluster}
+     * new instance of {@link MiniCluster}
      *
      * @param parallelism global setting for parallel execution.
      * @return new instance of {@link DataSetTestEnvironment}
      * @throws Exception
      */
     public static DataSetTestEnvironment createTestEnvironment(int parallelism) {
+
         int taskSlots = Runtime.getRuntime().availableProcessors();
 
-        final Configuration configuration = new Configuration();
-        configuration.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, taskSlots);
+        Configuration configuration = new Configuration();
+        configuration.setString(TaskManagerOptions.MANAGED_MEMORY_SIZE, "0");
 
-        return new DataSetTestEnvironment(new TestingCluster(configuration), parallelism);
+        if (!configuration.contains(RestOptions.BIND_PORT)) {
+            configuration.setString(RestOptions.BIND_PORT, "0");
+        }
+
+        int numSlotsPerTaskManager = configuration.getInteger(TaskManagerOptions.NUM_TASK_SLOTS, taskSlots);
+
+        MiniClusterConfiguration cfg = new MiniClusterConfiguration.Builder()
+                .setConfiguration(configuration)
+                .setNumSlotsPerTaskManager(numSlotsPerTaskManager)
+                .build();
+
+        MiniCluster miniCluster = new MiniCluster(cfg);
+
+        return new DataSetTestEnvironment(miniCluster, parallelism);
     }
 
     public <T> DataSet<T> createTestSet(Input<T> input) {
