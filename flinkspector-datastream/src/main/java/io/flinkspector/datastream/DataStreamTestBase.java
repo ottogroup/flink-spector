@@ -320,6 +320,10 @@ public class DataStreamTestBase {
         testEnv.setParallelism(parallelism);
     }
 
+    public void setMaxParralellism(int parralelism) {
+        testEnv.setMaxParallelism(parralelism);
+    }
+
     /**
      * Executes the test and verifies the output received by the sinks.
      */
@@ -337,6 +341,10 @@ public class DataStreamTestBase {
 //			}
             throw assertionError;
         }
+    }
+
+    public int getMaxParralelism() {
+        return testEnv.getMaxParallelism();
     }
 
     /**

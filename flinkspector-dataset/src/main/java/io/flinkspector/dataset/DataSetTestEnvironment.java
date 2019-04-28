@@ -23,6 +23,7 @@ import io.flinkspector.core.trigger.DefaultTestTrigger;
 import io.flinkspector.core.trigger.VerifyFinishedTrigger;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.configuration.RestOptions;
 import org.apache.flink.configuration.TaskManagerOptions;
 import org.apache.flink.runtime.minicluster.MiniCluster;
 import org.apache.flink.runtime.minicluster.MiniClusterConfiguration;
@@ -59,18 +60,26 @@ public class DataSetTestEnvironment extends TestEnvironment {
      * @throws Exception
      */
     public static DataSetTestEnvironment createTestEnvironment(int parallelism) {
+
         int taskSlots = Runtime.getRuntime().availableProcessors();
 
-        final Configuration configuration = new Configuration();
-        configuration.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, taskSlots);
+        Configuration configuration = new Configuration();
+        configuration.setString(TaskManagerOptions.MANAGED_MEMORY_SIZE, "0");
 
-        final MiniClusterConfiguration miniClusterConfiguration =
-                new MiniClusterConfiguration.Builder()
-                        .setConfiguration(configuration)
-                        .setRpcServiceSharing(RpcServiceSharing.SHARED)
-                        .build();
+        if (!configuration.contains(RestOptions.BIND_PORT)) {
+            configuration.setString(RestOptions.BIND_PORT, "0");
+        }
 
-        return new DataSetTestEnvironment(new MiniCluster(miniClusterConfiguration), parallelism);
+        int numSlotsPerTaskManager = configuration.getInteger(TaskManagerOptions.NUM_TASK_SLOTS, taskSlots);
+
+        MiniClusterConfiguration cfg = new MiniClusterConfiguration.Builder()
+                .setConfiguration(configuration)
+                .setNumSlotsPerTaskManager(numSlotsPerTaskManager)
+                .build();
+
+        MiniCluster miniCluster = new MiniCluster(cfg);
+
+        return new DataSetTestEnvironment(miniCluster, parallelism);
     }
 
     public <T> DataSet<T> createTestSet(Input<T> input) {
