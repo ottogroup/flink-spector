@@ -21,7 +21,7 @@
 
     <groupId>io.flinkspector</groupId>
     <artifactId>flinkspector-parent_2.11</artifactId>
-    <version>0.9.4-SNAPSHOT</version>
+    <version>0.9.4</version>
 
     <name>Flinkspector</name>
     <description>Lightweight integration tests for Apache Flink</description>

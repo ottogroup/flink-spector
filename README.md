@@ -65,7 +65,7 @@ You can find more extensive examples here:
 ## Getting started
 
 ### Get the Latest Release:
-> Note: The current build works with Flink version 1.7.0.
+> Note: The current build works with Flink version 1.8.0.
 > There is no Flink 1.4.0 release for scala 2.10 so this has been dropped by flinkspector as well.
 
 Include in your project's pom.xml:
@@ -73,7 +73,7 @@ Include in your project's pom.xml:
 <dependency>
     <groupId>io.flinkspector</groupId>
     <artifactId>flinkspector-dataset_2.11</artifactId>
-    <version>0.9.3</version>
+    <version>0.9.4</version>
 </dependency>
 ```
 or for the Flink DataStream API:
@@ -82,7 +82,7 @@ or for the Flink DataStream API:
 <dependency>
     <groupId>io.flinkspector</groupId>
     <artifactId>flinkspector-datastream_2.11</artifactId>
-    <version>0.9.3</version>
+    <version>0.9.4</version>
 </dependency>
 ```
 If you want to use assertions you should also include hamcrest:
@@ -104,7 +104,7 @@ If you want to use assertions you should also include hamcrest:
 <dependency>
     <groupId>io.flinkspector</groupId>
     <artifactId>flinkspector-dataset</artifactId>
-    <version>0.9.4-SNAPSHOT</version>
+    <version>0.9.5-SNAPSHOT</version>
 </dependency>
 ```
 or for the Flink DataStream API:
@@ -113,7 +113,7 @@ or for the Flink DataStream API:
 <dependency>
     <groupId>io.flinkspector</groupId>
     <artifactId>flinkspector-datastream</artifactId>
-    <version>0.9.4-SNAPSHOT</version>
+    <version>0.9.5-SNAPSHOT</version>
 </dependency>
 ```
 
